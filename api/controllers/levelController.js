@@ -114,7 +114,7 @@ function listLevels(req, res) {
             console.log(levs);
             res.set({
                 'Access-Control-Expose-Headers': 'Content-Range',
-                'Content-Range': 'posts 0-24/319'
+                'Content-Range': 'posts 0-7/8'
             })
             return utils.res(res, 200, 'Retrieval Successful', mylevel);
         });

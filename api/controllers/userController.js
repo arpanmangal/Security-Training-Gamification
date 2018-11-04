@@ -101,11 +101,15 @@ function createUser(req, res) {
 
 /** Logging in the user */
 function login(req, res) {
+    console.log(req.body);
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    const user = req.body;
+    let user = req.body;
+    if (user.user_id == null) {
+        user.user_id = user.username;
+    }
 
     if (user.user_id == null || config.nameRegex.test(user.user_id)) {
         // Either invalid or dangerous

@@ -1,12 +1,8 @@
 import React from 'react';
 import { Admin, Resource, ListGuesser, fetchUtils } from 'react-admin';
-// import { UserList } from './users';
-import { LevelList } from './levels';
-// import { PostList, PostEdit, PostCreate } from './posts'
-// import jsonServerProvider from 'ra-data-json-server';
-// import PostIcon from '@material-ui/icons/Book';
+import { LevelList, LevelEdit, LevelCreate } from './levels';
 import UserIcon from '@material-ui/icons/Group';
-// import Dashboard from './Dashboard';
+import Dashboard from './Dashboard';
 import authProvider from './authProvider';
 import dataProviderr from './dataProvider';
 
@@ -25,8 +21,8 @@ const httpClient = (url, options = {}) => {
 }
 const dataProvider = dataProviderr('http://localhost:5380/api', httpClient);
 const App = () => (
-  <Admin authProvider={authProvider} dataProvider={dataProvider}>
-        <Resource name="level" list={LevelList} icon={UserIcon} />
+  <Admin dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
+        <Resource name="level" list={LevelList} icon={UserIcon} edit={LevelEdit} create={LevelCreate} />
   </Admin>
 );
 export default App;

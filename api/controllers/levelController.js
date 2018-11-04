@@ -77,7 +77,7 @@ function createLevel(req, res) {
         })
         .catch(function (err) {
             if (err.code == 11000) {
-                // console.log(err);
+                console.log(err);
                 return utils.res(res, 400, 'Level ID already exists');
             } else {
                 return utils.res(res, 500, 'Internal Server Error');

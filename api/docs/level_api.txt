@@ -1,0 +1,159 @@
+level API
+
+POST: /api/level/create                             // For registering user
+    params:
+        header:
+            x-auth-token                            // token for verifying that admin is logged in
+        body:
+            level:
+                name*
+                subheading*
+                category*
+                difficulty*
+                type*
+                description
+                image_url*
+                rules
+                hints
+                qualification_iq*
+                Attributes
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+GET: /api/level
+    params:
+        header:
+            x-auth-token                            // token for verifying that admin is logged in
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data: [{
+            _id
+            name
+            subheading
+            category
+            difficulty
+            type
+            image_url
+            qualification_iq
+        }, ...]
+
+
+
+POST: /api/level/view            // Get particular level information
+    body:
+        id: level_id
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   { //whole level object}
+
+POST: /api/level/getAttributes
+    body:
+        id
+    return:
+        status_code
+        error: false/true
+        message: ".. string"
+        data: { // Whichever format that unity permits}
+
+POST: /api/level/modify             // Modifying level information
+    params:
+        header:
+            x-auth-token    //token for verifying that admin is logged in
+    body:
+        id:"..string" (to identify which level to edit)
+        //whatever final level you want
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+POST: /api/level/playerUpdate             // Adding player to played list if not already there
+    params:
+        header:
+            x-auth-token    
+    body:
+        id:"..string" (to identify which level to edit)
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+POST: /api/level/delete		// Delete level with this id
+    params:
+        header:
+            x-auth-token 	//token for verifying that admin is logged in
+    body:
+        id
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+POST: /api/level/leaderboard   // Gets the top n players of that level
+    params:
+        header:
+            x-auth-token
+    body:
+        id          
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+        data: "..."         // JSON data to render at frontend
+
+
+GET: /api/level/updateLeaderboard/:id   // Gets the top n players of that level
+    params:
+        header:
+            secret_within_api_token     // Token kept as a secret for within API calls
+        body:
+            id              // Level id
+            score           // User score of that level
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+        data: "..."         // JSON data to render at frontend
+
+POST: /api/level/getCategories   // Get ID ,name and image of levels for every category
+    params:
+        header:
+            x-auth-token
+        body: 
+            category: "..string"
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+        data: "..."         // json of list of all levels with their category as a key
+
+POST: /api/level/getType   // Get ID ,name and image of levels for every category
+    params:
+        header:
+            x-auth-token
+        body: 
+            type: "..string"
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+        data: "..."         // json of list of all levels with their category as a key
+
+-------------------- Not sure if following API is necessary ---------------------------
+
+POST: /api/level/notify/:id     // Send mail to all players of this level about any update
+    params:
+        header:
+            x-auth-token    // token for verifying that admin is logged in
+        body:
+            mail: "<p>Sample mail</p>" // mail to be sent to all players
+    returns:
+        status_code
+        error: false/true
+        message: "..string"

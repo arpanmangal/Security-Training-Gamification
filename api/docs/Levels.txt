@@ -1,0 +1,38 @@
+{
+    _id: "some_id",                                     // Unique level ID
+    name: "Some level",                                 // Displayable Level Name
+    subheading: "A Sample Level"                        // Level Subheading
+    category: "Topics/General"     		    			// Level category topic wise or general levels like phishing
+    difficulty: "Beginner/Intermediate/Expert",         // Diffculty level 
+    type: "multiplayer/single",                         // Level type
+    description: "..long string",						// Level Description
+    image_url: "string"                                 // URL of Image of that level
+    rules: [											// Level Rules
+    		"Rule 1",
+        ...
+    ],                 																		
+    hints: [											// Level Hints
+    		{
+    		"content": String,							// Hint content
+            "cost": Number								// Hint cost in coins
+        }, ...
+    ],
+    
+    qualification_iq: Number							// Minimum IQ score required to play this level
+    players: [                                          // List of reg till now
+        {
+            id: "uid"                                   // Registration id
+        },...
+    ],
+
+    leaderboard: [                                      // Top n players of that game
+        {
+            id: "uid"
+        },...
+    ]
+
+    attributes: {
+        attr1: {},
+        attr2: {}
+    }
+}

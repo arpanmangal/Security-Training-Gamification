@@ -1,0 +1,21 @@
+// Mail sending API
+
+POST: /api/email/send
+    params:
+        header:
+            x-auth-token 	//token of any admin
+	  body:
+            mail: {
+                from: "suyash@tryst-iitd.com"   // from email
+                reply_address: "technical@tryst-iitd.com"    // email to send the replies to
+                sub: "<Subject>" 
+                text: "<Body of the mail (html format allowed)>"
+                to: [
+                      "suyash@gmail.com",
+                      "aman@gmail.com",
+                    ]
+            }
+    return:
+        status_code
+        error: false/true
+        message: "..string"

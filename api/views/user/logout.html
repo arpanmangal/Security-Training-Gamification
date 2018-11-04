@@ -1,0 +1,13 @@
+<html>
+
+<body>
+    <script>
+        // Unset the token in session storage
+        delete window.sessionStorage.accessToken;
+        delete window.sessionStorage.userName;
+        alert("You have been successfully logged out and will be redirected to Home");
+        window.location = '/';
+    </script>
+</body>
+
+</html>

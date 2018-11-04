@@ -1,0 +1,84 @@
+// Logging API
+
+POST: /api/logs/create
+    params:
+        header:
+            x-auth-token
+    return:
+        status_code
+        error: false/true
+        message: "..string id"
+
+POST: /api/logs/create_level
+    params:
+        header:
+            x-auth-token
+    body:
+        id
+    return:
+        status_code
+        error: false/true
+        message: "..string id"
+
+POST: /api/logs/modify
+    params:
+        header:
+            x-auth-token 	//token for verifying that user is logged in        
+	body:
+            id
+            log_object
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+	
+
+POST: /api/logs/modify_basic
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in        
+    body:
+            id
+            attempts: number
+            sucess: number
+            coins: number
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+    
+POST: /api/logs/view  // id is the logs id to view
+    params:
+        header:
+            x-auth-token   //token for verifying that user if logged in
+        body:
+            secret: "string" // To identify whether it's the ML model or someone else trying to access the logs
+	                       // empty
+        return:
+        status_code
+        error: false/true
+        message: "..string"
+        data: log_object
+
+POST: /api/logs/delete  // id is the level log id to delete
+    params:
+        header:
+            x-auth-token   //token for verifying that admin is logged in
+        body:
+            id             // Level id
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+
+POST: /api/logs/delete_all    // Delete logs of the entire user
+    params:
+        header:
+            x-auth-token   //token for verifying that admin is logged in
+        body:
+                           // empty
+    return:
+        status_code
+        error: false/true
+        message: "..string"

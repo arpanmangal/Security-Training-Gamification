@@ -1,0 +1,31 @@
+{
+    user_id:  "some user id"                // Some random user id generated
+    email: "atishyajain1212@gmail.com"      // User email id
+    name: "Atishya Jain"                    // User name
+    password: "o23984)(#($*@#$(*"           // bcrypt hashed password of the user, to be sent over https 8-13 chars long
+    university: "IIT Delhi"                 // Name of university. Non-essential field
+    role: ["admin","player"]               // All the roles that this user handles [normal, admin]
+    total_coins: Number                                     // Total money earned by the user based on assessments, rewards etc. 
+    cyber_IQ: Number                                                // Cyber IQ of the player as given/learned by model
+    
+    security_question: {
+        question_id: Number,                                // Security question ID
+        answer: String                                          // bcrypt hashed answer to the security question
+    }
+    
+    levels: {                            // List of levels played by the user with best performance (to be discussed)
+        "level_id": {
+            player_rating: Number,                  // Player rating/score on that level on a scale of 1-10
+            cleared: Boolean,                   // Has player cleared that level or not
+            coins_earned: Number                        // Money earned in this level
+        }, ....
+    }
+    
+    assessments: {
+        "assessment_id": {
+            assessment_score: Number,               // Score on a scale of 1-10
+            cleared: Boolean,                               // Has player cleared the assessment or not
+            coins_earned: Number                        // Money earned as a result of giving this assessment / quiz
+        }, ....
+    }
+}

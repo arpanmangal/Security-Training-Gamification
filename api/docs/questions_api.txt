@@ -1,0 +1,31 @@
+questions API
+
+POST: /api/questions/create                             // For forget question
+    params:
+        header:
+            x-auth-token                                // token for verifying that admin is logged in
+        body:
+            question: "string"
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+GET: /api/questions/view            // Get all questions
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data: [
+            {
+                question_id: "xx",
+                content: "What is ...?"
+            }, ...
+        ]
+
+GET: /api/questions/view/:id            // Get a particular question
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   { //whole questions object}

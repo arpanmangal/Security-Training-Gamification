@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Serious Games</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <script src="/lib/jquery.min.js"></script>
+</head>
+
+
+<body>
+    <div class="container">
+        <section id="welcome">
+            <h1> Welcome to Serious Games</h1>
+            <br />
+        </section>
+        <section id="content">
+            <form action="" id="forgotform">
+                <h1>Forgot Password</h1>
+                <div>
+                    <input type="text" placeholder="Username*" required="" name="user_id" />
+                </div>
+                <div>
+                    <input type="password" placeholder="New Password*" required="" name="new_password" id="password" />
+                </div>
+                <div>
+                    <input type="password" placeholder="Confirm Password*" required="" name="confirm_password" id="confirm_password" />
+                </div>
+                <div>
+                    <h3> Select and answer your Security Question</h3>
+                    <select name="security_question" id="question_select">
+                    </select>
+                </div>
+                <div>
+                    <input type="text" placeholder="Security Answer*" required="" name="security_answer" />
+                </div>
+                <div>
+                    <input type="submit" value="Validate" />
+                </div>
+            </form><!-- form -->
+        </section><!-- content -->
+    </div><!-- container -->
+
+    <script src="/js/login.js"></script>
+    <script>
+        // Fetch all security questions
+        fetchSecurityQuestions('#question_select');
+
+        // Ensure passwords compare and valid
+        validatePassword('#password');
+        comparePasswords('#password', '#confirm_password');
+
+        // Validate user and reset password
+        $('#forgotform').submit(function (e) {
+            e.preventDefault(); // Prevent default submission
+
+            var data = $('#forgotform').serializeArray().reduce(function (obj, item) {
+                if (item.value !== "")
+                    obj[item.name] = item.value;
+                return obj;
+            }, {});
+
+            delete data["confirm_password"];
+            console.log(data);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/user/forgot',
+                data: data,
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (responseData, textStatus, jqXHR) {
+                    let data = responseData.data;
+                    console.log(data);
+                    alert(responseData.message);
+                    window.location = '/';
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var err = jqXHR.responseJSON
+                    alert(err.message);
+                    console.log(errorThrown);
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

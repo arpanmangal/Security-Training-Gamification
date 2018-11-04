@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h2 style="color: green"> Your Profile </h2>
+    <div id='profile'>
+
+    </div>
+    <script>
+
+        // Check if user is logged in
+        if (window.sessionStorage.accessToken == null) {
+            alert("Please login to see your profile");
+            console.log('alert done')
+            window.location = '/';
+        } else {
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/user/view',
+                beforeSend: function (request) {
+                    request.setRequestHeader("x-auth-token", window.sessionStorage.accessToken);
+                },
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (responseData, textStatus, jqXHR) {
+                    let data = responseData.data;
+                    console.log(data);
+                    $('#profile').append('<h3> Name : ' + data.name + '</h3>');
+                    $('#profile').append('<h3> University : ' + data.university + '</h3>');
+                    $('#profile').append('<h3> Total Coins : ' + data.total_coins + '</h3>');
+                    $('#profile').append('<h3> Cyber IQ : ' + data.cyber_IQ + '</h3>');
+                    $('#profile').append('<h3> <a href="/"> Home </a></h3>');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var err = jqXHR.responseJSON
+                    // alert(err.message);
+                    alert('Session Expired');
+                    window.location = '/logout';
+                    console.log(errorThrown);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h2 style="color: green"> Forgot Your Password? </h2>
+
+    <form id="forgotform">
+        <span> User ID : </span>
+        <input type="text" name="user_id" placeholder="User ID">
+        <br />
+        <span> Security Question : </span>
+        <select name="security_question" id="question_select">
+        </select>
+        <br />
+        <span> Security Answer : </span>
+        <input type="text" name="security_answer">
+        <br />
+        <span> New Password : </span>
+        <input type="password" name="new_password" placeholder="Enter a New Password here">
+        <br />
+        <input type="submit" value="Validate">
+    </form>
+
+    <br />
+    <h3> <a href="/"> Home </a></h3>
+
+    <script>
+        // Make an AJAX request to fetch all security questions
+        $.ajax({
+            type: 'GET',
+            url: '/api/questions/view',
+            contentType: 'application/x-www-form-encoded',
+            success: function (responseData, textStatus, jqXHR) {
+                const questions_data = responseData.data;
+
+                let questions = {};
+                questions_data.forEach(ques => {
+                    questions[ques.question_id] = ques.content;
+                });
+
+                // window.questionsList = questions;
+                var $questionDropdown = $('#question_select');
+                for (let id in questions) {
+                    let content = questions[id];
+                    $questionDropdown.append("<option value='" + id + "'> " + content + "</option > ");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+
+        $('#forgotform').submit(function (e) {
+            e.preventDefault(); // Prevent default submission
+
+            var data = $('#forgotform').serializeArray().reduce(function (obj, item) {
+                if (item.value !== "")
+                    obj[item.name] = item.value;
+                return obj;
+            }, {});
+
+            console.log(data);
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/user/forgot',
+                data: data,
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (responseData, textStatus, jqXHR) {
+                      let data = responseData.data;
+                        console.log(data);
+                        window.sessionStorage.accessToken = data.token;
+                        window.sessionStorage.name = data.name;
+                        alert('Your Password has been successfully reset');
+                        window.location = '/';
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var err = jqXHR.responseJSON
+                    alert(err.message);
+                    console.log(errorThrown);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

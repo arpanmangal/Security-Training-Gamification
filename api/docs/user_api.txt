@@ -1,0 +1,191 @@
+/POST: /User API
+
+GET: /api/user/view         // Get user information
+    params:
+        header:
+            x-auth-token    // token for verifying that user is logged
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   { //whole user object except password, levels, assessment }
+
+
+GET: /api/user/adminViewUser           // Get user information for Admin
+    params:
+        header:
+            x-auth-token    // token for verifying that user is logged
+            user_id         // user_id of the user who you want to see
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   { //whole user object except password }
+
+
+GET: /api/user/viewLevelInfo         // Get user information
+    params:
+        header:
+            x-auth-token    // token for verifying that user is logged
+        body:
+            level_id        // Level info which you want to retrive. Pass "ALL" for all info
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   [{ Level Object }]
+
+
+GET: /api/user/viewAssessmentInfo         // Get user information
+    params:
+        header:
+            x-auth-token    // token for verifying that user is logged
+        body:
+            assessment_id        // Assessment info which you want to retrive. Pass "ALL" for all info
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   [{ Assessment Object }]
+
+
+POST: /api/user/modify          // Modifying user information
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            //all the field that need to be edited
+            //should be among [name, email, security_question, university]
+        return:
+            status_code
+            error: false/true
+            message: "..string"
+
+
+// Login and Registration API
+
+POST: /api/user/create      // For registering user
+    params:
+        body:
+            user_id
+            name
+            email
+            password
+            university
+            security_question_id
+            security_answer
+            
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+
+POST: /api/user/login       // for loggin users in
+    params:
+        body:
+            user_id
+            password
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   {
+            token           // JWT token for logging user in (expiry: 6 hrs)
+            user            // all of users data except password (see users.txt for more info)
+        }
+
+
+// Delete the user
+POST: /api/user/delete
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+
+// Delete the user by admin
+POST: /api/user/adminDeleteUser
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            user_id         // User id of user to delete
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+
+// Verify that it is an authentic user, and log him in
+POST: /api/user/forgot
+    params:
+        body:
+            user_id
+            security_question
+            security_answer
+            new_password
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data: {
+            token,           // JWT token for logging user
+            name
+        }
+
+
+// Reset the password of a logged in user
+POST: /api/user/resetPassword
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            old_password
+            new_password
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+
+// Game Interaction API
+POST: /api/user/updateScore    
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            //all the field that need to be edited
+            //should be among [coins, cyber_IQ]
+        return:
+            status_code
+            error: false/true
+            message: "..string"
+            
+
+POST: /api/user/updateLevelInfo
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            level_id
+            level_object
+        return:
+            status_code
+            error: false/true
+            message: "..string"
+            
+POST: /api/user/updateAssessment
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            assessment_id
+            assessment_object
+        return:
+            status_code
+            error: false/true
+            message: "..string"

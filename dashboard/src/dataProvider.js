@@ -52,6 +52,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             }
             case GET_ONE:
                 url = `${apiUrl}/${resource}/${params.id}`;
+                console.log('GET ONE ', params.id);
+                console.log(url);
                 break;
             case GET_MANY: {
                 const query = {
@@ -107,7 +109,15 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
      */
     const convertHTTPResponse = (response, type, resource, params) => {
         const { headers, json } = response;
+        console.log('In response: ', type, resource, headers, json, params);
         switch (type) {
+            case GET_ONE:
+                return {
+                    data: {
+                        id: params.id,
+                        ...json.data
+                    }
+                }
             case GET_LIST:
             case GET_MANY_REFERENCE:
                 if (!headers.has('content-range')) {
@@ -127,7 +137,20 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     ),
                 };
             case CREATE:
-                return { data: { ...params.data, id: json.id } };
+                return { data: { ...params.data, id: json.data._id } };
+            case UPDATE:
+                return { 
+                    data: {
+                        id: params.id,
+                        ...json.data
+                    }
+                }
+            case DELETE:
+                return {
+                    data: {
+                        id: params.id
+                    }
+                }
             default:
                 return { data: json };
         }

@@ -1,8 +1,8 @@
 /*
  * @Author: arpan.mangal 
  * @Date: 2018-09-09 00:27:05 
- * @Last Modified by: arpan.mangal
- * @Last Modified time: 2018-09-23 18:13:05
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-11-05 21:05:09
  */
 
 const config = require('./config/config');
@@ -24,7 +24,6 @@ function resp(res, statusCode, msg, data = null) {
 // The function to validate token takes token from req.headers['x-auth-token']
 // Returns the 'email' key for user database in req.usrEmail by calling next()
 function validateToken(req, res, next) {
-
     const token = req.headers['x-auth-token'] || req.body.token || req.query.token;
     const requested_user_id = req.headers['user_id'] || req.body.user_id || req.query.user_id;
 
@@ -35,7 +34,7 @@ function validateToken(req, res, next) {
     // Verifies secret and checks expiry
     jwt.verify(token, config.jwtSecret, function (err, payload) {
         if (err) {
-            console.log(err);
+            // console.log(err);
             return resp(res, 401, 'Invalid Token');
         }
 
@@ -48,7 +47,7 @@ function validateToken(req, res, next) {
 
             if (loggedUser == null) {
                 // No such user exists
-                console.log('No such user exists');
+                // console.log('No such user exists');
                 return resp(res, 401, 'Invalid Token');
             }
 

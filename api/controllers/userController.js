@@ -373,7 +373,7 @@ function forgotPassword(req, res) {
             }, {
                     'password': hash
                 }, function (err, updatedUser) {
-                    if (err) {
+                    if (err || updatedUser == null) {
                         // Some problem occured
                         console.log(err);
                         return utils.res(res, 500, 'Internal Server Error');
@@ -454,7 +454,7 @@ function resetPassword(req, res) {
                 }, {
                         'password': hash
                     }, function (err, updatedUser) {
-                        if (err) {
+                        if (err || updatedUser == null) {
                             // Some problem occured
                             console.log(err);
                             return utils.res(res, 500, 'Internal Server Error');

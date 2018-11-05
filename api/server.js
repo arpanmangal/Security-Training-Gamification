@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-auth-token, Content-Range");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
     next();
 });
 
@@ -83,15 +84,14 @@ function setUpAPIs() {
     /***************** End Security Question API ****/
 
     /***************** Level API *******************/
-    app.post('/api/level/create', utils.validateToken, utils.checkAdmin, levelController.createLevel);
-    // app.get('/api/level/', utils.validateToken, utils.checkAdmin, levelController.listLevels);
-    app.get('/api/level/', levelController.listLevels);
+    app.get('/api/level/', utils.validateToken, utils.checkAdmin, levelController.listLevels);
+    app.get('/api/level/:id/', utils.validateToken, levelController.browser_view); 
+    app.post('/api/level/', utils.validateToken, utils.checkAdmin, levelController.createLevel);
+    app.put('/api/level/:id', utils.validateToken, utils.checkAdmin, levelController.modifyLevel);
+    app.delete('/api/level/:id', utils.validateToken, utils.checkAdmin, levelController.deleteLevel);
     app.post('/api/level/getattributes', utils.validateToken, levelController.getAttributes);
-    app.post('/api/level/view', utils.validateToken, levelController.browser_view);
-    app.post('/api/level/modify', utils.validateToken, utils.checkAdmin, levelController.modifyLevel);
     app.post('/api/level/playerUpdate', utils.validateToken, levelController.playerUpdate);
     app.post('/api/level/leaderboard', utils.validateToken, levelController.getLeaderboard);
-    app.post('/api/level/delete', utils.validateToken, utils.checkAdmin, levelController.deleteLevel);
     app.post('/api/level/getCategories', utils.validateToken, levelController.getCategories);
     app.post('/api/level/getType', utils.validateToken, levelController.getType);
     /***************** End Level API *****************/

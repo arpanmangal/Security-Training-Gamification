@@ -1,8 +1,8 @@
 /*
  * @Author: arpan.mangal 
  * @Date: 2018-09-09 17:23:05 
- * @Last Modified by: arpan.mangal
- * @Last Modified time: 2018-09-11 14:07:21
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-11-05 21:37:22
  */
 
 const mongoose = require('mongoose');
@@ -25,8 +25,7 @@ const userSchema = new mongoose.Schema({
 
 // Creating the database schemas
 const levelSchema = new mongoose.Schema({
-    // level_id: {type: String, required: true, unique: true, dropDups: true},
-    name: {type: String, required: true, unique: true},
+    name: {type: String, required: true, unique: true, dropDups: true},
     subheading: {type: String},
     category: {type: String, required: true},
     difficulty: {type: String, required: true},

@@ -1,27 +1,5 @@
 level API
 
-POST: /api/level/create                             // For registering user
-    params:
-        header:
-            x-auth-token                            // token for verifying that admin is logged in
-        body:
-            level:
-                name*
-                subheading*
-                category*
-                difficulty*
-                type*
-                description
-                image_url*
-                rules
-                hints
-                qualification_iq*
-                Attributes
-    return:
-        status_code
-        error: false/true
-        message: "..string"
-
 GET: /api/level
     params:
         header:
@@ -42,8 +20,7 @@ GET: /api/level
         }, ...]
 
 
-
-POST: /api/level/view            // Get particular level information
+GET: /api/level/<id>            // Get particular level information
     body:
         id: level_id
     return:
@@ -52,33 +29,36 @@ POST: /api/level/view            // Get particular level information
         message: "..string"
         data:   { //whole level object}
 
-POST: /api/level/getAttributes
-    body:
-        id
+POST: /api/level/                             // For creating a new level
+    params:
+        header:
+            x-auth-token                            // token for verifying that admin is logged in
+        body:
+            level:
+                name*
+                subheading*
+                category*
+                difficulty*
+                type*
+                description
+                image_url*
+                rules
+                hints
+                qualification_iq*
+                Attributes
     return:
         status_code
         error: false/true
-        message: ".. string"
-        data: { // Whichever format that unity permits}
+        message: {
+            Level Object
+        }
 
-POST: /api/level/modify             // Modifying level information
+PUT: /api/level/<id>             // Modifying level information
     params:
         header:
             x-auth-token    //token for verifying that admin is logged in
     body:
-        id:"..string" (to identify which level to edit)
         //whatever final level you want
-    return:
-        status_code
-        error: false/true
-        message: "..string"
-
-POST: /api/level/playerUpdate             // Adding player to played list if not already there
-    params:
-        header:
-            x-auth-token    
-    body:
-        id:"..string" (to identify which level to edit)
     return:
         status_code
         error: false/true
@@ -90,6 +70,27 @@ POST: /api/level/delete		// Delete level with this id
             x-auth-token 	//token for verifying that admin is logged in
     body:
         id
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+
+POST: /api/level/getAttributes
+    body:
+        id
+    return:
+        status_code
+        error: false/true
+        message: ".. string"
+        data: { // Whichever format that unity permits}
+
+
+POST: /api/level/playerUpdate             // Adding player to played list if not already there
+    params:
+        header:
+            x-auth-token    
+    body:
+        id:"..string" (to identify which level to edit)
     return:
         status_code
         error: false/true

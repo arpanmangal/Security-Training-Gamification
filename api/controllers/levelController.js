@@ -5,15 +5,13 @@ const jwt = require('jsonwebtoken');
 const models = require('../models/models');
 
 function createLevel(req, res) {
-    if (req == null) {
+    if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
 
     // Check Request Body
     const level = req.body;
-    if (level == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
+    console.log(level);
 
     if (level.name == null || level.subheading == null || level.category == null || level.difficulty == null ||
         level.type == null || level.image_url == null || level.qualification_iq == null) {
@@ -70,6 +68,7 @@ function createLevel(req, res) {
     if (!(level.attributes == null)) db_level["attributes"] = level.attributes;
 
     let newLevel = new models.level(db_level);
+    console.log(db_level, newLevel);
     newLevel.save()
         .then(function () {
             // Level successfully created

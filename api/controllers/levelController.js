@@ -4,15 +4,21 @@ const jwt = require('jsonwebtoken');
 
 const models = require('../models/models');
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+
 function createLevel(req, res) {
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    // Check Request Body
+    // check request body
     const level = req.body;
-    console.log(level);
-
     if (level.name == null || level.subheading == null || level.category == null || level.difficulty == null ||
         level.type == null || level.image_url == null || level.qualification_iq == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
@@ -85,7 +91,6 @@ function createLevel(req, res) {
             }
         });
 }
-
 function listLevels(req, res) {
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
@@ -118,6 +123,7 @@ function listLevels(req, res) {
             return utils.res(res, 200, 'Retrieval Successful', mylevel);
         });
 }
+
 
 /** Admin Deleting the level */
 function deleteLevel(req, res) {
@@ -205,27 +211,49 @@ function getAttributes(req, res) {
         return utils.res(res, 401, 'Invalid Level ID');
     }
 
+    if((req.body.keys == null) || (req.body.len == null)){
+        return utils.res(res, 401, 'Content to fetch not sent');
+    }
+
+    var my_key = req.body.keys.split(",");
+    var my_len = req.body.len.split(",").map(Number);
+    console.log("Yo: " + my_key);
+    console.log("Yo again: " + my_len);
+
+    if(my_key.length != my_len.length){
+        return utils.res(res, 401, 'Length of content mismatch');
+    }
+
     // Fetch the level info
     models.level.findOne({
         '_id': req.body.id
     }, 'attributes', function (err, mylevel) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
+	    if (err) {
+	        return utils.res(res, 500, 'Internal Server Error');
+	    }
 
-        if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid Token');
-        }
+	    if (mylevel == null) {
+	        return utils.res(res, 401, 'Invalid Token');
+	    }
 
-        var attri = mylevel.attributes;
-        for (key in attri) {
-            if (attri.hasOwnProperty(key)) {
-                var len = (attri[key]).length;
-                var index = Math.floor(Math.random() * (len));
-                attri[key] = attri[key][index]
-            }
-        }
-        return utils.res(res, 200, 'Retrieval Successful', attri);
+	    var attri = mylevel.attributes;
+        var new_attri = {};
+        // var my_key = req.body.keys;
+        // var my_len = req.body.len;
+	    for (var i = 0; i< my_key.length; i++) {
+	  		if (attri.hasOwnProperty(my_key[i])){
+		        var leng = (attri[my_key[i]]).length;
+                if(leng < my_len[i]){
+                    return utils.res(res, 401, 'Data size too large');
+                }
+                shuffleArray(attri[my_key[i]]);
+                new_attri[my_key[i]] = [];
+                for(var j = 0; j<my_len[i]; j++){
+                    new_attri[my_key[i]].push(attri[my_key[i]][j]);
+                }
+	  		}
+	  	}
+        return utils.res(res, 200, 'Retrieval Successful', new_attri);
     });
 }
 

@@ -266,10 +266,6 @@ function modify_attempts(req, res) {
     if (req.body.id == null) {
         return utils.res(res, 401, 'level_id undefined');
     }
-    
-    if (req.body.attempts == null) {
-        return utils.res(res, 401, 'attempts undefined');
-    }
 
     if (req.body.success == null) {
         return utils.res(res, 401, 'success undefined');
@@ -289,11 +285,23 @@ function modify_attempts(req, res) {
         if (mylogs == null) {
             return utils.res(res, 401, 'Invalid token provided');
         }
-
+        console.log(mylogs.logs[req.body.id].number_of_attempts);
         // delete mylogs.logs[req.params.id];
-        (mylogs.logs[req.body.id]).number_of_attempts = req.body.attempts;
-        (mylogs.logs[req.body.id]).number_of_successes = req.body.success;
-        (mylogs.logs[req.body.id]).max_coins_earned = Math.max(req.body.coins,(mylogs.logs[req.body.id]).max_coins_earned);
+        if(mylogs.logs[req.body.id].number_of_attempts != NaN){
+            (mylogs.logs[req.body.id]).number_of_attempts = mylogs.logs[req.body.id].number_of_attempts + 1;
+        }else{
+            (mylogs.logs[req.body.id]).number_of_attempts = 1;
+        }
+        if(mylogs.logs[req.body.id].number_of_successes != NaN){
+            (mylogs.logs[req.body.id]).number_of_successes = Number(req.body.success) + mylogs.logs[req.body.id].number_of_successes;
+        }else{
+            (mylogs.logs[req.body.id]).number_of_successes = Number(req.body.success);
+        }
+        if(mylogs.logs[req.body.id].max_coins_earned != NaN){
+            (mylogs.logs[req.body.id]).max_coins_earned = Math.max(Number(req.body.coins),(mylogs.logs[req.body.id]).max_coins_earned);
+        }else{
+            (mylogs.logs[req.body.id]).max_coins_earned = Number(req.body.coins);
+        }
         const ll = {
             'user_id': req.user_id,
             'logs': mylogs.logs,

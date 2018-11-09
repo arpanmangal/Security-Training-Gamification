@@ -19,7 +19,7 @@ function createUser(req, res) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    console.log(user);
+    // console.log(user);
 
     if (user.user_id == null || user.name == null || user.email == null || user.password == null ||
         user.security_question_id == null || user.security_answer == null) {
@@ -52,10 +52,10 @@ function createUser(req, res) {
         return utils.res(res, 400, 'Please enter alphanumeric characters only');
     }
 
-    if ((!(user.university == null)) && config.alphaNumericRegex.test(user.university)) {
-        // Contains dangerous special characters
-        return utils.res(res, 400, 'Please enter alphanumeric characters only');
-    }
+    // if ((!(user.university == null))) {
+    //     // Contains dangerous special characters
+    //     return utils.res(res, 400, 'University Name should contain only alphanumeric characters only');
+    // }
 
 
     // Hash the password and then create the user
@@ -209,9 +209,61 @@ function view(req, res) {
     });
 }
 
+/** Get the List of all users */
+function listUsers(req, res) {
+    if (req == null || req.query == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    try {
+        // Pagination
+        const range = JSON.parse(req.query.range);
+    } catch (err) {
+        return utils.res(res, 400, 'Please provide appropriate range');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    // Fetch User lists
+    models.User.find({}, 'user_id name email university total_coins cyber_IQ')
+        .lean()
+        .exec(function (err, users) {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            if (users == null) {
+                return utils.res(res, 404, 'Users do not Exist');
+            }
+            users.map(u => {
+                u['id'] = u['user_id'];
+                delete u['user_id'];
+                delete u['_id'];
+                if (!u['university']) {
+                    u['university'] = 'NA';
+                }
+                return u;
+            });
+
+            // Pagination
+            const range = JSON.parse(req.query.range);
+            const len = users.length;
+            const response = users.slice(range[0], range[1] + 1);
+            const contentRange = 'users ' + range[0] + '-' + range[1] + '/' + len;
+
+            res.set({
+                'Access-Control-Expose-Headers': 'Content-Range',
+                'Content-Range': contentRange
+            })
+            return utils.res(res, 200, 'Retrieval Successful', response);
+        })
+}
+
 /** Admin Viewing the user info */
-function adminViewUser(req, res) {
-    if (req == null) {
+function viewUser(req, res) {
+    if (req == null || req.params == null) {
         return utils.res(res, 400, 'Bad Request');
     }
 
@@ -219,41 +271,73 @@ function adminViewUser(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.requested_user_id == null) {
+    if (req.params.id == null) {
         return utils.res(res, 400, 'Please provide user_id of user to fetch');
     }
 
     // Fetch the user info
     models.User.findOne({
-        'user_id': req.requested_user_id
-    }, function (err, loggedUser) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
+        'user_id': req.params.id
+    }, 'user_id name email university total_coins cyber_IQ')
+        .lean()
+        .exec(function (err, user) {
+            if (err || user == null) {
+                return utils.res(res, 404, 'Such user does not exist');
+            }
 
-        if (loggedUser == null) {
+            // Compile all info
+            // const user = {
+            //     'user_id': user.user_id,
+            //     'name': user.name,
+            //     'email': user.email,
+            //     'university': user.university,
+            //     'role': user.role,
+            //     'total_coins': user.total_coins,
+            //     'cyber_IQ': user.cyber_IQ,
+            //     'levels': user.levels || {},
+            //     'assessments': user.assessments || {}
+            // }
+
+            user['id'] = user['user_id'];
+            delete user['user_id'];
+            delete user['_id'];
+            if (!user['university']) {
+                user['university'] = 'NA';
+            }
+
+            return utils.res(res, 200, 'Retrieval Successful', user);
+        });
+}
+
+/** Admin Deleting the user */
+function deleteUser(req, res) {
+    if (req == null || req.params == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    if (req.params.id == null) {
+        return utils.res(res, 400, 'Please provide user_id of user to delete');
+    }
+
+    // Delete the user
+    models.User.findOneAndDelete({
+        'user_id': req.params.id
+    }, function (err, deletedUser) {
+        if (err || deletedUser == null) {
             return utils.res(res, 401, 'Such user does not exist');
         }
 
-        // Compile all info
-        const user = {
-            'user_id': loggedUser.user_id,
-            'name': loggedUser.name,
-            'email': loggedUser.email,
-            'university': loggedUser.university,
-            'role': loggedUser.role,
-            'total_coins': loggedUser.total_coins,
-            'cyber_IQ': loggedUser.cyber_IQ,
-            'levels': loggedUser.levels || {},
-            'assessments': loggedUser.assessments || {}
-        }
-
-        return utils.res(res, 200, 'Retrieval Successful', user);
+        // Successfull Deletion
+        return utils.res(res, 200, 'User account deleted successfully');
     });
 }
 
 /** Deleting the user */
-function deleteUser(req, res) {
+function deleteAccount(req, res) {
     if (req == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -276,37 +360,6 @@ function deleteUser(req, res) {
 
         // Successfull Deletion
         return utils.res(res, 200, 'Your account is deleted successfully');
-    });
-}
-
-/** Admin Deleting the user */
-function adminDeleteUser(req, res) {
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    if (req.requested_user_id == null) {
-        return utils.res(res, 400, 'Please provide user_id of user to fetch');
-    }
-
-    // Delete the user
-    models.User.findOneAndDelete({
-        'user_id': req.requested_user_id
-    }, function (err, deletedUser) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
-
-        if (deletedUser == null) {
-            return utils.res(res, 401, 'Such user does not exist');
-        }
-
-        // Successfull Deletion
-        return utils.res(res, 200, 'User account deleted successfully');
     });
 }
 
@@ -482,12 +535,12 @@ function resetPassword(req, res) {
 
 
 module.exports = {
+    'viewUser': viewUser,
+    'listUsers': listUsers,
+    'deleteUser': deleteUser,
     'createUser': createUser,
     'login': login,
-    'viewUser': view,
-    'adminViewUser': adminViewUser,
-    'deleteUser': deleteUser,
-    'adminDeleteUser': adminDeleteUser,
+    'deleteAccount': deleteAccount,
     'forgotPassword': forgotPassword,
     'resetPassword': resetPassword
 }

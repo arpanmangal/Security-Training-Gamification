@@ -74,7 +74,6 @@ function createLevel(req, res) {
     if (!(level.attributes == null)) db_level["attributes"] = level.attributes;
 
     let newLevel = new models.level(db_level);
-    console.log(db_level, newLevel);
     newLevel.save()
         .then(function () {
             // Level successfully created
@@ -92,7 +91,7 @@ function createLevel(req, res) {
         });
 }
 function listLevels(req, res) {
-    if (req == null || req.body == null) {
+    if (req == null || req.query == null) {
         return utils.res(res, 400, 'Bad Request');
     }
 
@@ -100,27 +99,42 @@ function listLevels(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
+    try {
+        // Pagination
+        const range = JSON.parse(req.query.range);
+    } catch (err) {
+        return utils.res(res, 400, 'Please provide appropriate range');
+    }
+
     // Fetch the level info
     models.level.find({}, '_id name subheading category difficulty type image_url qualification_iq')
         .lean()
-        .exec(function (err, mylevel) {
+        .exec(function (err, levels) {
             if (err) {
                 return utils.res(res, 500, 'Internal Server Error');
             }
 
-            if (mylevel == null) {
+            if (levels == null) {
                 return utils.res(res, 404, 'No Such Level Exists');
             }
-            const levs = mylevel.map(l => {
+            levels.map(l => {
                 l['id'] = l['_id'];
                 delete l['_id'];
                 return l;
             });
+
+            // Pagination
+            const range = JSON.parse(req.query.range);
+            const len = levels.length;
+            const response = levels.slice(range[0], range[1] + 1);
+            const contentRange = 'levels ' + range[0] + '-' + range[1] + '/' + len;
+
             res.set({
                 'Access-Control-Expose-Headers': 'Content-Range',
-                'Content-Range': 'posts 0-7/8'
+                'Content-Range': contentRange
             })
-            return utils.res(res, 200, 'Retrieval Successful', mylevel);
+
+            return utils.res(res, 200, 'Retrieval Successful', response);
         });
 }
 

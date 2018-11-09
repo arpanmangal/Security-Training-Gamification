@@ -11,6 +11,29 @@ GET: /api/user/view         // Get user information
         data:   { //whole user object except password, levels, assessment }
 
 
+GET: /api/users
+    params:
+        header:
+            x-auth-token                // Admin token
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data: [{
+
+        }]
+
+GET: /api/users/<user_id>
+    return:
+        status_code
+        error: false/true
+        message: "..string"
+        data:   { //whole user object}
+
+POST: /api/users
+
+PUT: /api
+
 GET: /api/user/adminViewUser           // Get user information for Admin
     params:
         header:

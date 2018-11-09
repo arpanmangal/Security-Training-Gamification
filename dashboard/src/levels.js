@@ -1,7 +1,7 @@
 import React from 'react';
-import { List, Datagrid, TextField, UrlField, NumberField, SelectField } from 'react-admin'
+import { List, Datagrid, TextField, UrlField, SelectField } from 'react-admin'
 import { Edit, EditButton, SimpleFormIterator } from 'react-admin';
-import { Create, SimpleForm, TextInput, LongTextInput, UrlInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
+import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>

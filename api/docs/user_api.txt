@@ -15,24 +15,26 @@ GET: /api/users
     params:
         header:
             x-auth-token                // Admin token
+        query:
+            range: [4-9]                // Pagination
     return:
         status_code
         error: false/true
         message: "..string"
         data: [{
-
+            Basic User Info
         }]
 
 GET: /api/users/<user_id>
+    params:
+        header:
+            x-auth-token                // Admin token
     return:
         status_code
         error: false/true
         message: "..string"
         data:   { //whole user object}
 
-POST: /api/users
-
-PUT: /api
 
 GET: /api/user/adminViewUser           // Get user information for Admin
     params:

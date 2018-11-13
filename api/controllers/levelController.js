@@ -186,7 +186,6 @@ function browser_view(req, res) {
     if (req.params.id == null) {
         return utils.res(res, 401, 'Invalid Level ID');
     }
-    console.log(req.params.id);
 
     // Fetch the user info
     models.level.findOne({
@@ -203,11 +202,11 @@ function browser_view(req, res) {
             'category': mylevel.category,
             'type': mylevel.type,
             'difficulty': mylevel.difficulty,
-            'description': mylevel.description,
+            'description': mylevel.description || '',
             'image_url': mylevel.image_url,
             'game_url': mylevel.game_url,
-            'rules': mylevel.rules,
-            'hints': mylevel.hints,
+            'rules': mylevel.rules || [],
+            'hints': mylevel.hints || [],
             'qualification_iq': mylevel.qualification_iq,
         }
 

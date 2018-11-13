@@ -4,12 +4,7 @@ import { Edit, EditButton, DeleteButton, ShowButton, SimpleFormIterator } from '
 import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
 import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin';
 import PlayButton from '@material-ui/icons/PlayCircleFilled';
-import { Link } from 'react-router-dom'
-import IconButton from '@material-ui/core/IconButton';
-import PropTypes from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import { link } from 'fs';
 import $ from 'jquery'
 
 
@@ -34,21 +29,12 @@ const difficulties = [
     { id: "hard", name: "Hard" }
 ]
 
-// const styles = theme => ({
-//     button: {
-//         margin: theme.spacing.unit,
-//     },
-//     input: {
-//         display: 'none',
-//     },
-// });
 
-const PlayField = ({ record, source }) => {
-    // <span></span>,
+const PlayField = ({ record, sourcer }) => {
     let handleClick = () => {
         console.log('hello, handle clik');
 
-        let redirect = record[source];
+        let redirect = record[sourcer];
         let token = localStorage.getItem('accessToken');
 
         // jquery extend function
@@ -66,14 +52,13 @@ const PlayField = ({ record, source }) => {
         $.redirectPost(redirect, { token: token });
     }
     return (
-        /*<Button variant="contained" aria-label="Play" target="_blank" href={record[source]} color="primary">
-            <PlayButton />&nbsp;Play
-        </Button>*/
         <Button variant="contained" aria-label="Play" onClick={() => { handleClick() }} color="primary">
             <PlayButton />&nbsp;Play
         </Button>
     )
 }
+
+// LevelList
 export const LevelList = props => {
     const { classes } = props;
     return (
@@ -85,61 +70,43 @@ export const LevelList = props => {
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
                 <UrlField source="image_url" />
-                <PlayField source="game_url" />
-                {/* <NumberField source="qualification_iq" /> */}
+                <PlayField sourcer="game_url" />
                 <ShowButton />
-                <EditButton />
                 <DeleteButton />
-                {/* <div>Hi</div> */}
-                {/* <PlayButton></PlayButton> */}
-                {/* <PlayButton component={Link} to="/open-collective"> */}
-                {/* Play */}
-                {/* </PlayButton> */}
-                {/* <IconButton>
-                <PlayButton />Play
-            </IconButton> */}
-
             </Datagrid>
         </List>
     );
 }
 
-// LevelList
-// export const LevelList = props => (
 
-// );
-
-// LevelList.PropTypes = {
-//     classes: PropTypes.object.isRequired,
-// };
-// export const withStyles(styles)(LevelList);
-
-export const LevelEdit = props => (
-    <Edit title={<LevelTitle />} {...props}>
-        <SimpleForm>
-            <DisabledInput source="id" />
-            <TextInput source="name" />
-            <TextInput source="subheading" />
-            <SelectInput source="category" choices={categories} />
-            <SelectInput source="difficulty" choices={difficulties} />
-            <SelectInput source="type" choices={types} />
-            <LongTextInput source="description" />
-            <TextInput source="image_url" />
-            <TextInput source="game_url" />
-            <NumberInput source="qualification_iq" />
-            <ArrayInput source="rules">
-                <SimpleFormIterator>
-                    <TextInput source="rule" />
-                </SimpleFormIterator>
-            </ArrayInput>
-            <ArrayInput source="hints">
-                <SimpleFormIterator>
-                    <TextInput source="hint" />
-                </SimpleFormIterator>
-            </ArrayInput>
-        </SimpleForm>
-    </Edit>
-);
+export const LevelEdit = props => {
+    return (
+        <Edit title={<LevelTitle />} {...props}>
+            <SimpleForm>
+                <DisabledInput source="id" />
+                <TextInput source="name" />
+                <TextInput source="subheading" />
+                <SelectInput source="category" choices={categories} />
+                <SelectInput source="difficulty" choices={difficulties} />
+                <SelectInput source="type" choices={types} />
+                <LongTextInput source="description" />
+                <TextInput source="image_url" />
+                <TextInput source="game_url" />
+                <NumberInput source="qualification_iq" />
+                <ArrayInput source="rules">
+                    <SimpleFormIterator>
+                        <TextInput source="rule" />
+                    </SimpleFormIterator>
+                </ArrayInput>
+                <ArrayInput source="hints">
+                    <SimpleFormIterator>
+                        <TextInput source="hint" />
+                    </SimpleFormIterator>
+                </ArrayInput>
+            </SimpleForm>
+        </Edit>
+    );
+}
 
 export const LevelCreate = props => (
     <Create {...props}>
@@ -156,31 +123,38 @@ export const LevelCreate = props => (
     </Create>
 );
 
-const ListField = ({ record, source, name }) => (
-    <ul>
-        {record[source].map(item => (
-            <li key={item[name]}>{item[name]}</li>
-        ))}
-    </ul>
-)
+const ListField = ({ record, source, name }) => {
+    console.log(record, source, record[source])
+    if (!record[source]) record[source] = [];
+    return (
+        <ul>
+            {record[source].map(item => (
+                <li key={item[name]}>{item[name]}</li>
+            ))}
+        </ul>
+    )
+}
 ListField.defaultProps = { addLabel: true };
 
-export const LevelShow = props => (
-    <Show title={<LevelTitle />} {...props}>
-        <SimpleShowLayout>
-            <TextField source="id" />
-            <TextField source="name" />
-            <TextField source="subheading" />
-            <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
-            <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
-            <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-            <UrlField source="image_url" />
-            <UrlField source="game_url" />
-            <TextField source="description" />
-            <NumberField source="qualification_iq" />
+export const LevelShow = props => {
+    console.log(props);
+    return (
+        <Show title={<LevelTitle />} {...props}>
+            <SimpleShowLayout>
+                <TextField source="id" />
+                <TextField source="name" />
+                <TextField source="subheading" />
+                <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
+                <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
+                <SelectField source="type" choices={types} optionText="name" optionValue="id" />
+                <UrlField source="image_url" />
+                <UrlField source="game_url" />
+                <TextField source="description" />
+                <NumberField source="qualification_iq" />
 
-            {/* <ListField source="rules" name="rule"/>
-            <ListField source="hints" name="hint"/> */}
-        </SimpleShowLayout>
-    </Show>
-);
+                <ListField source="rules" name="rule" />
+                <ListField source="hints" name="hint" />
+            </SimpleShowLayout>
+        </Show>
+    );
+}

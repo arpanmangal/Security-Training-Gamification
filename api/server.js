@@ -87,7 +87,7 @@ function setUpAPIs() {
     /***************** End Security Question API ****/
 
     /***************** Level API *******************/
-    app.get('/api/level/', utils.validateToken, utils.checkAdmin, levelController.listLevels);
+    app.get('/api/level/', utils.validateToken, levelController.listLevels);
     app.get('/api/level/:id/', utils.validateToken, levelController.browser_view); 
     app.post('/api/level/', utils.validateToken, utils.checkAdmin, levelController.createLevel);
     app.put('/api/level/:id', utils.validateToken, utils.checkAdmin, levelController.modifyLevel);

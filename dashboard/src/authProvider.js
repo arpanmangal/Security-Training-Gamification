@@ -1,4 +1,4 @@
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'react-admin';
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK, AUTH_GET_PERMISSIONS } from 'react-admin';
 
 const apiUrl = 'http://localhost:5380/api/user/login';
 
@@ -19,12 +19,20 @@ export default (type, params) => {
                 return response.json();
             })
             .then((res) => {
+                console.log(res.data);
+                // localStorage.removeItem('accessToken');
+                // localStorage.removeItem('admin');
+                // if (res.data.admin) {
+                    // }
+                localStorage.setItem('admin', res.data.admin);
                 localStorage.setItem('accessToken', res.data.token);
+                console.log(localStorage);
             });
     }
     // called when the user clicks on the logout button
     if (type === AUTH_LOGOUT) {
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('admin');
         return Promise.resolve();
     }
     // called when the API returns an error
@@ -41,6 +49,10 @@ export default (type, params) => {
         return localStorage.getItem('accessToken')
             ? Promise.resolve()
             : Promise.reject();
+    }
+    if (type === AUTH_GET_PERMISSIONS) {
+        const role = localStorage.getItem('admin');
+        return role ? Promise.resolve(role) : Promise.reject();
     }
     return Promise.reject('Unknown method');
 };

@@ -167,7 +167,8 @@ function login(req, res) {
 
             return utils.res(res, 200, 'Login Successful', {
                 'token': token,
-                'user': userInfo
+                'user': userInfo,
+                'admin': (loggedUser.role === 'admin') ? 'admin' : null
             });
         });
     });

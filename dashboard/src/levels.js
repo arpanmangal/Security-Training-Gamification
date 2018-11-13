@@ -30,11 +30,11 @@ const difficulties = [
 ]
 
 
-const PlayField = ({ record, sourcer }) => {
+const PlayField = ({ record, field }) => {
     let handleClick = () => {
         console.log('hello, handle clik');
 
-        let redirect = record[sourcer];
+        let redirect = record[field];
         let token = localStorage.getItem('accessToken');
 
         // jquery extend function
@@ -59,7 +59,7 @@ const PlayField = ({ record, sourcer }) => {
 }
 
 // LevelList
-export const LevelList = props => {
+export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
     return (
         <List {...props}>
@@ -70,9 +70,14 @@ export const LevelList = props => {
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
                 <UrlField source="image_url" />
-                <PlayField sourcer="game_url" />
+                {permissions !== 'admin' &&
+                    <PlayField
+                        field="game_url"
+                    />}
                 <ShowButton />
-                <DeleteButton />
+                {permissions === 'admin' &&
+                    <DeleteButton
+                    />}
             </Datagrid>
         </List>
     );

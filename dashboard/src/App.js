@@ -20,16 +20,31 @@ const httpClient = (url, options = {}) => {
 
   options.headers.set('x-auth-token', token);
   console.log(options);
-  
+
   return fetchUtils.fetchJson(url, options);
 }
 const dataProvider = dataProviderr('http://localhost:5380/api', httpClient);
 const App = () => (
-  <Admin dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
-        <Resource name="level" list={LevelList} icon={LevelIcon} edit={LevelEdit} show={LevelShow} create={LevelCreate} />
-        {/* <Resource name="level" list={ListGuesser} icon={LevelIcon} edit={EditGuesser} show={ShowGuesser} create={LevelCreate} /> */}
-        <Resource name="users" list={UserList} icon={UserIcon} show={UserShow}></Resource>
-        {/* <Resource name="users" icon={UserIcon} show={UserShow}></Resource> */}
+  <Admin
+    dashboard={Dashboard}
+    authProvider={authProvider}
+    dataProvider={dataProvider}
+  >
+    {permissions => [
+      <Resource
+        name="level"
+        list={LevelList}
+        icon={LevelIcon}
+        edit={permissions === 'admin' ? LevelEdit : null}
+        show={LevelShow}
+        create={permissions === 'admin' ? LevelCreate : null}
+      />,
+
+      // Only Admin can see users
+      permissions === 'admin'
+        ? <Resource name="users" list={UserList} icon={UserIcon} show={UserShow}></Resource>
+        : null,
+    ]}
   </Admin>
 );
 export default App;

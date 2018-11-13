@@ -47,7 +47,7 @@ function createUser(req, res) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    if (config.alphaNumericRegex.test(user.name) || config.alphaNumericRegex.test(user.security_answer)) {
+    if (config.textRegex.test(user.name) || config.alphaNumericRegex.test(user.security_answer)) {
         // Contains dangerous special characters
         return utils.res(res, 400, 'Please enter alphanumeric characters only');
     }
@@ -101,7 +101,6 @@ function createUser(req, res) {
 
 /** Logging in the user */
 function login(req, res) {
-    console.log(req.body);
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -257,7 +256,7 @@ function listUsers(req, res) {
             res.set({
                 'Access-Control-Expose-Headers': 'Content-Range',
                 'Content-Range': contentRange
-            })
+            });
             return utils.res(res, 200, 'Retrieval Successful', response);
         })
 }
@@ -429,7 +428,7 @@ function forgotPassword(req, res) {
                 }, function (err, updatedUser) {
                     if (err || updatedUser == null) {
                         // Some problem occured
-                        console.log(err);
+                        // console.log(err);
                         return utils.res(res, 500, 'Internal Server Error');
                     }
 
@@ -510,7 +509,7 @@ function resetPassword(req, res) {
                     }, function (err, updatedUser) {
                         if (err || updatedUser == null) {
                             // Some problem occured
-                            console.log(err);
+                            // console.log(err);
                             return utils.res(res, 500, 'Internal Server Error');
                         }
 

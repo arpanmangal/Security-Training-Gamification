@@ -5,11 +5,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 
 export default ({ permissions }) => (
     <Card>
-        <CardHeader title='Welcome Serious Games Admin!' />
-        <CardContent>Lorem ipsum sic dolor amit...</CardContent>
+        <CardHeader title={'Welcome ' + localStorage.getItem('userName') + ' !!'} />
         {permissions === 'admin'
-            ? <CardContent>Sensitive data</CardContent>
-            : null
+            ? <CardContent>Enjoy the Editing</CardContent>
+            : <CardContent>Enjoy the games</CardContent>
         }
     </Card>
 );

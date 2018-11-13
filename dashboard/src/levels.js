@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { List, Datagrid, TextField, UrlField, SelectField, NumberField } from 'react-admin'
 import { Edit, EditButton, DeleteButton, ShowButton, SimpleFormIterator } from 'react-admin';
 import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
+import { BulkDeleteButton, CardActions } from 'react-admin';
 import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin';
 import PlayButton from '@material-ui/icons/PlayCircleFilled';
 import Button from '@material-ui/core/Button';
@@ -29,6 +30,15 @@ const difficulties = [
     { id: "hard", name: "Hard" }
 ]
 
+const NoneActions = props => (
+    <CardActions />
+);
+
+const PostBulkActionButtons = props => (
+    <Fragment>
+        <BulkDeleteButton {...props} />
+    </Fragment>
+);
 
 const PlayField = ({ record, field }) => {
     let handleClick = () => {
@@ -62,7 +72,7 @@ const PlayField = ({ record, field }) => {
 export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
     return (
-        <List {...props}>
+        <List {...props} bulkActionButtons={permissions === 'admin' ? <PostBulkActionButtons /> : <NoneActions />}>
             <Datagrid>
                 <TextField source="name" />
                 <TextField source="subheading" />

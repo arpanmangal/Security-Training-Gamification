@@ -4,14 +4,15 @@ function fetchSecurityQuestions(dropdown) {
     // Make an AJAX request to fetch all security questions
     $.ajax({
         type: 'GET',
-        url: '/api/questions/view',
+        url: '/api/questions',
         contentType: 'application/x-www-form-encoded',
         success: function (responseData, textStatus, jqXHR) {
             const questions_data = responseData.data;
+            console.log(questions_data);
 
             let questions = {};
             questions_data.forEach(ques => {
-                questions[ques.question_id] = ques.content;
+                questions[ques.id] = ques.content;
             });
 
             populateSecurityQuestions(dropdown, questions);

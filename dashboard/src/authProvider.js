@@ -26,6 +26,7 @@ export default (type, params) => {
                     // }
                 localStorage.setItem('admin', res.data.admin);
                 localStorage.setItem('accessToken', res.data.token);
+                localStorage.setItem('userName', res.data.user.name);
                 console.log(localStorage);
             });
     }

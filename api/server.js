@@ -81,9 +81,10 @@ function setUpAPIs() {
     /***************** End User API *****************/
 
     /***************** Security Question API ********/
-    app.post('/api/questions/create', utils.validateToken, utils.checkAdmin, securityQuestionController.addQuestion);
-    app.get('/api/questions/view', securityQuestionController.view);
-    app.get('/api/questions/view:id', securityQuestionController.viewQuestion);
+    app.post('/api/questions', utils.validateToken, utils.checkAdmin, securityQuestionController.addQuestion);
+    app.get('/api/questions', securityQuestionController.view);
+    app.get('/api/questions/:id', securityQuestionController.viewQuestion);
+    // app.delete('/api/questions/:id', utils.validateToken, utils.checkAdmin, securityQuestionController.viewQuestion);
     /***************** End Security Question API ****/
 
     /***************** Level API *******************/
@@ -98,6 +99,26 @@ function setUpAPIs() {
     app.post('/api/level/getCategories', utils.validateToken, levelController.getCategories);
     app.post('/api/level/getType', utils.validateToken, levelController.getType);
     /***************** End Level API *****************/
+
+    /***************** Leaderboard API  *************/
+    app.get('/api/leaderboard', function (req, res) {
+        let rankings = [
+            {
+                'name': 'Arpan Mangal',
+                'rank': 1,
+                'coins': 945,
+                'cyber_IQ': 38,
+                'levels_played': 79,
+                'id': 'arpan'
+            }
+        ];
+        res.set({
+            'Access-Control-Expose-Headers': 'Content-Range',
+            'Content-Range': 'rankings 0-0/1'
+        })
+        return utils.res(res, 200, 'Fetched Leaderboard', rankings);
+    })
+    /***************** End Leaderboard API  *************/
 
     /***************** Logs API **********************/
     app.post('/api/logs/create', utils.validateToken, logController.createLog);

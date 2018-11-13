@@ -1,9 +1,13 @@
 import React from 'react';
 import { Admin, Resource, fetchUtils, ListGuesser, ShowGuesser, EditGuesser } from 'react-admin';
 import { LevelList, LevelEdit, LevelCreate, LevelShow } from './levels';
+import { LeaderboardList } from './LeaderBoard';
 import { UserList, UserShow } from './users';
+import { QuestionList, QuestionShow, QuestionCreate } from './questions';
 import LevelIcon from '@material-ui/icons/ViewList';
 import UserIcon from '@material-ui/icons/Group';
+import LeaderIcon from '@material-ui/icons/TrendingUp';
+import SecurityIcon from '@material-ui/icons/Https';
 import Dashboard from './Dashboard';
 // import customRoutes from './customRoutes';
 import authProvider from './authProvider';
@@ -44,6 +48,16 @@ const App = () => (
       permissions === 'admin'
         ? <Resource name="users" list={UserList} icon={UserIcon} show={UserShow}></Resource>
         : null,
+
+      permissions === 'admin'
+        ? <Resource name="questions" list={QuestionList} show={QuestionShow} create={QuestionCreate} icon={SecurityIcon}></Resource>
+        : null,
+
+      <Resource
+        name="leaderboard"
+        list={LeaderboardList}
+        icon={LeaderIcon}
+      />
     ]}
   </Admin>
 );

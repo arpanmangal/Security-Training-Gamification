@@ -108,7 +108,15 @@ function setUpAPIs() {
     app.post('/api/logs/delete', utils.validateToken, utils.checkAdmin, logController.delete_level_info);
     app.post('/api/logs/delete_all', utils.validateToken, utils.checkAdmin, logController.delete_user_info);
     /****************End Logs API **********************/
-    
+
+    /**************** Testing  */
+    app.post('/testing/', function (req, res) {
+        if (req == null || req.body == null || req.body.token == null) {
+            res.send('fail');
+        } else {
+            res.send('Success!! You sent: ' + req.body.token);
+        }
+    });  
 }
 
 function setUpViews() {

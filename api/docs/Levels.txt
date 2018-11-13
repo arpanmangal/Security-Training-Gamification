@@ -7,6 +7,7 @@
     type: "multiplayer/single",                         // Level type
     description: "..long string",						// Level Description
     image_url: "string"                                 // URL of Image of that level
+    game_url: "string"                                  // URL of the Game
     rules: [											// Level Rules
     		"Rule 1",
         ...

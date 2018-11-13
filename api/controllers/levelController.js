@@ -52,6 +52,8 @@ function createLevel(req, res) {
         return utils.res(res, 400, 'Invalid Image URL');
     }
 
+    if (level.game_url == null) level.game_url = '#';
+
     let db_level = {
         "name": level.name,
         "subheading": level.subheading,
@@ -60,6 +62,7 @@ function createLevel(req, res) {
         "type": level.type,
         "description": '',
         "image_url": level.image_url,
+        "game_url": level.game_url,
         "qualification_iq": level.qualification_iq,
         "rules": [],
         "hints": [],
@@ -107,7 +110,7 @@ function listLevels(req, res) {
     }
 
     // Fetch the level info
-    models.level.find({}, '_id name subheading category difficulty type image_url qualification_iq')
+    models.level.find({}, '_id name subheading category difficulty type image_url game_url qualification_iq')
         .lean()
         .exec(function (err, levels) {
             if (err) {
@@ -188,7 +191,7 @@ function browser_view(req, res) {
     // Fetch the user info
     models.level.findOne({
         '_id': req.params.id
-    }, 'level_id name subheading category type difficulty description image_url rules hints qualification_iq', function (err, mylevel) {
+    }, 'level_id name subheading category type difficulty description image_url game_url rules hints qualification_iq', function (err, mylevel) {
         if (err || mylevel == null) {
             // console.log(err);
             return utils.res(res, 404, 'Level does not exist');
@@ -202,6 +205,7 @@ function browser_view(req, res) {
             'difficulty': mylevel.difficulty,
             'description': mylevel.description,
             'image_url': mylevel.image_url,
+            'game_url': mylevel.game_url,
             'rules': mylevel.rules,
             'hints': mylevel.hints,
             'qualification_iq': mylevel.qualification_iq,
@@ -402,6 +406,9 @@ function modifyLevel(req, res) {
             return utils.res(res, 400, 'Invalid Image URL');
         else
             updatedLevel.image_url = level.image_url;
+    }
+    if (!(level.game_url == null)) {
+        updatedLevel.game_url = level.game_url;
     }
     if (!(level.rules == null)) {
         if (!Array.isArray(level.rules))

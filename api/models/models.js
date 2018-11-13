@@ -2,7 +2,7 @@
  * @Author: arpan.mangal 
  * @Date: 2018-09-09 17:23:05 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-05 21:37:22
+ * @Last Modified time: 2018-11-13 13:55:38
  */
 
 const mongoose = require('mongoose');
@@ -32,6 +32,7 @@ const levelSchema = new mongoose.Schema({
     type: {type: String, required: true},
     description: {type: String},
     image_url: {type: String, required: true},
+    game_url: {type: String, required: true},
     qualification_iq: {type: Number, required: true, default: 0},
     rules: {type: []},
     hints: {type: []},

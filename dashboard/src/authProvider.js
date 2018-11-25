@@ -4,8 +4,9 @@ import { ApiUrl } from './config';
 const apiUrl = ApiUrl + '/api/user/login';
 
 export default (type, params) => {
-    alert('Checking auth: ' + type + '\n');
-    alert(params);
+    // alert(type)
+    // alert(params)
+    // alert(JSON.stringify(params));
     if (type === AUTH_LOGIN) {
         const { username, password } = params;
         const request = new Request(apiUrl, {
@@ -23,6 +24,10 @@ export default (type, params) => {
             })
             .then((res) => {
                 console.log(res.data);
+                // localStorage.removeItem('accessToken');
+                // localStorage.removeItem('admin');
+                // if (res.data.admin) {
+                    // }
                 localStorage.setItem('admin', res.data.admin);
                 localStorage.setItem('accessToken', res.data.token);
                 localStorage.setItem('userName', res.data.user.name);
@@ -33,7 +38,6 @@ export default (type, params) => {
     if (type === AUTH_LOGOUT) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('admin');
-        localStorage.removeItem('userName');
         return Promise.resolve();
     }
     // called when the API returns an error
@@ -41,25 +45,17 @@ export default (type, params) => {
         const { status } = params;
         if (status === 401 || status === 403) {
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('admin');
-            localStorage.removeItem('userName');
             return Promise.reject();
         }
         return Promise.resolve();
     }
     // called when the user navigates to a new location
     if (type === AUTH_CHECK) {
-        const { resource } = params;
-        // alert(resource);
-        if (resource === 'signup') return Promise.resolve();
-
         return localStorage.getItem('accessToken')
             ? Promise.resolve()
             : Promise.reject();
     }
     if (type === AUTH_GET_PERMISSIONS) {
-        const { resource } = params;
-        alert (resource, JSON.stringify(params));
         const role = localStorage.getItem('admin');
         return role ? Promise.resolve(role) : Promise.reject();
     }

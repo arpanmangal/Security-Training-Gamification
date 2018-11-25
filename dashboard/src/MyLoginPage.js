@@ -33,6 +33,7 @@ const styles = theme => ({
         maxHeight: '90vh',
         minWidth: 400,
         maxWidth: '90vh',
+        textAlign: 'center'
     },
 });
 

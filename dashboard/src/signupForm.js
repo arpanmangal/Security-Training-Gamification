@@ -4,7 +4,12 @@ import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import RaisedButton from '@material-ui/core/Button'
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { fetchUtils } from 'react-admin';
+import { push } from 'react-router-redux';
+
 const styles = theme => ({
     container: {
         // display: 'flex',
@@ -19,6 +24,12 @@ const styles = theme => ({
     },
     menu: {
         width: 200,
+    },
+    dialogPaper: {
+        minHeight: '80vh',
+        maxHeight: '90vh',
+        minWidth: 500,
+        maxWidth: '90vh',
     },
 });
 
@@ -35,7 +46,7 @@ class SignupForm extends React.Component {
                 university: '',
                 age: '',
                 question: '',
-                answer: '', 
+                answer: '',
             },
             errors: {},
             securityQuestions: [],
@@ -43,7 +54,6 @@ class SignupForm extends React.Component {
     }
 
     componentDidMount() {
-        console.log('yay component mounted');
         this.loadSecurityQuestions();
     }
 
@@ -56,15 +66,12 @@ class SignupForm extends React.Component {
                 }
 
                 response.json().then((data) => {
-                    console.log(data);
-                    console.log(data.data);
                     let questions = [];
                     let fields = this.state.fields;
                     if (!data || !data.data || data.data.length < 1) {
 
                     } else {
                         data.data.forEach(ques => {
-                            console.log(ques);
                             questions.push({
                                 value: ques.id,
                                 label: ques.content
@@ -76,7 +83,6 @@ class SignupForm extends React.Component {
                         fields: fields,
                         securityQuestions: questions
                     })
-                    console.log(this.state);
                 })
             }
             )
@@ -94,8 +100,32 @@ class SignupForm extends React.Component {
             fields: fields,
             errors: errors
         });
-        console.log(this.state);
     };
+
+    handleReset = event => {
+        let fields ={
+            username: '',
+            password: '',
+            confirmPassword: '',
+            name: '',
+            email: '',
+            university: '',
+            age: '',
+            question: '',
+            answer: '',
+        };
+        if (this.state.securityQuestions.length > 0) {
+            fields.question = this.state.securityQuestions[0].value;
+        }
+        this.setState({
+            fields: fields,
+            errors: {}
+        });
+    }
+
+    handleClose = event => {
+        this.props.history.push('/login')
+    }
 
     handleValidation = () => {
         let fields = this.state.fields || {};
@@ -115,7 +145,6 @@ class SignupForm extends React.Component {
         }
 
         // Validate Password
-        console.log(fields['password']);
         if (!fields['password'] || fields['password'] === '') {
             errors['password'] = 'This is required';
             formIsValid = false;
@@ -147,6 +176,7 @@ class SignupForm extends React.Component {
         }
 
         // Validate Email
+        // alert(emailRegex.test(fields['email']));
         if (!fields['email'] || fields['email'] === '') {
             errors['email'] = 'This is required';
             formIsValid = false;
@@ -156,6 +186,7 @@ class SignupForm extends React.Component {
         } else {
             errors['email'] = null;
         }
+        // alert(formIsValid);
 
         // Validate University
         if (!fields['university'] || fields['university'] === '') {
@@ -166,187 +197,250 @@ class SignupForm extends React.Component {
         // Validate Age
         if (!fields['age'] || fields['age'] === '') {
             errors['age'] = 'This is required';
+            formIsValid = false;
         } else {
             errors['age'] = null;
         }
 
+        // Validate Security Question
+        if (!fields['question'] || fields['question'] === '') {
+            errors['question'] = 'This is required';
+            formIsValid = false;
+        } else {
+            errors['question'] = null;
+        }
         // Validate Security Answer
         if (!fields['answer'] || fields['answer'] === '') {
             errors['answer'] = 'This is required';
+            formIsValid = false;
         } else {
             errors['answer'] = null;
         }
 
         this.setState({ errors: errors });
-        console.log(this.state);
         return formIsValid;
     }
 
     handleSubmit = (event) => {
         // Prevent default
-        // event.preventDefault();
-        // console.log(event);
-        // console.log(event.target);
-        console.log(this.state);
+        event.preventDefault();
+        
         if (this.handleValidation()) {
-            alert(JSON.stringify(this.state));
+            let body = JSON.parse(JSON.stringify(this.state.fields));
+            body['security_question_id'] = body['question'];
+            body['security_answer'] = body['answer'];
+            body['user_id'] = body['username'];
+            delete body['question'];
+            delete body['answer'];
+            delete body['username'];
+            delete body['confirmPassword']
+
+            let url = 'http://localhost:5380/api/user/create';
+            let options = {}
+            options.headers = new Headers({ Accept: 'application/json' });
+            options.method = 'POST'
+            options.body = JSON.stringify(body);
+            fetchUtils.fetchJson(url, options)
+                .then(data => {
+                    alert(data.json.message);
+                    this.props.history.push('/login')
+                })
+                .catch((err, ...rest) => {
+                    console.log(err.status, err.message);
+                    alert(err.message);
+                });
         }
     }
-
-    // handleName = (event, name) => {
-    //     console.log(name, event.target.value, event);
-    // }
 
     render() {
         const { classes } = this.props;
 
+        const actions = [
+            <Button
+                type="reset"
+                label="Reset"
+                color='secondary'
+                onClick={this.handleReset}
+                style={{ float: 'left' }}
+                variant="flat"
+            >Reset</Button>,
+            <Button
+                label="Cancel"
+                color='primary'
+                onClick={this.handleClose}
+                variant="flat"
+            >Cancel</Button>,
+            <Button
+                type="submit"
+                label="Submit"
+                color='primary'
+                variant="flat"
+            >Submit</Button>,
+        ];
+
         return (
-            <form className={classes.container} noValidate autoComplete="off" onSubmit={this.handleSubmit}>
-                <TextField
-                    required
-                    id="username"
-                    label="Username"
-                    value={this.state.fields["username"]}
-                    onChange={this.handleChange('username')}
-                    placeholder="username"
-                    className={classes.textField}
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["username"] ? true : false}
-                    helperText={this.state.errors["username"]}
-                />
-                <br />
-                <TextField
-                    required
-                    id="name"
-                    label="Name"
-                    value={this.state.fields["name"]}
-                    onChange={this.handleChange('name')}
-                    placeholder="name"
-                    className={classes.textField}
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["name"] ? true : false}
-                    helperText={this.state.errors["name"]}
-                />
-                <br />
-                <TextField
-                    required
-                    id="password"
-                    label="Password"
-                    value={this.state.fields["password"]}
-                    onChange={this.handleChange('password')}
-                    placeholder="password"
-                    className={classes.textField}
-                    type="password"
-                    autoComplete="current-password"
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["password"] ? true : false}
-                    helperText={this.state.errors["password"]}
-                />
-                <br />
-                <TextField
-                    required
-                    id="confirmPassword"
-                    label="Confirm Password"
-                    value={this.state.fields["confirmPassword"]}
-                    onChange={this.handleChange('confirmPassword')}
-                    placeholder="password"
-                    className={classes.textField}
-                    type="password"
-                    autoComplete="current-password"
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["confirmPassword"] ? true : false}
-                    helperText={this.state.errors["confirmPassword"]}
-                />
-                <br />
-                <TextField
-                    required
-                    id="email"
-                    label="Email"
-                    value={this.state.fields["email"]}
-                    onChange={this.handleChange('email')}
-                    className={classes.textField}
-                    type="email"
-                    name="email"
-                    placeholder="email"
-                    autoComplete="email"
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["email"] ? true : false}
-                    helperText={this.state.errors["email"]}
-                />
-                <br />
-                <TextField
-                    id="university"
-                    label="University"
-                    value={this.state.fields["university"]}
-                    onChange={this.handleChange('university')}
-                    className={classes.textField}
-                    margin="normal"
-                    variant="outlined"
-                />
-                <br />
-                <TextField
-                    required
-                    id="number"
-                    label="Age"
-                    value={this.state.fields["age"]}
-                    onChange={this.handleChange('age')}
-                    type="number"
-                    className={classes.textField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["age"] ? true : false}
-                    helperText={this.state.errors["age"]}
-                />
-                <br /><br />
-                <TextField
-                    required
-                    id="securityQuestion"
-                    select
-                    // label="Question"
-                    value={this.state.fields["question"]}
-                    className={classes.textField}
-                    style={{width: 400}}
-                    onChange={this.handleChange('question')}
-                    SelectProps={{
-                        MenuProps: {
-                            className: classes.menu,
-                        },
-                    }}
-                    helperText="Please select a security question"
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["question"] ? true : false}
-                >
-                    {this.state.securityQuestions.map(option => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-                <br />
-                <TextField
-                    required
-                    id="securityAnswer"
-                    label="Answer"
-                    value={this.state.fields["answer"]}
-                    className={classes.textField}
-                    onChange={this.handleChange('answer')}
-                    margin="normal"
-                    variant="outlined"
-                    error={this.state.errors["answer"] ? true : false}
-                    helperText={this.state.errors["answer"]}
-                />
-                <br /><br /><br />
-                <RaisedButton variant="raised" label="Register" type="submit"> Register </RaisedButton>
-            </form>
+            <Dialog
+                title="Create an Account"
+                open={true}
+                style={{
+                    textAlign: "center",
+                    // height: '99%',
+                    // width: '90%'
+                }}
+                onClose={this.handleClose}
+                classes={{ paper: classes.dialogPaper }}
+            >
+                <DialogTitle>Create an Account</DialogTitle>
+                <form className={classes.container} noValidate autoComplete="off" onSubmit={this.handleSubmit}>
+                    <TextField
+                        required
+                        id="username"
+                        label="Username"
+                        value={this.state.fields["username"]}
+                        onChange={this.handleChange('username')}
+                        placeholder="username"
+                        className={classes.textField}
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["username"] ? true : false}
+                        helperText={this.state.errors["username"]}
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="name"
+                        label="Name"
+                        value={this.state.fields["name"]}
+                        onChange={this.handleChange('name')}
+                        placeholder="name"
+                        className={classes.textField}
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["name"] ? true : false}
+                        helperText={this.state.errors["name"]}
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="password"
+                        label="Password"
+                        value={this.state.fields["password"]}
+                        onChange={this.handleChange('password')}
+                        placeholder="password"
+                        className={classes.textField}
+                        type="password"
+                        autoComplete="current-password"
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["password"] ? true : false}
+                        helperText={this.state.errors["password"]}
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="confirmPassword"
+                        label="Confirm Password"
+                        value={this.state.fields["confirmPassword"]}
+                        onChange={this.handleChange('confirmPassword')}
+                        placeholder="password"
+                        className={classes.textField}
+                        type="password"
+                        autoComplete="current-password"
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["confirmPassword"] ? true : false}
+                        helperText={this.state.errors["confirmPassword"]}
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="email"
+                        label="Email"
+                        value={this.state.fields["email"]}
+                        onChange={this.handleChange('email')}
+                        className={classes.textField}
+                        type="email"
+                        name="email"
+                        placeholder="email"
+                        autoComplete="email"
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["email"] ? true : false}
+                        helperText={this.state.errors["email"]}
+                    />
+                    <br />
+                    <TextField
+                        id="university"
+                        label="University"
+                        value={this.state.fields["university"]}
+                        onChange={this.handleChange('university')}
+                        className={classes.textField}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="number"
+                        label="Age"
+                        value={this.state.fields["age"]}
+                        onChange={this.handleChange('age')}
+                        type="number"
+                        className={classes.textField}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["age"] ? true : false}
+                        helperText={this.state.errors["age"]}
+                    />
+                    <br /><br />
+                    <TextField
+                        required
+                        id="securityQuestion"
+                        select
+                        // label="Question"
+                        value={this.state.fields["question"]}
+                        className={classes.textField}
+                        style={{ width: 400 }}
+                        onChange={this.handleChange('question')}
+                        SelectProps={{
+                            MenuProps: {
+                                className: classes.menu,
+                            },
+                        }}
+                        helperText="Please select a security question"
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["question"] ? true : false}
+                    >
+                        {this.state.securityQuestions.map(option => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <br />
+                    <TextField
+                        required
+                        id="securityAnswer"
+                        label="Answer"
+                        value={this.state.fields["answer"]}
+                        className={classes.textField}
+                        onChange={this.handleChange('answer')}
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["answer"] ? true : false}
+                        helperText={this.state.errors["answer"]}
+                    />
+                    {/* <br /><br /><br /> */}
+                    {/* <Button variant='raised' label="Register" type="submit"> Register </Button> */}
+                    <div style={{ textAlign: 'right', padding: 40 }}>
+                        {actions}
+                    </div>
+                </form>
+            </Dialog>
         );
     }
 }

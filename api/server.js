@@ -23,7 +23,8 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(express.static('public'))
+app.use(express.static('build/client'))
+app.use(express.static('build/game1'))
 
 /***************** Controllers ******************/
 const userController = require('./controllers/userController');
@@ -135,14 +136,16 @@ function setUpAPIs() {
         if (req == null || req.body == null || req.body.token == null) {
             res.send('fail');
         } else {
-            res.send('Success!! You sent: ' + req.body.token);
+            // res.send('Success!! You sent: ' + req.body.token);
+            res.sendFile(path.join(__dirname, 'build/game1/index.html'));
         }
     });  
 }
 
 function setUpViews() {
     app.get('/', function(req, res) {
-        res.sendFile(path.join(__dirname, 'views/index.html'));
+        // res.sendFile(path.join(__dirname, 'views/index.html'));
+        res.sendFile(path.join(__dirname, 'build/client/index.html'));
     });
     app.get('/signup', function(req, res) {
         res.sendFile(path.join(__dirname, 'views/user/signup.html'));

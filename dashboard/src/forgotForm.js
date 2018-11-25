@@ -33,7 +33,7 @@ const styles = theme => ({
     },
 });
 
-class SignupForm extends React.Component {
+class ForgotForm extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -41,10 +41,6 @@ class SignupForm extends React.Component {
                 username: '',
                 password: '',
                 confirmPassword: '',
-                name: '',
-                email: '',
-                university: '',
-                age: '',
                 question: '',
                 answer: '',
             },
@@ -107,10 +103,6 @@ class SignupForm extends React.Component {
             username: '',
             password: '',
             confirmPassword: '',
-            name: '',
-            email: '',
-            university: '',
-            age: '',
             question: '',
             answer: '',
         };
@@ -131,7 +123,6 @@ class SignupForm extends React.Component {
         let fields = this.state.fields || {};
         let errors = {};
         let formIsValid = true;
-        let emailRegex = new RegExp("^([a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)\.([a-zA-Z]{2,5})$");
 
         // Validate Username
         if (!fields['username'] || fields['username'] === '') {
@@ -164,44 +155,6 @@ class SignupForm extends React.Component {
             errors['confirmPassword'] = null;
         }
 
-        // Validate Name
-        if (!fields['name'] || fields['name'] === '') {
-            errors['name'] = 'This is required';
-            formIsValid = false;
-        } else if (fields['name'].length < 3) {
-            errors['name'] = 'Password should be of minimum 3 characters';
-            formIsValid = false;
-        } else {
-            errors['name'] = null;
-        }
-
-        // Validate Email
-        // alert(emailRegex.test(fields['email']));
-        if (!fields['email'] || fields['email'] === '') {
-            errors['email'] = 'This is required';
-            formIsValid = false;
-        } else if (!emailRegex.test(fields['email'])) {
-            errors['email'] = 'Enter a valid email';
-            formIsValid = false;
-        } else {
-            errors['email'] = null;
-        }
-        // alert(formIsValid);
-
-        // Validate University
-        if (!fields['university'] || fields['university'] === '') {
-            fields['university'] = 'NA';
-            errors['university'] = null;
-        }
-
-        // Validate Age
-        if (!fields['age'] || fields['age'] === '') {
-            errors['age'] = 'This is required';
-            formIsValid = false;
-        } else {
-            errors['age'] = null;
-        }
-
         // Validate Security Question
         if (!fields['question'] || fields['question'] === '') {
             errors['question'] = 'This is required';
@@ -227,15 +180,17 @@ class SignupForm extends React.Component {
         
         if (this.handleValidation()) {
             let body = JSON.parse(JSON.stringify(this.state.fields));
-            body['security_question_id'] = body['question'];
+            body['security_question'] = body['question'];
             body['security_answer'] = body['answer'];
             body['user_id'] = body['username'];
+            body['new_password'] = body['password'];
             delete body['question'];
             delete body['answer'];
             delete body['username'];
-            delete body['confirmPassword']
+            delete body['password'];
+            delete body['confirmPassword'];
 
-            let url = ApiUrl + '/api/user/create';
+            let url = ApiUrl + '/api/user/forgot';
             let options = {}
             options.headers = new Headers({ Accept: 'application/json' });
             options.method = 'POST'
@@ -287,7 +242,7 @@ class SignupForm extends React.Component {
                 onClose={this.handleClose}
                 classes={{ paper: classes.dialogPaper }}
             >
-                <DialogTitle>Create an Account</DialogTitle>
+                <DialogTitle>Reset your Password</DialogTitle>
                 <form className={classes.container} noValidate autoComplete="off" onSubmit={this.handleSubmit}>
                     <TextField
                         required
@@ -301,20 +256,6 @@ class SignupForm extends React.Component {
                         variant="outlined"
                         error={this.state.errors["username"] ? true : false}
                         helperText={this.state.errors["username"]}
-                    />
-                    <br />
-                    <TextField
-                        required
-                        id="name"
-                        label="Name"
-                        value={this.state.fields["name"]}
-                        onChange={this.handleChange('name')}
-                        placeholder="name"
-                        className={classes.textField}
-                        margin="normal"
-                        variant="outlined"
-                        error={this.state.errors["name"] ? true : false}
-                        helperText={this.state.errors["name"]}
                     />
                     <br />
                     <TextField
@@ -347,50 +288,6 @@ class SignupForm extends React.Component {
                         variant="outlined"
                         error={this.state.errors["confirmPassword"] ? true : false}
                         helperText={this.state.errors["confirmPassword"]}
-                    />
-                    <br />
-                    <TextField
-                        required
-                        id="email"
-                        label="Email"
-                        value={this.state.fields["email"]}
-                        onChange={this.handleChange('email')}
-                        className={classes.textField}
-                        type="email"
-                        name="email"
-                        placeholder="email"
-                        autoComplete="email"
-                        margin="normal"
-                        variant="outlined"
-                        error={this.state.errors["email"] ? true : false}
-                        helperText={this.state.errors["email"]}
-                    />
-                    <br />
-                    <TextField
-                        id="university"
-                        label="University"
-                        value={this.state.fields["university"]}
-                        onChange={this.handleChange('university')}
-                        className={classes.textField}
-                        margin="normal"
-                        variant="outlined"
-                    />
-                    <br />
-                    <TextField
-                        required
-                        id="number"
-                        label="Age"
-                        value={this.state.fields["age"]}
-                        onChange={this.handleChange('age')}
-                        type="number"
-                        className={classes.textField}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        margin="normal"
-                        variant="outlined"
-                        error={this.state.errors["age"] ? true : false}
-                        helperText={this.state.errors["age"]}
                     />
                     <br /><br />
                     <TextField
@@ -440,8 +337,8 @@ class SignupForm extends React.Component {
     }
 }
 
-SignupForm.propTypes = {
+ForgotForm.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignupForm);
+export default withStyles(styles)(ForgotForm);

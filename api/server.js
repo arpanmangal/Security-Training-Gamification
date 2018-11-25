@@ -23,7 +23,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(express.static('public'))
+app.use(express.static('build'))
 
 /***************** Controllers ******************/
 const userController = require('./controllers/userController');
@@ -89,7 +89,7 @@ function setUpAPIs() {
 
     /***************** Level API *******************/
     app.get('/api/level/', utils.validateToken, levelController.listLevels);
-    app.get('/api/level/:id/', utils.validateToken, levelController.browser_view); 
+    app.get('/api/level/:id/', utils.validateToken, levelController.browser_view);
     app.post('/api/level/', utils.validateToken, utils.checkAdmin, levelController.createLevel);
     app.put('/api/level/:id', utils.validateToken, utils.checkAdmin, levelController.modifyLevel);
     app.delete('/api/level/:id', utils.validateToken, utils.checkAdmin, levelController.deleteLevel);
@@ -137,14 +137,14 @@ function setUpAPIs() {
         } else {
             res.send('Success!! You sent: ' + req.body.token);
         }
-    });  
+    });
 }
 
 function setUpViews() {
-    app.get('/', function(req, res) {
-        res.sendFile(path.join(__dirname, 'views/index.html'));
+    app.get('/', function (req, res) {
+        res.sendFile(path.join(__dirname, 'build/index.html'));
     });
-    app.get('/signup', function(req, res) {
+    app.get('/signup', function (req, res) {
         res.sendFile(path.join(__dirname, 'views/user/signup.html'));
     });
     app.get('/reset', function (req, res) {
@@ -155,16 +155,16 @@ function setUpViews() {
     });
 
     // Old views
-    app.get('/login', function(req, res) {
+    app.get('/login', function (req, res) {
         res.sendFile(path.join(__dirname, 'views/user/login.html'));
     });
     app.get('/logout', function (req, res) {
         res.sendFile(path.join(__dirname, 'views/user/logout.html'));
     });
-    app.get('/profile', function(req, res) {
+    app.get('/profile', function (req, res) {
         res.sendFile(path.join(__dirname, 'views/user/view.html'));
     });
-    app.get('/resetPassword', function(req, res) {
+    app.get('/resetPassword', function (req, res) {
         res.sendFile(path.join(__dirname, 'views/user/resetPass.html'));
     });
     app.get('/settings', function (req, res) {

@@ -9,9 +9,10 @@ import UserIcon from '@material-ui/icons/Group';
 import LeaderIcon from '@material-ui/icons/TrendingUp';
 import SecurityIcon from '@material-ui/icons/Https';
 import Dashboard from './Dashboard';
-// import customRoutes from './customRoutes';
+import customRoutes from './customRoutes';
 import authProvider from './authProvider';
 import dataProviderr from './dataProvider';
+import MyLoginPage from './MyLoginPage';
 
 const httpClient = (url, options = {}) => {
   let token = localStorage.getItem('accessToken');
@@ -30,9 +31,11 @@ const httpClient = (url, options = {}) => {
 const dataProvider = dataProviderr('http://localhost:5380/api', httpClient);
 const App = () => (
   <Admin
+    loginPage={MyLoginPage}
     dashboard={Dashboard}
     authProvider={authProvider}
     dataProvider={dataProvider}
+    customRoutes={customRoutes}
   >
     {permissions => [
       <Resource

@@ -123,21 +123,23 @@ export const LevelEdit = props => {
     );
 }
 
-export const LevelCreate = props => (
-    <Create {...props}>
-        <SimpleForm>
-            <TextInput source="name" />
-            <TextInput source="subheading" />
-            <SelectInput source="category" choices={categories} />
-            <SelectInput source="difficulty" choices={difficulties} />
-            <SelectInput source="type" choices={types} />
-            <LongTextInput source="description" />
-            <TextInput source="image_url" />
-            <NumberInput source="qualification_iq" />
-        </SimpleForm>
-    </Create>
-);
-
+export const LevelCreate = props => {
+    console.log(props);
+    return (
+        <Create {...props}>
+            <SimpleForm>
+                <TextInput source="name" />
+                <TextInput source="subheading" />
+                <SelectInput source="category" choices={categories} />
+                <SelectInput source="difficulty" choices={difficulties} />
+                <SelectInput source="type" choices={types} />
+                <LongTextInput source="description" />
+                <TextInput source="image_url" />
+                <NumberInput source="qualification_iq" />
+            </SimpleForm>
+        </Create>
+    );
+}
 const ListField = ({ record, source, name }) => {
     console.log(record, source, record[source])
     if (!record[source]) record[source] = [];

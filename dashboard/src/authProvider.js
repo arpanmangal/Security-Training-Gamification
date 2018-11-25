@@ -1,8 +1,12 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK, AUTH_GET_PERMISSIONS } from 'react-admin';
+import { ApiUrl } from './config';
 
-const apiUrl = 'http://localhost:5380/api/user/login';
+const apiUrl = ApiUrl + '/api/user/login';
 
 export default (type, params) => {
+    // alert(type)
+    // alert(params)
+    // alert(JSON.stringify(params));
     if (type === AUTH_LOGIN) {
         const { username, password } = params;
         const request = new Request(apiUrl, {

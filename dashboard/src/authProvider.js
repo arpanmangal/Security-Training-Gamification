@@ -25,10 +25,10 @@ export default (type, params) => {
             .then((res) => {
                 console.log(res.data);
                 // localStorage.removeItem('accessToken');
-                // localStorage.removeItem('admin');
+                // localStorage.removeItem('role');
                 // if (res.data.admin) {
-                    // }
-                localStorage.setItem('admin', res.data.admin);
+                // }
+                localStorage.setItem('role', res.data.admin);
                 localStorage.setItem('accessToken', res.data.token);
                 localStorage.setItem('userName', res.data.user.name);
                 console.log(localStorage);
@@ -37,11 +37,13 @@ export default (type, params) => {
     // called when the user clicks on the logout button
     if (type === AUTH_LOGOUT) {
         localStorage.removeItem('accessToken');
-        localStorage.removeItem('admin');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userName');
         return Promise.resolve();
     }
     // called when the API returns an error
     if (type === AUTH_ERROR) {
+        // return Promise.resolve();
         const { status } = params;
         if (status === 401 || status === 403) {
             localStorage.removeItem('accessToken');
@@ -56,8 +58,9 @@ export default (type, params) => {
             : Promise.reject();
     }
     if (type === AUTH_GET_PERMISSIONS) {
-        const role = localStorage.getItem('admin');
-        return role ? Promise.resolve(role) : Promise.reject();
+        const role = localStorage.getItem('role');
+        return role ? Promise.resolve(role) : Promise.resolve('guest');
+        //  Promise.reject();
     }
     return Promise.reject('Unknown method');
 };

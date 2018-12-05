@@ -87,7 +87,7 @@ function createUser(req, res) {
         newUser.save()
             .then(function () {
                 // User successfully created
-                return utils.res(res, 200, "User Registered Successfully")
+                return utils.res(res, 200, "Account Created Successfully!")
             })
             .catch(function (err) {
                 if (err.code == 11000) {

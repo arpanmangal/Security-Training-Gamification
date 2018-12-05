@@ -115,8 +115,8 @@ function create_level_info(req, res) {
         return utils.res(res, 401, 'Invalid User id');
     }
 
-    if (req.body.id == null) {
-        return utils.res(res, 400, 'Please provide level_id of level log to delete');
+    if (req.body.name == null) {
+        return utils.res(res, 400, 'Please provide level_name of level log to delete');
     }
 
     models.Logs.findOne({
@@ -140,7 +140,7 @@ function create_level_info(req, res) {
         // console.log(mylogs);        
         if(mylogs.logs == null){
             const new_log = {};
-            new_log[req.body.id.toString()] = level;
+            new_log[req.body.name.toString()] = level;
             mylogs.logs = new_log;
         }else{
             if(mylogs.logs[req.body.id.toString()] == null){

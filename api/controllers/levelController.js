@@ -81,7 +81,7 @@ function createLevel(req, res) {
         .then(function () {
             // Level successfully created
             return utils.res(res, 200, 'Level Registered Successfully', {
-                '_id': newLevel._id
+                'level_name': newLevel.name
             });
         })
         .catch(function (err) {
@@ -152,13 +152,13 @@ function deleteLevel(req, res) {
         return utils.res(res, 401, 'Invalid User id');
     }
 
-    if (req.params.id == null) {
-        return utils.res(res, 400, 'Please provide level_id of level to delete');
+    if (req.params.name == null) {
+        return utils.res(res, 400, 'Please provide name of level to delete');
     }
 
     // Delete the user
     models.level.findOneAndDelete({
-        '_id': req.params.id
+        'name': req.params.name
     }, function (err, deletedLevel) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
@@ -183,13 +183,13 @@ function browser_view(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.params.id == null) {
-        return utils.res(res, 401, 'Invalid Level ID');
+    if (req.params.name == null) {
+        return utils.res(res, 401, 'Invalid Level name');
     }
 
     // Fetch the user info
     models.level.findOne({
-        '_id': req.params.id
+        'name': req.params.name
     }, 'level_id name subheading category type difficulty description image_url game_url rules hints qualification_iq', function (err, mylevel) {
         if (err || mylevel == null) {
             // console.log(err);
@@ -224,8 +224,8 @@ function getAttributes(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.body.id == null) {
-        return utils.res(res, 401, 'Invalid Level ID');
+    if (req.body.name == null) {
+        return utils.res(res, 401, 'Invalid Level name');
     }
 
     if((req.body.keys == null) || (req.body.len == null)){
@@ -243,7 +243,7 @@ function getAttributes(req, res) {
 
     // Fetch the level info
     models.level.findOne({
-        '_id': req.body.id
+        'name': req.body.name
     }, 'attributes', function (err, mylevel) {
 	    if (err) {
 	        return utils.res(res, 500, 'Internal Server Error');
@@ -362,8 +362,8 @@ function modifyLevel(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.params.id == null) {
-        return utils.res(res, 400, 'Provide Level ID');
+    if (req.params.name == null) {
+        return utils.res(res, 400, 'Provide Level name');
     }
 
     const level = req.body;
@@ -434,7 +434,7 @@ function modifyLevel(req, res) {
     console.log(updatedLevel);
 
     // Update the level info
-    models.level.findOneAndUpdate({ '_id': req.params.id }, updatedLevel, { new: true }, function (err, newLevel) {
+    models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
         if (err || newLevel == null) {
             return utils.res(res, 400, 'Level Does not exist');
         }
@@ -452,13 +452,13 @@ function getLeaderboard(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.body.id == null) {
-        return utils.res(res, 401, 'Level Id undefined');
+    if (req.body.name == null) {
+        return utils.res(res, 401, 'Level name undefined');
     }
 
     // Fetch the level info
     models.level.find({
-        '_id': req.body.id
+        'name': req.body.name
     }, 'name leaderboard', function (err, mylevel) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
@@ -487,26 +487,26 @@ function playerUpdate(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.body.id == null) {
-        return utils.res(res, 401, 'Invalid Level ID');
+    if (req.body.name == null) {
+        return utils.res(res, 401, 'Invalid Level name');
     }
 
     // Fetch the level info
     models.level.findOne({
-        '_id': req.body.id
+        'name': req.body.name
     }, 'players', function (err, mylevel) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
         }
 
         if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid Token');
+            return utils.res(res, 401, 'Invalid name');
         }
 
         var player = mylevel.players;
         player.push(req.user_id);
 
-        models.level.findOneAndUpdate({ '_id': req.body.id }, { 'players': player }, { new: false }, function (err, updatelevel) {
+        models.level.findOneAndUpdate({ 'name': req.body.name }, { 'players': player }, { new: false }, function (err, updatelevel) {
             if (err) {
                 return utils.res(res, 500, 'Internal Server Error');
             }

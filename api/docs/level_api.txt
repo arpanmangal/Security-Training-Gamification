@@ -1,33 +1,48 @@
-level API
+
+------------------- Level API --------------------
 
 GET: /api/level
     params:
         header:
-            x-auth-token                            // token for verifying that admin is logged in
+            x-auth-token                            // token for verifying that any user is logged in
     return:
         status_code
         error: false/true
         message: "..string"
         data: [{
-            _id
+            id                      // Same as name
             name
             subheading
             category
             difficulty
             type
             image_url
+            game_url
             qualification_iq
         }, ...]
 
 
 GET: /api/level/<name>            // Get particular level information
-    body:
-        name: name
+    params:
+        header:
+            x-auth-token                            // token for verifying that any user is logged in
     return:
         status_code
         error: false/true
         message: "..string"
-        data:   { //whole level object}
+        data:   {
+            name
+            subheading
+            category
+            type
+            difficulty
+            description
+            image_url
+            game_url
+            rules
+            hints
+            qualification_iq
+        }
 
 POST: /api/level/                             // For creating a new level
     params:
@@ -50,7 +65,7 @@ POST: /api/level/                             // For creating a new level
         status_code
         error: false/true
         message: {
-            Level Object
+            '_id': <Level_Name> 
         }
 
 PUT: /api/level/<name>             // Modifying level information
@@ -63,18 +78,37 @@ PUT: /api/level/<name>             // Modifying level information
         status_code
         error: false/true
         message: "..string"
+        data: {New Level Object}
 
-POST: /api/level/delete		// Delete level with this name
+DELETE: /api/level/<name>		// Delete level with this name
     params:
         header:
             x-auth-token 	//token for verifying that admin is logged in
-    body:
-        name
     return:
         status_code
         error: false/true
         message: "..string"
 
+
+------------------- Leaderboard API --------------------
+
+POST: /api/leaderboard   // Gets the top 10 players of that level
+    params:
+        header:
+            x-auth-token
+    body:
+        name          
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+        data: {
+            name: level_name,
+            leaderboard: []
+        }
+
+
+---------- Not used APIs -- as of now ----------
 POST: /api/level/getAttributes
     body:
         name
@@ -95,19 +129,6 @@ POST: /api/level/playerUpdate             // Adding player to played list if not
         status_code
         error: false/true
         message: "..string"
-
-POST: /api/level/leaderboard   // Gets the top n players of that level
-    params:
-        header:
-            x-auth-token
-    body:
-        name          
-    returns:
-        status_code
-        error: false/true
-        message: "..string"
-        data: "..."         // JSON data to render at frontend
-
 
 GET: /api/level/updateLeaderboard/:id   // Gets the top n players of that level
     params:

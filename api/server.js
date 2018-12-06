@@ -91,15 +91,16 @@ function setUpAPIs() {
 
     /***************** Level API *******************/
     app.get('/api/level/', utils.validateToken, levelController.listLevels);
-    app.get('/api/level/:name/', utils.validateToken, levelController.browser_view);
+    app.get('/api/level/:name/', utils.validateToken, levelController.viewLevel);
     app.post('/api/level/', utils.validateToken, utils.checkAdmin, levelController.createLevel);
     app.put('/api/level/:name', utils.validateToken, utils.checkAdmin, levelController.modifyLevel);
     app.delete('/api/level/:name', utils.validateToken, utils.checkAdmin, levelController.deleteLevel);
 
+    app.post('/api/leaderboard', utils.validateToken, levelController.getLeaderboard);
+    
     app.post('/api/level/getattributes', utils.validateToken, levelController.getAttributes);
     app.post('/api/level/playerUpdate', utils.validateToken, levelController.playerUpdate);
-    
-    app.post('/api/level/leaderboard', utils.validateToken, levelController.getLeaderboard);
+
     // app.post('/api/level/upadteLeaderboard', utils.validateToken, levelController.getLeaderboard);
     app.post('/api/level/getCategories', utils.validateToken, levelController.getCategories);
     app.post('/api/level/getType', utils.validateToken, levelController.getType);

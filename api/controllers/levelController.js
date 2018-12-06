@@ -4,27 +4,56 @@ const jwt = require('jsonwebtoken');
 
 const models = require('../models/models');
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+/** List all the levels */
+function listLevels(req, res) {
+    if (req == null || req.query == null) {
+        return utils.res(res, 400, 'Bad Request');
     }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    try {
+        // Pagination
+        const range = JSON.parse(req.query.range);
+    } catch (err) {
+        return utils.res(res, 400, 'Please provide appropriate range');
+    }
+
+    // Fetch the level info
+    models.level.find({}, '_id name subheading category difficulty type image_url game_url qualification_iq')
+        .lean()
+        .exec(function (err, levels) {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            if (levels == null) {
+                return utils.res(res, 404, 'No Such Level Exists');
+            }
+            levels.map(l => {
+                l['id'] = l['name'];
+                return l;
+            });
+
+            // Pagination
+            const range = JSON.parse(req.query.range);
+            const len = levels.length;
+            const response = levels.slice(range[0], range[1] + 1);
+            const contentRange = 'levels ' + range[0] + '-' + range[1] + '/' + len;
+
+            res.set({
+                'Access-Control-Expose-Headers': 'Content-Range',
+                'Content-Range': contentRange
+            })
+
+            return utils.res(res, 200, 'Retrieval Successful', response);
+        });
 }
 
-function sortProperties(obj) {
-    // convert object into array
-    var sortable = [];
-    for (var key in obj)
-        if (obj.hasOwnProperty(key))
-            sortable.push([key, obj[key]]); // each item is an array in format [key, value]
 
-    // sort items by value
-    sortable.sort(function (a, b) {
-        return a[1] - b[1]; // compare numbers
-    });
-    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
-}
-
+/** Create new level */
 function createLevel(req, res) {
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
@@ -94,7 +123,7 @@ function createLevel(req, res) {
         .then(function () {
             // Level successfully created
             return utils.res(res, 200, 'Level Registered Successfully', {
-                'level_name': newLevel.name
+                '_id': newLevel.name
             });
         })
         .catch(function (err) {
@@ -106,87 +135,10 @@ function createLevel(req, res) {
             }
         });
 }
-function listLevels(req, res) {
-    if (req == null || req.query == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    try {
-        // Pagination
-        const range = JSON.parse(req.query.range);
-    } catch (err) {
-        return utils.res(res, 400, 'Please provide appropriate range');
-    }
-
-    // Fetch the level info
-    models.level.find({}, '_id name subheading category difficulty type image_url game_url qualification_iq')
-        .lean()
-        .exec(function (err, levels) {
-            if (err) {
-                return utils.res(res, 500, 'Internal Server Error');
-            }
-
-            if (levels == null) {
-                return utils.res(res, 404, 'No Such Level Exists');
-            }
-            levels.map(l => {
-                l['id'] = l['name'];
-                return l;
-            });
-
-            // Pagination
-            const range = JSON.parse(req.query.range);
-            const len = levels.length;
-            const response = levels.slice(range[0], range[1] + 1);
-            const contentRange = 'levels ' + range[0] + '-' + range[1] + '/' + len;
-
-            res.set({
-                'Access-Control-Expose-Headers': 'Content-Range',
-                'Content-Range': contentRange
-            })
-
-            return utils.res(res, 200, 'Retrieval Successful', response);
-        });
-}
-
-
-/** Admin Deleting the level */
-function deleteLevel(req, res) {
-    if (req == null || req.params == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid User id');
-    }
-
-    if (req.params.name == null) {
-        return utils.res(res, 400, 'Please provide name of level to delete');
-    }
-
-    // Delete the user
-    models.level.findOneAndDelete({
-        'name': req.params.name
-    }, function (err, deletedLevel) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
-        if (deletedLevel == null) {
-            return utils.res(res, 401, 'Such level does not exist');
-        }
-
-        // Successfull Deletion
-        return utils.res(res, 200, 'Level deleted successfully');
-    });
-}
 
 
 /** Viewing the basic level info */
-function browser_view(req, res) {
+function viewLevel(req, res) {
     if (req == null || req.params == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -225,6 +177,59 @@ function browser_view(req, res) {
         return utils.res(res, 200, 'Retrieval Successful', lev);
     });
 }
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function sortProperties(obj) {
+    // convert object into array
+    var sortable = [];
+    for (var key in obj)
+        if (obj.hasOwnProperty(key))
+            sortable.push([key, obj[key]]); // each item is an array in format [key, value]
+
+    // sort items by value
+    sortable.sort(function (a, b) {
+        return a[1] - b[1]; // compare numbers
+    });
+    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
+}
+
+
+/** Admin Deleting the level */
+function deleteLevel(req, res) {
+    if (req == null || req.params == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid User id');
+    }
+
+    if (req.params.name == null) {
+        return utils.res(res, 400, 'Please provide name of level to delete');
+    }
+
+    // Delete the user
+    models.level.findOneAndDelete({
+        'name': req.params.name
+    }, function (err, deletedLevel) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+        if (deletedLevel == null) {
+            return utils.res(res, 401, 'Such level does not exist');
+        }
+
+        // Successfull Deletion
+        return utils.res(res, 200, 'Level deleted successfully');
+    });
+}
+
 
 /** Viewing the level info */
 function getAttributes(req, res) {
@@ -537,11 +542,11 @@ function playerUpdate(req, res) {
 }
 
 module.exports = {
-    'createLevel': createLevel,
     'listLevels': listLevels,
+    'viewLevel': viewLevel,
+    'createLevel': createLevel,
     'deleteLevel': deleteLevel,
     'modifyLevel': modifyLevel,
-    'browser_view': browser_view,
     'getAttributes': getAttributes,
     'getCategories': getCategories,
     'playerUpdate': playerUpdate,

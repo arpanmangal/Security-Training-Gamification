@@ -19,8 +19,6 @@ function createUser(req, res) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    // console.log(user);
-
     if (user.user_id == null || user.name == null || user.email == null || user.password == null ||
         user.security_question_id == null || user.security_answer == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
@@ -37,9 +35,11 @@ function createUser(req, res) {
         return utils.res(res, 400, 'Please enter a valid email address');
     }
 
-    if (config.passwordRegex.test(user.password)) {
+    if (!config.passwordRegex.test(user.password)) {
         // Contains dangerous special characters
-        return utils.res(res, 400, 'Password should contains only alphanumeric and [ @ # $ % * ] characters');
+        let msg = 'Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
     }
 
     if (config.nameRegex.test(user.security_question_id)) {
@@ -52,10 +52,10 @@ function createUser(req, res) {
         return utils.res(res, 400, 'Please enter alphanumeric characters only');
     }
 
-    // if ((!(user.university == null))) {
-    //     // Contains dangerous special characters
-    //     return utils.res(res, 400, 'University Name should contain only alphanumeric characters only');
-    // }
+    if ((!(user.university == null)) && config.textRegex.test(user.university)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'University Name should not contain special characters');
+    }
 
 
     // Hash the password and then create the user
@@ -80,7 +80,6 @@ function createUser(req, res) {
         // Add additional parameters 
         // Leave coins and user_IQ at default values
         if (!(user.university == null)) db_user["university"] = user.university;
-        if (!(user.role == null) && user.role == "admin") db_user["role"] = "admin";
 
         // Insert into DB
         let newUser = new models.User(db_user);
@@ -96,6 +95,101 @@ function createUser(req, res) {
                     return utils.res(res, 500, 'Internal Server Error');
                 }
             });
+    });
+}
+
+/** Creating the admin */
+function createAdmin(req, res) {
+    console.log(config.admin_secret);
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    // Check Request Body
+    const user = req.body;
+    if (user == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (user.user_id == null || user.name == null || user.email == null || user.password == null || user.admin_secret == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    // Validate user input
+    if (config.nameRegex.test(user.user_id)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'User ID should contain only alphanumeric and [ _ - ] characters');
+    }
+
+    if (!user.email.match(config.emailRegex)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Please enter a valid email address');
+    }
+
+    if (!config.passwordRegex.test(user.password)) {
+        // Contains dangerous special characters
+        let msg = 'Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
+    }
+
+    if (!config.adminSecretRegex.test(user.admin_secret)) {
+        // Contains dangerous special characters
+        return utils.res(res, 401, 'Incorrect Admin Secret');
+    }
+
+    if (config.textRegex.test(user.name)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Name should contain alphanumeric characters only');
+    }
+
+    // Check the validity of Admin_Secret
+    bcrypt.compare(user.admin_secret, config.admin_secret, function (err, verdict) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+
+        if (!verdict) {
+            return utils.res(res, 401, 'Incorrect Admin Secret');
+        }
+
+        // Successful authentication
+        // Hash the password and then create the user
+        bcrypt.hash(user.password, saltRounds, (err, hash) => {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            let db_user = {
+                "user_id": user.user_id,
+                "password": hash,
+                "name": user.name,
+                "email": user.email,
+                "security_question": {
+                    "question_id": "admin10",
+                    "answer": "Yes"
+                },
+                "role": "admin",
+                "levels": {}, // No level for new user
+                "assessments": {} // No assessment for new user
+            };
+
+            // Leave coins and user_IQ at default values
+            // Insert into DB
+            let newUser = new models.User(db_user);
+            newUser.save()
+                .then(function () {
+                    // User successfully created
+                    return utils.res(res, 200, "Account Created Successfully!")
+                })
+                .catch(function (err) {
+                    if (err.code == 11000) {
+                        return utils.res(res, 400, 'User ID already exists');
+                    } else {
+                        return utils.res(res, 500, 'Internal Server Error');
+                    }
+                });
+        });
     });
 }
 
@@ -115,9 +209,13 @@ function login(req, res) {
         return utils.res(res, 400, 'Bad Request, Incorrect Username');
     }
 
-    if (user.password == null || config.passwordRegex.test(user.password)) {
+    if (user.password == null) {
+        return utils.res(res, 400, 'Bad Request');
+    } 
+    if (!config.passwordRegex.test(user.password)) {
         // Either invalid or dangerous
-        return utils.res(res, 400, 'Bad Request, Incorrect Password');
+        console.log(user.password);
+        return utils.res(res, 401, 'Incorrect Password');
     }
 
     // Fetch the user and check if password is correct
@@ -133,7 +231,6 @@ function login(req, res) {
             // No such record
             return utils.res(res, 401, 'Username does not exist');
         }
-
 
         // Compare passwords
         bcrypt.compare(user.password, loggedUser.password, function (err, verdict) {
@@ -167,7 +264,7 @@ function login(req, res) {
             return utils.res(res, 200, 'Login Successful', {
                 'token': token,
                 'user': userInfo,
-                'admin': (loggedUser.role === 'admin') ? 'admin' : null
+                'admin': (loggedUser.role === 'admin') ? 'admin' : 'player'
             });
         });
     });
@@ -384,9 +481,11 @@ function forgotPassword(req, res) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
-    if (config.passwordRegex.test(user.new_password)) {
+    if (!config.passwordRegex.test(user.new_password)) {
         // Contains dangerous special characters
-        return utils.res(res, 400, 'Password should contains only alphanumeric and [ @ # $ % * ] characters');
+        let msg = 'Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
     }
 
     // Fetch the user and check if password is correct
@@ -433,19 +532,7 @@ function forgotPassword(req, res) {
                     }
 
                     // Password changed successfully
-                    const payload = {
-                        'user_id': updatedUser.user_id,
-                        'name': updatedUser.name
-                    }
-
-                    const token = jwt.sign(payload, config.jwtSecret, {
-                        expiresIn: config.jwtExpiry
-                    });
-
-                    return utils.res(res, 200, 'Password Reset Successfully', {
-                        'token': token,
-                        'name': updatedUser.name
-                    });
+                    return utils.res(res, 200, 'Password Reset Successfully');
                 });
         });
     });
@@ -467,9 +554,11 @@ function resetPassword(req, res) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
-    if (config.passwordRegex.test(user.old_password) || config.passwordRegex.test(user.new_password)) {
+    if (!config.passwordRegex.test(user.old_password) || !config.passwordRegex.test(user.new_password)) {
         // Contains dangerous special characters
-        return utils.res(res, 400, 'Password should contains only alphanumeric and [ @ # $ % * ] characters');
+        let msg = 'Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
     }
 
     // Fetch the user info
@@ -539,6 +628,8 @@ module.exports = {
     'listUsers': listUsers,
     'deleteUser': deleteUser,
     'createUser': createUser,
+    'createAdmin': createAdmin,
+    // 'createLevelAdmin': createLevelAdmin,
     'login': login,
     'deleteAccount': deleteAccount,
     'forgotPassword': forgotPassword,

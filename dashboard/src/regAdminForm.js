@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl, PasswordRegex, NameRegex, TextRegex, AlphaNumericRegex } from './config';
+import { ApiUrl, PasswordRegex, NameRegex, TextRegex } from './config';
 
 const styles = theme => ({
     container: {
@@ -26,14 +26,14 @@ const styles = theme => ({
         width: 200,
     },
     dialogPaper: {
-        minHeight: '50vh',
+        minHeight: '80vh',
         maxHeight: '90vh',
         minWidth: 500,
         maxWidth: '90vh',
     },
 });
 
-class ForgotForm extends React.Component {
+class RegAdminForm extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -41,51 +41,16 @@ class ForgotForm extends React.Component {
                 username: '',
                 password: '',
                 confirmPassword: '',
-                question: '',
-                answer: '',
+                name: '',
+                email: '',
+                adminSecret: '',
             },
             errors: {},
             securityQuestions: [],
         }
     }
 
-    componentDidMount() {
-        this.loadSecurityQuestions();
-    }
-
-    loadSecurityQuestions = () => {
-        fetch(ApiUrl + '/api/questions')
-            .then((response) => {
-                if (response.status !== 200) {
-                    console.log('Can\'t fetch questions: ' + response.status);
-                    return;
-                }
-
-                response.json().then((data) => {
-                    let questions = [];
-                    let fields = this.state.fields;
-                    if (!data || !data.data || data.data.length < 1) {
-
-                    } else {
-                        data.data.forEach(ques => {
-                            questions.push({
-                                value: ques.id,
-                                label: ques.content
-                            });
-                        });
-                        fields['question'] = data.data[0].id;
-                    }
-                    this.setState({
-                        fields: fields,
-                        securityQuestions: questions
-                    })
-                })
-            }
-            )
-            .catch((err) => {
-                console.log('Fetch Error: -S', err);
-            });
-    }
+    componentDidMount() { }
 
     handleChange = name => event => {
         let fields = this.state.fields;
@@ -103,12 +68,10 @@ class ForgotForm extends React.Component {
             username: '',
             password: '',
             confirmPassword: '',
-            question: '',
-            answer: '',
+            name: '',
+            email: '',
+            adminSecret: '',
         };
-        if (this.state.securityQuestions.length > 0) {
-            fields.question = this.state.securityQuestions[0].value;
-        }
         this.setState({
             fields: fields,
             errors: {}
@@ -123,6 +86,7 @@ class ForgotForm extends React.Component {
         let fields = this.state.fields || {};
         let errors = {};
         let formIsValid = true;
+        let emailRegex = new RegExp("^([a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9_\.\-]+)\.([a-zA-Z]{2,5})$");
 
         // Validate Username
         if (!fields['username'] || fields['username'] === '') {
@@ -161,22 +125,39 @@ class ForgotForm extends React.Component {
             errors['confirmPassword'] = null;
         }
 
-        // Validate Security Question
-        if (!fields['question'] || fields['question'] === '') {
-            errors['question'] = 'This is required';
+        // Validate Admin Secret
+        if (!fields['adminSecret'] || fields['adminSecret'] === '') {
+            errors['adminSecret'] = 'This is required';
+            formIsValid = false;
+        } else if (fields['adminSecret'].length < 10) {
+            errors['adminSecret'] = 'Admin Secret not of appropriate length';
             formIsValid = false;
         } else {
-            errors['question'] = null;
+            errors['adminSecret'] = null;
         }
-        // Validate Security Answer
-        if (!fields['answer'] || fields['answer'] === '') {
-            errors['answer'] = 'This is required';
+
+        // Validate Name
+        if (!fields['name'] || fields['name'] === '') {
+            errors['name'] = 'This is required';
             formIsValid = false;
-        } else if (AlphaNumericRegex.test(fields['answer'])) {
-            errors['answer'] = 'Please enter alphanumeric characters only';
+        } else if (fields['name'].length < 3) {
+            errors['name'] = 'Name should be of minimum 3 characters';
+            formIsValid = false;
+        } else if (TextRegex.test(fields['name'])) {
+            errors['name'] = 'Name should not contain special characters'
+        } else {
+            errors['name'] = null;
+        }
+
+        // Validate Email
+        if (!fields['email'] || fields['email'] === '') {
+            errors['email'] = 'This is required';
+            formIsValid = false;
+        } else if (!emailRegex.test(fields['email'])) {
+            errors['email'] = 'Enter a valid email';
             formIsValid = false;
         } else {
-            errors['answer'] = null;
+            errors['email'] = null;
         }
 
         this.setState({ errors: errors });
@@ -189,17 +170,13 @@ class ForgotForm extends React.Component {
 
         if (this.handleValidation()) {
             let body = JSON.parse(JSON.stringify(this.state.fields));
-            body['security_question'] = body['question'];
-            body['security_answer'] = body['answer'];
             body['user_id'] = body['username'];
-            body['new_password'] = body['password'];
-            delete body['question'];
-            delete body['answer'];
+            body['admin_secret'] = body['adminSecret'];
             delete body['username'];
-            delete body['password'];
-            delete body['confirmPassword'];
+            delete body['adminSecret'];
+            delete body['confirmPassword']
 
-            let url = ApiUrl + '/api/user/forgot';
+            let url = ApiUrl + '/api/user/createAdmin';
             let options = {}
             options.headers = new Headers({ Accept: 'application/json' });
             options.method = 'POST'
@@ -251,7 +228,7 @@ class ForgotForm extends React.Component {
                 onClose={this.handleClose}
                 classes={{ paper: classes.dialogPaper }}
             >
-                <DialogTitle>Reset your Password</DialogTitle>
+                <DialogTitle>Create an Admin Account</DialogTitle>
                 <form className={classes.container} noValidate autoComplete="off" onSubmit={this.handleSubmit}>
                     <TextField
                         required
@@ -265,6 +242,20 @@ class ForgotForm extends React.Component {
                         variant="outlined"
                         error={this.state.errors["username"] ? true : false}
                         helperText={this.state.errors["username"]}
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="name"
+                        label="Name"
+                        value={this.state.fields["name"]}
+                        onChange={this.handleChange('name')}
+                        placeholder="name"
+                        className={classes.textField}
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["name"] ? true : false}
+                        helperText={this.state.errors["name"]}
                     />
                     <br />
                     <TextField
@@ -298,44 +289,37 @@ class ForgotForm extends React.Component {
                         error={this.state.errors["confirmPassword"] ? true : false}
                         helperText={this.state.errors["confirmPassword"]}
                     />
-                    <br /><br />
-                    <TextField
-                        required
-                        id="securityQuestion"
-                        select
-                        // label="Question"
-                        value={this.state.fields["question"]}
-                        className={classes.textField}
-                        style={{ width: 400 }}
-                        onChange={this.handleChange('question')}
-                        SelectProps={{
-                            MenuProps: {
-                                className: classes.menu,
-                            },
-                        }}
-                        helperText="Please select a security question"
-                        margin="normal"
-                        variant="outlined"
-                        error={this.state.errors["question"] ? true : false}
-                    >
-                        {this.state.securityQuestions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </TextField>
                     <br />
                     <TextField
                         required
-                        id="securityAnswer"
-                        label="Answer"
-                        value={this.state.fields["answer"]}
+                        id="email"
+                        label="Email"
+                        value={this.state.fields["email"]}
+                        onChange={this.handleChange('email')}
                         className={classes.textField}
-                        onChange={this.handleChange('answer')}
+                        type="email"
+                        name="email"
+                        placeholder="email"
+                        autoComplete="email"
                         margin="normal"
                         variant="outlined"
-                        error={this.state.errors["answer"] ? true : false}
-                        helperText={this.state.errors["answer"]}
+                        error={this.state.errors["email"] ? true : false}
+                        helperText={this.state.errors["email"]}
+                    />
+                    <br />
+                    <TextField
+                        required
+                        id="adminSecret"
+                        label="Admin Secret"
+                        value={this.state.fields["adminSecret"]}
+                        onChange={this.handleChange('adminSecret')}
+                        placeholder="Admin Secret"
+                        className={classes.textField}
+                        type="password"
+                        margin="normal"
+                        variant="outlined"
+                        error={this.state.errors["adminSecret"] ? true : false}
+                        helperText={this.state.errors["adminSecret"]}
                     />
                     <div style={{ textAlign: 'right', padding: 40 }}>
                         {actions}
@@ -346,8 +330,8 @@ class ForgotForm extends React.Component {
     }
 }
 
-ForgotForm.propTypes = {
+RegAdminForm.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ForgotForm);
+export default withStyles(styles)(RegAdminForm);

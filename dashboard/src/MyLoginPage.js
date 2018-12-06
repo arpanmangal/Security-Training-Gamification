@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { userLogin } from 'react-admin';
+import { userLogin, Notification } from 'react-admin';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -91,7 +91,20 @@ class MyLoginPage extends Component {
         const credentials = this.state.fields;
 
         // Dispatch the userLogin action (injected by connect)
-        this.props.userLogin(credentials);
+        if (this.handleValidation()) {
+            this.props.userLogin(credentials);
+        }
+        // , function() {
+        // alert('hey')
+        // })
+        // .then(() => {
+        //     console.log('hey')
+        // })
+        // .catch((...rest) => {
+        //     // console.log(err.status, err.message);
+        //     // alert(err.message);
+        //     console.log('err')
+        // });
     }
 
     render() {
@@ -105,7 +118,7 @@ class MyLoginPage extends Component {
                 variant="raised"
                 style={{ width: 300 }}
             >Login</Button>,
-            <br />,<br />,
+            <br />, <br />,
             <div style={{ textAlign: 'center' }}>
                 <Link to={`/signup`} >New Player? Register Here</Link>
                 <br /><br />

@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl } from './config';
+import { ApiUrl, PasswordRegex, NameRegex, TextRegex, AlphaNumericRegex } from './config';
 
 const styles = theme => ({
     container: {
@@ -103,7 +103,7 @@ class SignupForm extends React.Component {
     };
 
     handleReset = event => {
-        let fields ={
+        let fields = {
             username: '',
             password: '',
             confirmPassword: '',
@@ -140,6 +140,9 @@ class SignupForm extends React.Component {
         } else if (fields['username'].length < 3) {
             errors['username'] = 'Username should be of minimum 3 characters';
             formIsValid = false;
+        } else if (NameRegex.test(fields['username'])) {
+            errors['username'] = 'Username should only contain alphanumeric characters';
+            formIsValid = false;
         } else {
             errors['username'] = null;
         }
@@ -148,8 +151,11 @@ class SignupForm extends React.Component {
         if (!fields['password'] || fields['password'] === '') {
             errors['password'] = 'This is required';
             formIsValid = false;
-        } else if (fields['password'].length < 6) {
-            errors['password'] = 'Password should be of minimum 6 characters';
+        } else if (fields['password'].length < 8 || fields['password'].length > 13) {
+            errors['password'] = 'Password should be 8-13 characters long';
+            formIsValid = false;
+        } else if (!PasswordRegex.test(fields['password'])) {
+            errors['password'] = 'Password should contain at least one uppercase, one lowercase, one number, and one special character from @$!%*?&';
             formIsValid = false;
         } else {
             errors['password'] = null;
@@ -169,14 +175,15 @@ class SignupForm extends React.Component {
             errors['name'] = 'This is required';
             formIsValid = false;
         } else if (fields['name'].length < 3) {
-            errors['name'] = 'Password should be of minimum 3 characters';
+            errors['name'] = 'Name should be of minimum 3 characters';
             formIsValid = false;
+        } else if (TextRegex.test(fields['name'])) {
+            errors['name'] = 'Name should not contain special characters'
         } else {
             errors['name'] = null;
         }
 
         // Validate Email
-        // alert(emailRegex.test(fields['email']));
         if (!fields['email'] || fields['email'] === '') {
             errors['email'] = 'This is required';
             formIsValid = false;
@@ -186,17 +193,22 @@ class SignupForm extends React.Component {
         } else {
             errors['email'] = null;
         }
-        // alert(formIsValid);
 
         // Validate University
         if (!fields['university'] || fields['university'] === '') {
             fields['university'] = 'NA';
             errors['university'] = null;
+        } else if (TextRegex.test(fields['university'])) {
+            errors['university'] = 'University Name should not contain special characters';
+            formIsValid = false;
         }
 
         // Validate Age
         if (!fields['age'] || fields['age'] === '') {
             errors['age'] = 'This is required';
+            formIsValid = false;
+        } else if (parseInt(fields['age']) <= 0) {
+            errors['age'] = 'This should be a positive integer';
             formIsValid = false;
         } else {
             errors['age'] = null;
@@ -213,6 +225,9 @@ class SignupForm extends React.Component {
         if (!fields['answer'] || fields['answer'] === '') {
             errors['answer'] = 'This is required';
             formIsValid = false;
+        } else if (AlphaNumericRegex.test(fields['answer'])) {
+            errors['answer'] = 'Please enter alphanumeric characters only';
+            formIsValid = false;
         } else {
             errors['answer'] = null;
         }
@@ -224,7 +239,7 @@ class SignupForm extends React.Component {
     handleSubmit = (event) => {
         // Prevent default
         event.preventDefault();
-        
+
         if (this.handleValidation()) {
             let body = JSON.parse(JSON.stringify(this.state.fields));
             body['security_question_id'] = body['question'];

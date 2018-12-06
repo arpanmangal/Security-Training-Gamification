@@ -92,19 +92,31 @@ POST: /api/user/modify          // Modifying user information
 POST: /api/user/create      // For registering user
     params:
         body:
-            user_id
-            name
-            email
-            password
+            user_id*
+            name*
+            email*
+            password*
             university
-            security_question_id
-            security_answer
+            security_question_id*
+            security_answer*
             
     return:
         status_code
         error: false/true
         message: "..string"
 
+POST: /api/user/createAdmin      // For registering user
+    params:
+        body:
+            user_id*
+            name*
+            email*
+            password*
+            admin_secret*
+    return:
+        status_code
+        error: false/true
+        message: "..string"
 
 POST: /api/user/login       // for loggin users in
     params:
@@ -117,6 +129,7 @@ POST: /api/user/login       // for loggin users in
         message: "..string"
         data:   {
             token           // JWT token for logging user in (expiry: 6 hrs)
+            admin           // Role of the user
             user            // all of users data except password (see users.txt for more info)
         }
 
@@ -157,11 +170,6 @@ POST: /api/user/forgot
         status_code
         error: false/true
         message: "..string"
-        data: {
-            token,           // JWT token for logging user
-            name
-        }
-
 
 // Reset the password of a logged in user
 POST: /api/user/resetPassword
@@ -175,6 +183,9 @@ POST: /api/user/resetPassword
         status_code
         error: false/true
         message: "..string"
+        data: {
+            token:          // new JWT token for authentication
+        }
 
 
 // Game Interaction API

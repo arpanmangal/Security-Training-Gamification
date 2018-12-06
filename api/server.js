@@ -69,6 +69,7 @@ function setUpAPIs() {
     app.delete('/api/users/:id/', utils.validateToken, utils.checkAdmin, userController.deleteUser);
 
     app.post('/api/user/create', userController.createUser);
+    app.post('/api/user/createAdmin', userController.createAdmin);
     app.post('/api/user/login', userController.login);
     app.get('/api/user/view', utils.validateToken, userController.viewUser);
     // app.get('/api/user/adminViewUser', utils.validateToken, utils.checkAdmin, userController.adminViewUser);

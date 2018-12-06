@@ -1,13 +1,9 @@
-/*
- * @Author: arpan.mangal 
- * @Date: 2018-09-09 00:27:05 
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-11-05 21:05:09
- */
-
 const config = require('./config/config');
 const jwt = require('jsonwebtoken');
 const models = require('./models/models')
+
+const bcrypt = require('bcryptjs');
+const saltRounds = 10;
 
 function resp(res, statusCode, msg, data = null) {
     try {
@@ -71,8 +67,32 @@ function checkAdmin(req, res, next) {
 }
 
 
+function generateAdminSecret(secret) {
+    // generate an admin secret
+    if (!secret)
+        return console.log('Please provide a secret to hash');
+
+    const adminSecretRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+    if (!adminSecretRegex.test(secret)) {
+        return console.log('Admin Secret should be of minimum 10 characters, ' +
+        'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&')
+    }
+
+    // Hash the password and then create the user
+    bcrypt.hash(secret, saltRounds, (err, hash) => {
+        if (err) {
+            return console.log('Some error occurred in generating your hash');
+        }
+        else {
+            return console.log('Enjoy your hash: ', hash);
+        }
+    });
+}
+
+
 module.exports = {
     'res': resp,
     'validateToken': validateToken,
-    'checkAdmin': checkAdmin
+    'checkAdmin': checkAdmin,
+    'generateAdminSecret': generateAdminSecret
 }

@@ -11,18 +11,16 @@ function shuffleArray(array) {
     }
 }
 
-function sortProperties(obj)
-{
-  // convert object into array
-    var sortable=[];
-    for(var key in obj)
-        if(obj.hasOwnProperty(key))
+function sortProperties(obj) {
+    // convert object into array
+    var sortable = [];
+    for (var key in obj)
+        if (obj.hasOwnProperty(key))
             sortable.push([key, obj[key]]); // each item is an array in format [key, value]
-    
+
     // sort items by value
-    sortable.sort(function(a, b)
-    {
-      return a[1]-b[1]; // compare numbers
+    sortable.sort(function (a, b) {
+        return a[1] - b[1]; // compare numbers
     });
     return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
 }
@@ -136,8 +134,7 @@ function listLevels(req, res) {
                 return utils.res(res, 404, 'No Such Level Exists');
             }
             levels.map(l => {
-                l['id'] = l['_id'];
-                delete l['_id'];
+                l['id'] = l['name'];
                 return l;
             });
 
@@ -205,7 +202,7 @@ function browser_view(req, res) {
     // Fetch the user info
     models.level.findOne({
         'name': req.params.name
-    }, 'level_id name subheading category type difficulty description image_url game_url rules hints qualification_iq', function (err, mylevel) {
+    }, '_id name subheading category type difficulty description image_url game_url rules hints qualification_iq', function (err, mylevel) {
         if (err || mylevel == null) {
             // console.log(err);
             return utils.res(res, 404, 'Level does not exist');
@@ -243,7 +240,7 @@ function getAttributes(req, res) {
         return utils.res(res, 401, 'Invalid Level name');
     }
 
-    if((req.body.keys == null) || (req.body.len == null)){
+    if ((req.body.keys == null) || (req.body.len == null)) {
         return utils.res(res, 401, 'Content to fetch not sent');
     }
 
@@ -252,7 +249,7 @@ function getAttributes(req, res) {
     console.log("Yo: " + my_key);
     console.log("Yo again: " + my_len);
 
-    if(my_key.length != my_len.length){
+    if (my_key.length != my_len.length) {
         return utils.res(res, 401, 'Length of content mismatch');
     }
 
@@ -260,31 +257,31 @@ function getAttributes(req, res) {
     models.level.findOne({
         'name': req.body.name
     }, 'attributes', function (err, mylevel) {
-	    if (err) {
-	        return utils.res(res, 500, 'Internal Server Error');
-	    }
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
 
-	    if (mylevel == null) {
-	        return utils.res(res, 401, 'Invalid Token');
-	    }
+        if (mylevel == null) {
+            return utils.res(res, 401, 'Invalid Token');
+        }
 
-	    var attri = mylevel.attributes;
+        var attri = mylevel.attributes;
         var new_attri = {};
         // var my_key = req.body.keys;
         // var my_len = req.body.len;
-	    for (var i = 0; i< my_key.length; i++) {
-	  		if (attri.hasOwnProperty(my_key[i])){
-		        var leng = (attri[my_key[i]]).length;
-                if(leng < my_len[i]){
+        for (var i = 0; i < my_key.length; i++) {
+            if (attri.hasOwnProperty(my_key[i])) {
+                var leng = (attri[my_key[i]]).length;
+                if (leng < my_len[i]) {
                     return utils.res(res, 401, 'Data size too large');
                 }
                 shuffleArray(attri[my_key[i]]);
                 new_attri[my_key[i]] = [];
-                for(var j = 0; j<my_len[i]; j++){
+                for (var j = 0; j < my_len[i]; j++) {
                     new_attri[my_key[i]].push(attri[my_key[i]][j]);
                 }
-	  		}
-	  	}
+            }
+        }
         return utils.res(res, 200, 'Retrieval Successful', new_attri);
     });
 }
@@ -488,7 +485,7 @@ function getLeaderboard(req, res) {
         console.log(lead)
         var leng = Math.min(10, lead.length);
         console.log(lead[0][0]);
-        for(var i = 0; i<leng; i++){
+        for (var i = 0; i < leng; i++) {
             arr[lead[i][0]] = lead[i][1];
         }
         console.log(arr);

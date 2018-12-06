@@ -98,7 +98,6 @@ export const LevelEdit = props => {
     return (
         <Edit title={<LevelTitle />} {...props}>
             <SimpleForm>
-                <DisabledInput source="id" />
                 <TextInput source="name" />
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
@@ -141,7 +140,7 @@ export const LevelCreate = props => {
     );
 }
 const ListField = ({ record, source, name }) => {
-    console.log(record, source, record[source])
+    // console.log(record, source, record[source])
     if (!record[source]) record[source] = [];
     return (
         <ul>
@@ -158,7 +157,6 @@ export const LevelShow = props => {
     return (
         <Show title={<LevelTitle />} {...props}>
             <SimpleShowLayout>
-                <TextField source="id" />
                 <TextField source="name" />
                 <TextField source="subheading" />
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />

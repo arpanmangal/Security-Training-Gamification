@@ -13,6 +13,7 @@ import customRoutes from './customRoutes';
 import authProvider from './authProvider';
 import dataProviderr from './dataProvider';
 import LoginPage from './LoginPage';
+import { ApiUrl } from './config';
 
 const httpClient = (url, options = {}) => {
   let token = localStorage.getItem('accessToken');
@@ -28,7 +29,7 @@ const httpClient = (url, options = {}) => {
 
   return fetchUtils.fetchJson(url, options);
 }
-const dataProvider = dataProviderr('http://localhost:5380/api', httpClient);
+const dataProvider = dataProviderr(ApiUrl + '/api', httpClient);
 const App = () => (
   <Admin
     loginPage={LoginPage}

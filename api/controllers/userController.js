@@ -91,6 +91,7 @@ function createUser(req, res) {
                     console.log(status);
                     if (status == 200) {
                         // User successfully created
+                        console.log('success', user.user_id);
                         return utils.res(res, 200, "Account Created Successfully!")
                     } else {
                         // Delete the user again

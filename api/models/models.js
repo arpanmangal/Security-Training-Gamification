@@ -37,7 +37,7 @@ const levelSchema = new mongoose.Schema({
     rules: {type: []},
     hints: {type: []},
     players: {type: []},
-    leaderboard: {type: []},
+    leaderboard: {type: {}},
     attributes: {type: {}}
 });
 

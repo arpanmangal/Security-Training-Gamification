@@ -20,9 +20,9 @@ GET: /api/level
         }, ...]
 
 
-GET: /api/level/<id>            // Get particular level information
+GET: /api/level/<name>            // Get particular level information
     body:
-        id: level_id
+        name: name
     return:
         status_code
         error: false/true
@@ -53,7 +53,7 @@ POST: /api/level/                             // For creating a new level
             Level Object
         }
 
-PUT: /api/level/<id>             // Modifying level information
+PUT: /api/level/<name>             // Modifying level information
     params:
         header:
             x-auth-token    //token for verifying that admin is logged in
@@ -64,12 +64,12 @@ PUT: /api/level/<id>             // Modifying level information
         error: false/true
         message: "..string"
 
-POST: /api/level/delete		// Delete level with this id
+POST: /api/level/delete		// Delete level with this name
     params:
         header:
             x-auth-token 	//token for verifying that admin is logged in
     body:
-        id
+        name
     return:
         status_code
         error: false/true
@@ -77,7 +77,7 @@ POST: /api/level/delete		// Delete level with this id
 
 POST: /api/level/getAttributes
     body:
-        id
+        name
     return:
         status_code
         error: false/true
@@ -90,7 +90,7 @@ POST: /api/level/playerUpdate             // Adding player to played list if not
         header:
             x-auth-token    
     body:
-        id:"..string" (to identify which level to edit)
+        name:"..string" (to identify which level to edit)
     return:
         status_code
         error: false/true
@@ -101,7 +101,7 @@ POST: /api/level/leaderboard   // Gets the top n players of that level
         header:
             x-auth-token
     body:
-        id          
+        name          
     returns:
         status_code
         error: false/true

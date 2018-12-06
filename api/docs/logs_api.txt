@@ -14,7 +14,7 @@ POST: /api/logs/create_level
         header:
             x-auth-token
     body:
-        id
+        name
     return:
         status_code
         error: false/true
@@ -25,7 +25,7 @@ POST: /api/logs/modify
         header:
             x-auth-token 	//token for verifying that user is logged in        
 	body:
-            id
+            name
             log_object
     return:
         status_code
@@ -38,7 +38,7 @@ POST: /api/logs/modify_basic
         header:
             x-auth-token    //token for verifying that user is logged in        
     body:
-            id
+            name
             attempts: number
             sucess: number
             coins: number
@@ -65,7 +65,7 @@ POST: /api/logs/delete  // id is the level log id to delete
         header:
             x-auth-token   //token for verifying that admin is logged in
         body:
-            id             // Level id
+            name             // Level name
     return:
         status_code
         error: false/true

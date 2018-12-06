@@ -111,8 +111,8 @@ function create_level_info(req, res) {
         return utils.res(res, 401, 'Invalid User id');
     }
 
-    if (req.body.id == null) {
-        return utils.res(res, 400, 'Please provide level_id of level log to delete');
+    if (req.body.name == null) {
+        return utils.res(res, 400, 'Please provide level_name of level log to delete');
     }
 
     models.Logs.findOne({
@@ -136,11 +136,11 @@ function create_level_info(req, res) {
         // console.log(mylogs);        
         if(mylogs.logs == null){
             const new_log = {};
-            new_log[req.body.id.toString()] = level;
+            new_log[req.body.name.toString()] = level;
             mylogs.logs = new_log;
         }else{
-            if(mylogs.logs[req.body.id.toString()] == null){
-                mylogs.logs[req.body.id.toString()] = level;                
+            if(mylogs.logs[req.body.name.toString()] == null){
+                mylogs.logs[req.body.name.toString()] = level;                
             }
         }
 
@@ -211,8 +211,7 @@ function modifyLog(req, res) {
     if (req.user_id == null) {
         return utils.res(res, 401, 'Invalid Token');
     }
-
-    if (req.body.id == null) {
+    if (req.body.name == null) {
         return utils.res(res, 401, 'level_id undefined');
     }
     
@@ -230,7 +229,7 @@ function modifyLog(req, res) {
             return utils.res(res, 401, 'Invalid token provided');
         }
 
-        (mylogs.logs[req.body.id]).info.push(req.body.log_object);
+        (mylogs.logs[req.body.name]).info.push(req.body.log_object);
         const ll = {
             'user_id': req.user_id,
             'logs': mylogs.logs,
@@ -259,8 +258,8 @@ function modify_attempts(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    if (req.body.id == null) {
-        return utils.res(res, 401, 'level_id undefined');
+    if (req.body.name == null) {
+        return utils.res(res, 401, 'level_name undefined');
     }
 
     if (req.body.success == null) {
@@ -281,22 +280,25 @@ function modify_attempts(req, res) {
         if (mylogs == null) {
             return utils.res(res, 401, 'Invalid token provided');
         }
-        console.log(mylogs.logs[req.body.id].number_of_attempts);
-        // delete mylogs.logs[req.params.id];
-        if(mylogs.logs[req.body.id].number_of_attempts != NaN){
-            (mylogs.logs[req.body.id]).number_of_attempts = mylogs.logs[req.body.id].number_of_attempts + 1;
+        console.log(mylogs.logs[req.body.name].number_of_attempts);
+        var coins_to_update;
+        // delete mylogs.logs[req.params.name];
+        if(mylogs.logs[req.body.name].number_of_attempts != NaN){
+            (mylogs.logs[req.body.name]).number_of_attempts = mylogs.logs[req.body.name].number_of_attempts + 1;
         }else{
-            (mylogs.logs[req.body.id]).number_of_attempts = 1;
+            (mylogs.logs[req.body.name]).number_of_attempts = 1;
         }
-        if(mylogs.logs[req.body.id].number_of_successes != NaN){
-            (mylogs.logs[req.body.id]).number_of_successes = Number(req.body.success) + mylogs.logs[req.body.id].number_of_successes;
+        if(mylogs.logs[req.body.name].number_of_successes != NaN){
+            (mylogs.logs[req.body.name]).number_of_successes = Number(req.body.success) + mylogs.logs[req.body.name].number_of_successes;
         }else{
-            (mylogs.logs[req.body.id]).number_of_successes = Number(req.body.success);
+            (mylogs.logs[req.body.name]).number_of_successes = Number(req.body.success);
         }
-        if(mylogs.logs[req.body.id].max_coins_earned != NaN){
-            (mylogs.logs[req.body.id]).max_coins_earned = Math.max(Number(req.body.coins),(mylogs.logs[req.body.id]).max_coins_earned);
+        if(mylogs.logs[req.body.name].max_coins_earned != NaN){
+            coins_to_update = Math.max(Number(req.body.coins),(mylogs.logs[req.body.name]).max_coins_earned);
+            (mylogs.logs[req.body.name]).max_coins_earned = Math.max(Number(req.body.coins),(mylogs.logs[req.body.name]).max_coins_earned);
         }else{
-            (mylogs.logs[req.body.id]).max_coins_earned = Number(req.body.coins);
+            coins_to_update = Number(req.body.coins);
+            (mylogs.logs[req.body.name]).max_coins_earned = Number(req.body.coins);
         }
         const ll = {
             'user_id': req.user_id,
@@ -312,7 +314,34 @@ function modify_attempts(req, res) {
                 return utils.res(res, 401, 'Invalid token provided');
             }
 
-            return utils.res(res, 200, 'Successful');
+            // Fetch the level info
+            models.level.findOne({
+                'name': req.body.name
+            }, 'leaderboard', function (err, mylevel) {
+                if (err) {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
+
+                if (mylevel == null) {
+                    return utils.res(res, 401, 'Invalid name');
+                }
+
+                var lead = mylevel.leaderboard;
+                console.log(lead);
+                if(lead == undefined){
+                    lead = {}
+                }    
+                lead[req.user_id] = coins_to_update;
+                console.log(lead);
+                models.level.findOneAndUpdate({ 'name': req.body.name }, { 'leaderboard': lead }, { new: true }, function (err, updatelevel) {
+                    if (err) {
+                        return utils.res(res, 500, 'Internal Server Error');
+                    }
+                    // console.log(updatelevel);
+                    // return utils.res(res, 200, 'Update Successful');
+                    return utils.res(res, 200, 'Successful');
+                });
+            });
         });
     });
 }

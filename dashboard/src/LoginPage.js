@@ -37,7 +37,7 @@ const styles = theme => ({
     },
 });
 
-class MyLoginPage extends Component {
+class LoginPage extends Component {
     constructor() {
         super();
         this.state = {
@@ -87,24 +87,27 @@ class MyLoginPage extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+
         // gather your data/credentials here
         const credentials = this.state.fields;
 
-        // Dispatch the userLogin action (injected by connect)
         if (this.handleValidation()) {
-            this.props.userLogin(credentials);
+            // For purpose of message => Redundant call
+            let url = ApiUrl + '/api/user/login';
+            let options = {}
+            options.headers = new Headers({ Accept: 'application/json' });
+            options.method = 'POST'
+            options.body = JSON.stringify(credentials);
+            fetchUtils.fetchJson(url, options)
+                .then(data => {
+                    // Dispatch the userLogin action (injected by connect)
+                    this.props.userLogin(credentials);
+                })
+                .catch((err, ...rest) => {
+                    console.log(err.status, err.message);
+                    alert(err.message);
+                });
         }
-        // , function() {
-        // alert('hey')
-        // })
-        // .then(() => {
-        //     console.log('hey')
-        // })
-        // .catch((...rest) => {
-        //     // console.log(err.status, err.message);
-        //     // alert(err.message);
-        //     console.log('err')
-        // });
     }
 
     render() {
@@ -113,18 +116,12 @@ class MyLoginPage extends Component {
         const actions = [
             <Button
                 type="submit"
+                key="submit"
                 label="Login"
                 color='primary'
                 variant="raised"
                 style={{ width: 300 }}
             >Login</Button>,
-            <br />, <br />,
-            <div style={{ textAlign: 'center' }}>
-                <Link to={`/signup`} >New Player? Register Here</Link>
-                <br /><br />
-                <Link to={`/forgot`}>Forgot your Password</Link>
-            </div >
-
         ];
 
         return (
@@ -169,6 +166,12 @@ class MyLoginPage extends Component {
                     />
                     <div style={{ textAlign: 'right', padding: 40 }}>
                         {actions}
+                        <br /><br />
+                        <div style={{ textAlign: 'center' }}>
+                            <Link to={`/signup`} >New Player? Register Here</Link>
+                            <br /><br />
+                            <Link to={`/forgot`}>Forgot your Password</Link>
+                        </div >
                     </div>
                 </form>
             </Dialog>
@@ -177,8 +180,8 @@ class MyLoginPage extends Component {
     }
 };
 
-MyLoginPage.propTypes = {
+LoginPage.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default connect(undefined, { userLogin })(withStyles(styles)(MyLoginPage));
+export default connect(undefined, { userLogin })(withStyles(styles)(LoginPage));

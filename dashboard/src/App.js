@@ -12,7 +12,7 @@ import Dashboard from './Dashboard';
 import customRoutes from './customRoutes';
 import authProvider from './authProvider';
 import dataProviderr from './dataProvider';
-import MyLoginPage from './MyLoginPage';
+import LoginPage from './LoginPage';
 
 const httpClient = (url, options = {}) => {
   let token = localStorage.getItem('accessToken');
@@ -31,7 +31,7 @@ const httpClient = (url, options = {}) => {
 const dataProvider = dataProviderr('http://localhost:5380/api', httpClient);
 const App = () => (
   <Admin
-    loginPage={MyLoginPage}
+    loginPage={LoginPage}
     dashboard={Dashboard}
     authProvider={authProvider}
     dataProvider={dataProvider}

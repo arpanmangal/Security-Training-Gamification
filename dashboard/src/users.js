@@ -1,25 +1,33 @@
 import React from 'react';
 import { List, Datagrid, TextField, EmailField, NumberField } from 'react-admin';
 import { Show, SimpleShowLayout } from 'react-admin';
-import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
-import { ShowButton, EditButton, DeleteButton } from 'react-admin';
+import { ShowButton, DeleteButton } from 'react-admin';
 
 const UserTitle = ({ record }) => {
     return <span>Player {record ? `"${record.id}"` : ''}</span>
 }
+
+const AdminField = ({ record, source }) => {
+    return (
+        <span>
+            {record['role'] === 'admin' ? '-' : record[source]}
+        </span>
+    )
+}
+AdminField.defaultProps = { addLabel: true };
 
 export const UserList = props => (
     <List {...props}>
         <Datagrid>
             <TextField source="id" label="username" />
             <TextField source="name" />
+            <TextField source="role" />
             <EmailField source="email" />
-            <TextField source="university" />
-            <TextField source="total_coins" label="Total Coins" />
-            <TextField source="cyber_IQ" label="Cyber IQ" />
+            <AdminField source="university" />
+            <AdminField source="total_coins" label="Total Coins" />
+            <AdminField source="cyber_IQ" label="Cyber IQ" />
             <ShowButton />
             <DeleteButton />
-            {/* <EditButton /> */}
         </Datagrid>
     </List>
 );
@@ -29,10 +37,11 @@ export const UserShow = (props) => (
         <SimpleShowLayout>
             <TextField source="id" label="username" />
             <TextField source="name" />
+            <TextField source="role" />
             <EmailField source="email" />
-            <TextField source="university" />
-            <NumberField source="cyber_IQ" />
-            <NumberField source="total_coins" />
+            <AdminField source="university" />
+            <AdminField source="cyber_IQ" label="Cyber IQ"/>
+            <AdminField source="total_coins" />
         </SimpleShowLayout>
     </Show>
 );

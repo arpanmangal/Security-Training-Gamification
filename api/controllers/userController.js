@@ -324,7 +324,7 @@ function listUsers(req, res) {
     }
 
     // Fetch User lists
-    models.User.find({}, 'user_id name email university total_coins cyber_IQ')
+    models.User.find({}, 'user_id name email university total_coins cyber_IQ role')
         .lean()
         .exec(function (err, users) {
             if (err) {
@@ -375,25 +375,12 @@ function viewUser(req, res) {
     // Fetch the user info
     models.User.findOne({
         'user_id': req.params.id
-    }, 'user_id name email university total_coins cyber_IQ')
+    }, 'user_id name role email university total_coins cyber_IQ')
         .lean()
         .exec(function (err, user) {
             if (err || user == null) {
                 return utils.res(res, 404, 'Such user does not exist');
             }
-
-            // Compile all info
-            // const user = {
-            //     'user_id': user.user_id,
-            //     'name': user.name,
-            //     'email': user.email,
-            //     'university': user.university,
-            //     'role': user.role,
-            //     'total_coins': user.total_coins,
-            //     'cyber_IQ': user.cyber_IQ,
-            //     'levels': user.levels || {},
-            //     'assessments': user.assessments || {}
-            // }
 
             user['id'] = user['user_id'];
             delete user['user_id'];

@@ -222,6 +222,7 @@ class ForgotForm extends React.Component {
         const actions = [
             <Button
                 type="reset"
+                key="reset"
                 label="Reset"
                 color='secondary'
                 onClick={this.handleReset}
@@ -230,12 +231,14 @@ class ForgotForm extends React.Component {
             >Reset</Button>,
             <Button
                 label="Cancel"
+                key="cancel"
                 color='primary'
                 onClick={this.handleClose}
                 variant="flat"
             >Cancel</Button>,
             <Button
                 type="submit"
+                key="submit"
                 label="Submit"
                 color='primary'
                 variant="flat"

@@ -472,7 +472,7 @@ function getLeaderboard(req, res) {
     }
 
     // Fetch the level info
-    models.level.find({
+    models.level.findOne({
         'name': req.body.name
     }, 'name leaderboard', function (err, mylevel) {
         if (err) {
@@ -483,11 +483,15 @@ function getLeaderboard(req, res) {
             return utils.res(res, 401, 'Invalid type provided');
         }
         var arr = {};
+        console.log(mylevel);
         var lead = sortProperties(mylevel.leaderboard);
+        console.log(lead)
         var leng = Math.min(10, lead.length);
+        console.log(lead[0][0]);
         for(var i = 0; i<leng; i++){
-            arr.lead[i][0] = lead[i][1];
+            arr[lead[i][0]] = lead[i][1];
         }
+        console.log(arr);
         const lev = {
             'name': mylevel.name,
             'leaderboard': arr,

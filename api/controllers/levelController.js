@@ -11,6 +11,21 @@ function shuffleArray(array) {
     }
 }
 
+function sortProperties(obj)
+{
+  // convert object into array
+    var sortable=[];
+    for(var key in obj)
+        if(obj.hasOwnProperty(key))
+            sortable.push([key, obj[key]]); // each item is an array in format [key, value]
+    
+    // sort items by value
+    sortable.sort(function(a, b)
+    {
+      return a[1]-b[1]; // compare numbers
+    });
+    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
+}
 
 function createLevel(req, res) {
     if (req == null || req.body == null) {
@@ -467,10 +482,15 @@ function getLeaderboard(req, res) {
         if (mylevel == null) {
             return utils.res(res, 401, 'Invalid type provided');
         }
-
+        var arr = {};
+        var lead = sortProperties(mylevel.leaderboard);
+        var leng = Math.min(10, lead.length);
+        for(var i = 0; i<leng; i++){
+            arr.lead[i][0] = lead[i][1];
+        }
         const lev = {
             'name': mylevel.name,
-            'leaderboard': mylevel.leaderboard,
+            'leaderboard': arr,
         }
         return utils.res(res, 200, 'Retrieval Successful', lev);
     });

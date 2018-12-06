@@ -215,7 +215,6 @@ function modifyLog(req, res) {
     if (req.user_id == null) {
         return utils.res(res, 401, 'Invalid Token');
     }
-
     if (req.body.name == null) {
         return utils.res(res, 401, 'level_id undefined');
     }
@@ -322,7 +321,7 @@ function modify_attempts(req, res) {
             // Fetch the level info
             models.level.findOne({
                 'name': req.body.name
-            }, 'players', function (err, mylevel) {
+            }, 'leaderboard', function (err, mylevel) {
                 if (err) {
                     return utils.res(res, 500, 'Internal Server Error');
                 }
@@ -332,12 +331,14 @@ function modify_attempts(req, res) {
                 }
 
                 var lead = mylevel.leaderboard;
-                lead.(req.user_id) = coins_to_update;
-
-                models.level.findOneAndUpdate({ 'name': req.body.name }, { 'leaderboard': lead }, { new: false }, function (err, updatelevel) {
+                // console.log(mylevel);
+                lead[req.user_id] = coins_to_update;
+                // console.log(lead);
+                models.level.findOneAndUpdate({ 'name': req.body.name }, { 'leaderboard': lead }, { new: true }, function (err, updatelevel) {
                     if (err) {
                         return utils.res(res, 500, 'Internal Server Error');
                     }
+                    // console.log(updatelevel);
                     // return utils.res(res, 200, 'Update Successful');
                     return utils.res(res, 200, 'Successful');
                 });

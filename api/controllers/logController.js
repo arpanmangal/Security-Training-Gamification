@@ -331,9 +331,12 @@ function modify_attempts(req, res) {
                 }
 
                 var lead = mylevel.leaderboard;
-                // console.log(mylevel);
+                console.log(lead);
+                if(lead == undefined){
+                    lead = {}
+                }    
                 lead[req.user_id] = coins_to_update;
-                // console.log(lead);
+                console.log(lead);
                 models.level.findOneAndUpdate({ 'name': req.body.name }, { 'leaderboard': lead }, { new: true }, function (err, updatelevel) {
                     if (err) {
                         return utils.res(res, 500, 'Internal Server Error');

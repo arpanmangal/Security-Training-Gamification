@@ -82,7 +82,7 @@ function createLevel(req, res) {
         "rules": [],
         "hints": [],
         "players": [],
-        "leaderboard": [], // No level for new user
+        "leaderboard": {}, // No level for new user
         "attributes": {} // No assessment for new user
     };
 

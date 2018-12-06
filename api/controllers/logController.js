@@ -4,27 +4,23 @@ const jwt = require('jsonwebtoken');
 
 const models = require('../models/models');
 
-function createLog(req, res){
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
+function createLog(user_id, cb){
     let db_log = {
-        "user_id": req.user_id,
+        "user_id": user_id,
         "logs": {}
     };
 
     let newLog = new models.Logs(db_log);
     newLog.save()
 	    .then(function () {
-	        // Log successfully Instantiated
-	        return utils.res(res, 200, "Log initiated Successfully")
+            // Log successfully Instantiated
+            return cb(200);
 	    })
 	    .catch(function (err) {
 	        if (err.code == 11000) {
-	            return utils.res(res, 400, 'User Log ID already exists');
+                return cb(400);
 	        } else {
-	            return utils.res(res, 500, 'Internal Server Error');
+                return cb(500);
 	        }
 	    });
 }

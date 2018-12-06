@@ -1,10 +1,10 @@
 {
     user_id: "some_user_id",                             				// Unique User ID
-    logs: {																											// Logs of this user
-      "level_id": {																							// Level logs of this level_id
-          number_of_attempts: Number,													  // Number of times user has played the level
-          number_of_successes: Number,													// Number of times the user has successfully cleared the level
-          max_coins_earned: Number,															// Maximum number of Coins 
+    logs: {															    // Logs of this user
+      "level_id": {				    									// Level logs of this level_id
+          number_of_attempts: Number,									// Number of times user has played the level
+          number_of_successes: Number,									// Number of times the user has successfully cleared the level
+          max_coins_earned: Number,										// Maximum number of Coins 
           info: [
               {// All the relevant key-value pair logs of this level}
           ]   

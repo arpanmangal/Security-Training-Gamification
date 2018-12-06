@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 const models = require('../models/models');
+const logController = require('./logController');
 
 /** Creating the user */
 function createUser(req, res) {
@@ -85,8 +86,22 @@ function createUser(req, res) {
         let newUser = new models.User(db_user);
         newUser.save()
             .then(function () {
-                // User successfully created
-                return utils.res(res, 200, "Account Created Successfully!")
+                // Create log
+                logController.createLog(user.user_id, function(status) {
+                    console.log(status);
+                    if (status == 200) {
+                        // User successfully created
+                        return utils.res(res, 200, "Account Created Successfully!")
+                    } else {
+                        // Delete the user again
+                        models.User.findOneAndDelete({
+                            'user_id': user.user_id
+                        }, function (err, deletedUser) {
+                            // Irrespective of deletion status, report Error
+                            return utils.res(res, 400, 'User ID already exists');
+                        });
+                    }
+                });
             })
             .catch(function (err) {
                 if (err.code == 11000) {
@@ -211,7 +226,7 @@ function login(req, res) {
 
     if (user.password == null) {
         return utils.res(res, 400, 'Bad Request');
-    } 
+    }
     if (!config.passwordRegex.test(user.password)) {
         // Either invalid or dangerous
         console.log(user.password);

@@ -123,7 +123,7 @@ function setUpAPIs() {
     /***************** End Leaderboard API  *************/
 
     /***************** Logs API **********************/
-    app.post('/api/logs/create', utils.validateToken, logController.createLog);
+    // app.post('/api/logs/create', utils.validateToken, logController.createLog);
     app.post('/api/logs/create_level', utils.validateToken, logController.create_level_info);
     app.post('/api/logs/view', utils.validateToken, logController.view);
     app.post('/api/logs/modify', utils.validateToken, logController.modifyLog);

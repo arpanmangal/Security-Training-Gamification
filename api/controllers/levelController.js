@@ -178,25 +178,96 @@ function viewLevel(req, res) {
     });
 }
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+
+/** Modifying the level info */
+function modifyLevel(req, res) {
+    if (req == null || req.params == null) {
+        return utils.res(res, 400, 'Bad Request');
     }
-}
 
-function sortProperties(obj) {
-    // convert object into array
-    var sortable = [];
-    for (var key in obj)
-        if (obj.hasOwnProperty(key))
-            sortable.push([key, obj[key]]); // each item is an array in format [key, value]
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
 
-    // sort items by value
-    sortable.sort(function (a, b) {
-        return a[1] - b[1]; // compare numbers
+    if (req.params.name == null) {
+        return utils.res(res, 400, 'Provide Level name');
+    }
+
+    const level = req.body;
+    let updatedLevel = {}
+    console.log(level);
+
+    if (!(level.name == null)) {
+        if (config.nameRegex.test(level.name))
+            return utils.res(res, 400, 'Level Name should contain only alphanumeric and [ _ - ] characters');
+        else
+            updatedLevel.name = level.name;
+    }
+    if (!(level.subheading == null)) {
+        updatedLevel.subheading = level.subheading;
+    }
+    if (!(level.category == null)) {
+        if (config.nameRegex.test(level.category))
+            return utils.res(res, 400, 'Category should contain only alphanumeric and [ _ - ] characters');
+        else
+            updatedLevel.category = level.category;
+    }
+    if (!(level.difficulty == null)) {
+        if (config.alphaNumericRegex.test(level.difficulty))
+            return utils.res(res, 400, 'Difficulty should contain only alphanumeric characters');
+        else
+            updatedLevel.difficulty = level.difficulty;
+    }
+    if (!(level.type == null)) {
+        if (config.alphaNumericRegex.test(level.type))
+            return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
+        else
+            updatedLevel.type = level.type;
+    }
+    if (!(level.description == null)) {
+        updatedLevel.description = level.description;
+    }
+    if (!(level.image_url == null)) {
+        if (config.urlRegex.test(level.image_url))
+            return utils.res(res, 400, 'Invalid Image URL');
+        else
+            updatedLevel.image_url = level.image_url;
+    }
+    if (!(level.game_url == null)) {
+        updatedLevel.game_url = level.game_url;
+    }
+    if (!(level.rules == null)) {
+        if (!Array.isArray(level.rules))
+            return utils.res(res, 400, 'Rules should be an Array');
+        else
+            updatedLevel.rules = level.rules;
+    }
+    if (!(level.hints == null)) {
+        if (!Array.isArray(level.hints))
+            return utils.res(res, 400, 'Hints should be an Array');
+        else
+            updatedLevel.hints = level.hints;
+    }
+    if (!(level.qualification_iq == null)) {
+        updatedLevel.qualification_iq = level.qualification_iq;
+    }
+    if (!(level.attributes == null)) {
+        if (!typeof (level.attributes) === 'object')
+            return utils.res(res, 400, 'Attributes should be an Object');
+        else
+            updatedLevel.attributes = level.attributes;
+    }
+
+    console.log(updatedLevel);
+
+    // Update the level info
+    models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
+        if (err || newLevel == null) {
+            return utils.res(res, 400, 'Level Does not exist');
+        }
+
+        return utils.res(res, 200, 'Retrieval Successful', newLevel);
     });
-    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
 }
 
 
@@ -228,6 +299,71 @@ function deleteLevel(req, res) {
         // Successfull Deletion
         return utils.res(res, 200, 'Level deleted successfully');
     });
+}
+
+
+/******* Leaderboard API ********/
+function getLeaderboard(req, res) {
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    if (req.body.name == null) {
+        return utils.res(res, 401, 'Level name undefined');
+    }
+
+    // Fetch the level info
+    models.level.findOne({
+        'name': req.body.name
+    }, 'name leaderboard', function (err, mylevel) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+
+        if (mylevel == null) {
+            return utils.res(res, 401, 'Invalid type provided');
+        }
+        var arr = {};
+        console.log(mylevel);
+        var lead = sortProperties(mylevel.leaderboard);
+        console.log(lead)
+        var leng = Math.min(10, lead.length);
+        console.log(lead[0][0]);
+        for (var i = 0; i < leng; i++) {
+            arr[lead[i][0]] = lead[i][1];
+        }
+        console.log(arr);
+        const lev = {
+            'name': mylevel.name,
+            'leaderboard': arr,
+        }
+        return utils.res(res, 200, 'Retrieval Successful', lev);
+    });
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function sortProperties(obj) {
+    // convert object into array
+    var sortable = [];
+    for (var key in obj)
+        if (obj.hasOwnProperty(key))
+            sortable.push([key, obj[key]]); // each item is an array in format [key, value]
+
+    // sort items by value
+    sortable.sort(function (a, b) {
+        return a[1] - b[1]; // compare numbers
+    });
+    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
 }
 
 
@@ -370,138 +506,6 @@ function getType(req, res) {
     });
 }
 
-function modifyLevel(req, res) {
-    if (req == null || req.params == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    if (req.params.name == null) {
-        return utils.res(res, 400, 'Provide Level name');
-    }
-
-    const level = req.body;
-    let updatedLevel = {}
-    console.log(level);
-
-    if (!(level.name == null)) {
-        if (config.nameRegex.test(level.name))
-            return utils.res(res, 400, 'Level Name should contain only alphanumeric and [ _ - ] characters');
-        else
-            updatedLevel.name = level.name;
-    }
-    if (!(level.subheading == null)) {
-        updatedLevel.subheading = level.subheading;
-    }
-    if (!(level.category == null)) {
-        if (config.nameRegex.test(level.category))
-            return utils.res(res, 400, 'Category should contain only alphanumeric and [ _ - ] characters');
-        else
-            updatedLevel.category = level.category;
-    }
-    if (!(level.difficulty == null)) {
-        if (config.alphaNumericRegex.test(level.difficulty))
-            return utils.res(res, 400, 'Difficulty should contain only alphanumeric characters');
-        else
-            updatedLevel.difficulty = level.difficulty;
-    }
-    if (!(level.type == null)) {
-        if (config.alphaNumericRegex.test(level.type))
-            return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
-        else
-            updatedLevel.type = level.type;
-    }
-    if (!(level.description == null)) {
-        updatedLevel.description = level.description;
-    }
-    if (!(level.image_url == null)) {
-        if (config.urlRegex.test(level.image_url))
-            return utils.res(res, 400, 'Invalid Image URL');
-        else
-            updatedLevel.image_url = level.image_url;
-    }
-    if (!(level.game_url == null)) {
-        updatedLevel.game_url = level.game_url;
-    }
-    if (!(level.rules == null)) {
-        if (!Array.isArray(level.rules))
-            return utils.res(res, 400, 'Rules should be an Array');
-        else
-            updatedLevel.rules = level.rules;
-    }
-    if (!(level.hints == null)) {
-        if (!Array.isArray(level.hints))
-            return utils.res(res, 400, 'Hints should be an Array');
-        else
-            updatedLevel.hints = level.hints;
-    }
-    if (!(level.qualification_iq == null)) {
-        updatedLevel.qualification_iq = level.qualification_iq;
-    }
-    if (!(level.attributes == null)) {
-        if (!typeof (level.attributes) === 'object')
-            return utils.res(res, 400, 'Attributes should be an Object');
-        else
-            updatedLevel.attributes = level.attributes;
-    }
-
-    console.log(updatedLevel);
-
-    // Update the level info
-    models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
-        if (err || newLevel == null) {
-            return utils.res(res, 400, 'Level Does not exist');
-        }
-
-        return utils.res(res, 200, 'Retrieval Successful', newLevel);
-    });
-}
-
-function getLeaderboard(req, res) {
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    if (req.body.name == null) {
-        return utils.res(res, 401, 'Level name undefined');
-    }
-
-    // Fetch the level info
-    models.level.findOne({
-        'name': req.body.name
-    }, 'name leaderboard', function (err, mylevel) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
-
-        if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid type provided');
-        }
-        var arr = {};
-        console.log(mylevel);
-        var lead = sortProperties(mylevel.leaderboard);
-        console.log(lead)
-        var leng = Math.min(10, lead.length);
-        console.log(lead[0][0]);
-        for (var i = 0; i < leng; i++) {
-            arr[lead[i][0]] = lead[i][1];
-        }
-        console.log(arr);
-        const lev = {
-            'name': mylevel.name,
-            'leaderboard': arr,
-        }
-        return utils.res(res, 200, 'Retrieval Successful', lev);
-    });
-}
-
 
 /** Viewing the level info */
 function playerUpdate(req, res) {
@@ -545,8 +549,9 @@ module.exports = {
     'listLevels': listLevels,
     'viewLevel': viewLevel,
     'createLevel': createLevel,
-    'deleteLevel': deleteLevel,
     'modifyLevel': modifyLevel,
+    'deleteLevel': deleteLevel,
+
     'getAttributes': getAttributes,
     'getCategories': getCategories,
     'playerUpdate': playerUpdate,

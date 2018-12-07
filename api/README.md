@@ -20,9 +20,26 @@ Copy the generated hash of the Admin Secret.
 $ export ADMIN_SECRET='<Admin_Secret_Hash>'
 $ export <OTHER REQUIRED EXPORTS>
 ```
-**Note**: Take care of exporting the `<Admin_Secret_Hash>` within `''`.
+**Note**: Take care of exporting the `<Admin_Secret_Hash>` within `''`,
+for example if the hash generated is `$I.am.theHash`, then do:
+```
+$ export ADMIN_SECRET='$I.am.theHash'
+```
 
-### Running 
+### Export other variables
+1. Decide on a decent difficult to guess jwtSecret. The default is `**YouWillNeverGuess**`.
+`export JWTSECRET='<Your jwtSecret>'`
+2. Find out your `IP` using `ifconfig`.
+`export IP=<Your IP>` (only needed in case of hosting on a server)
+3. Decide on a port number. Let it be default (`5380`) only if it does not conflict with any other application.
+`export PORT=<Your Port>`
+4. Decide on a ML_secret.
+`export ML='<Your ML secret>'`
+5. Finally decide a database name. Default is `gameDB`.
+`export DBNAME='<Your database name>'`
+
+
+## Running 
 
 ```
 $ npm install
@@ -33,3 +50,6 @@ $ npm start
 1. Create Admin account from `/registerAdmin`, using the Admin-Secret passed when starting the app.
 2. Create User accounts from `/signup`.
 3. Login from `/login`. 
+4. Add new levels and modify existing levels after logging in as an Admin user.
+
+Enjoy!

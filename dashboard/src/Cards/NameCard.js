@@ -9,7 +9,7 @@ import { CardContent, Typography } from '@material-ui/core';
 
 const styles = theme => ({
     card: {
-        maxWidth: 800,
+        maxWidth: 600,
     },
     media: {
         height: 0,

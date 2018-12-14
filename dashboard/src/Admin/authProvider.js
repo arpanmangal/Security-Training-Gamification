@@ -1,5 +1,5 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK, AUTH_GET_PERMISSIONS } from 'react-admin';
-import { ApiUrl } from './config';
+import { ApiUrl } from '../Utils/config';
 
 const apiUrl = ApiUrl + '/api/user/login';
 

@@ -1,19 +1,20 @@
 import React from 'react';
 import { Admin, Resource, fetchUtils, ListGuesser, ShowGuesser, EditGuesser } from 'react-admin';
-import { LevelList, LevelEdit, LevelCreate, LevelShow } from './levels';
-import { LeaderboardList } from './LeaderBoard';
-import { UserList, UserShow } from './users';
-import { QuestionList, QuestionShow, QuestionCreate } from './questions';
+import { LevelList, LevelEdit, LevelCreate, LevelShow } from './Resources/levels';
+import { LeaderboardList } from './Resources/LeaderBoard';
+import { UserList, UserShow } from './Resources/users';
+import { QuestionList, QuestionShow, QuestionCreate } from './Resources/questions';
 import LevelIcon from '@material-ui/icons/ViewList';
 import UserIcon from '@material-ui/icons/Group';
 import LeaderIcon from '@material-ui/icons/TrendingUp';
 import SecurityIcon from '@material-ui/icons/Https';
-import Dashboard from './Dashboard';
-import customRoutes from './customRoutes';
-import authProvider from './authProvider';
-import dataProviderr from './dataProvider';
-import LoginPage from './LoginPage';
-import { ApiUrl } from './config';
+import Dashboard from './Admin/Dashboard';
+import customRoutes from './Admin/customRoutes';
+import authProvider from './Admin/authProvider';
+import dataProviderr from './Admin/dataProvider';
+import LoginPage from './Admin/LoginPage';
+import AppLayout from './Admin/AppLayout';
+import { ApiUrl } from './Utils/config';
 
 const httpClient = (url, options = {}) => {
   let token = localStorage.getItem('accessToken');
@@ -32,6 +33,7 @@ const httpClient = (url, options = {}) => {
 const dataProvider = dataProviderr(ApiUrl + '/api', httpClient);
 const App = () => (
   <Admin
+    appLayout={AppLayout}
     loginPage={LoginPage}
     dashboard={Dashboard}
     authProvider={authProvider}

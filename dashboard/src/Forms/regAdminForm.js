@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl, PasswordRegex, NameRegex, TextRegex } from './config';
+import { ApiUrl, PasswordRegex, NameRegex, TextRegex } from '../Utils/config';
 
 const styles = theme => ({
     container: {

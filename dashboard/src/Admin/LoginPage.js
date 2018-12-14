@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl } from './config';
+import { ApiUrl } from '../Utils/config';
 import { Link } from 'react-router-dom';
 
 const styles = theme => ({

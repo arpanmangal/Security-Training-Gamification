@@ -47,7 +47,7 @@ class DeleteForm extends React.Component {
     }
 
     handleChange = name => event => {
-        this.setState({ [name]: event.target.checked });
+        this.setState({ checked: event.target.checked });
     };
 
     handleSubmit = (event) => {
@@ -82,10 +82,14 @@ class DeleteForm extends React.Component {
                 type="submit"
                 key="submit"
                 label="Delete"
-                color="secondary"
+                color="default"
                 variant="raised"
                 disabled={this.state.checked ? false : true}
-                style={{ float: 'left' }}
+                style={
+                    this.state.checked
+                        ? { float: 'left', backgroundColor: 'red', color: 'white' }
+                        : { float: 'left' }
+                }
             >Delete Account</Button>,
         ];
 

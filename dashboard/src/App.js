@@ -14,6 +14,7 @@ import authProvider from './Admin/authProvider';
 import dataProviderr from './Admin/dataProvider';
 import LoginPage from './Admin/LoginPage';
 import AppLayout from './Admin/AppLayout';
+import themeReducer from './Admin/themeReducer';
 import { ApiUrl } from './Utils/config';
 
 const httpClient = (url, options = {}) => {
@@ -39,6 +40,8 @@ const App = () => (
     authProvider={authProvider}
     dataProvider={dataProvider}
     customRoutes={customRoutes}
+    customReducers={{ theme: themeReducer }}
+    locale="en"
   >
     {permissions => [
       <Resource

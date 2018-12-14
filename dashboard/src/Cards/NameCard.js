@@ -6,6 +6,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Avatar from '@material-ui/core/Avatar';
 import green from '@material-ui/core/colors/green';
 import { CardContent, Typography } from '@material-ui/core';
+import { Title } from 'react-admin';
 
 const styles = theme => ({
     card: {
@@ -42,6 +43,7 @@ class NameCard extends React.Component {
 
         return (
             <Card className={classes.card}>
+                <Title title={this.props.title}></Title>
                 <CardHeader
                     avatar={
                         <Avatar aria-label="Avatar" className={classes.avatar}>

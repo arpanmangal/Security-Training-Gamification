@@ -40,7 +40,7 @@ class AccountCard extends React.Component {
                 <CardContent>
                     <Typography variant='headline'>Change Password</Typography>
                     <Typography component={'span'}>
-                        <ResetForm />
+                        <ResetForm history={this.props.history}/>
                     </Typography>
                     <Divider />
                     <br />
@@ -49,7 +49,7 @@ class AccountCard extends React.Component {
                         *Once you delete your account, there is no going back. Please be certain.
                     </Typography>
                     <Typography component={'span'}>
-                        <DeleteForm />
+                        <DeleteForm history={this.props.history}/>
                     </Typography>
                 </CardContent>
             </Card>

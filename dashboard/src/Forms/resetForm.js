@@ -2,12 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { fetchUtils } from 'react-admin';
+import { fetchUtils, userLogout } from 'react-admin';
 import { ApiUrl, PasswordRegex, NameRegex, TextRegex, AlphaNumericRegex } from '../Utils/config';
 
 const styles = theme => ({
@@ -119,19 +116,23 @@ class ResetForm extends React.Component {
 
         if (this.handleValidation()) {
             let body = JSON.parse(JSON.stringify(this.state.fields));
-            body['new_password'] = body['password'];
+            body['old_password'] = body['password'];
+            body['new_password'] = body['newPassword'];
             delete body['password'];
+            delete body['newPassword'];
             delete body['confirmPassword'];
 
-            let url = ApiUrl + '/api/user/reset';
+            let url = ApiUrl + '/api/user/resetPassword';
             let options = {}
+            let token = localStorage.getItem('accessToken') || '';
             options.headers = new Headers({ Accept: 'application/json' });
+            options.headers.set('x-auth-token', token);
             options.method = 'POST'
             options.body = JSON.stringify(body);
             fetchUtils.fetchJson(url, options)
                 .then(data => {
                     alert(data.json.message);
-                    this.props.history.push('/profile')
+                    window.location.reload();
                 })
                 .catch((err, ...rest) => {
                     console.log(err.status, err.message);

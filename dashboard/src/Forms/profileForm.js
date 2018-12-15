@@ -36,51 +36,48 @@ class ProfileForm extends React.Component {
         super();
         this.state = {
             fields: {
+                username: '',
                 name: '',
                 email: '',
                 university: '',
                 age: '',
             },
             errors: {},
-            securityQuestions: [],
         }
     }
 
     componentDidMount() {
-        // this.loadSecurityQuestions();
+        this.loadUserInfo();
     }
 
-    loadSecurityQuestions = () => {
-        fetch(ApiUrl + '/api/questions')
-            .then((response) => {
-                if (response.status !== 200) {
-                    console.log('Can\'t fetch questions: ' + response.status);
-                    return;
+    loadUserInfo = () => {
+        let url = ApiUrl + '/api/user/view';
+        let options = {}
+        let token = localStorage.getItem('accessToken') || '';
+        options.headers = new Headers({ Accept: 'application/json' });
+        options.headers.set('x-auth-token', token);
+        options.method = 'GET'
+        fetchUtils.fetchJson(url, options)
+            .then(data => {
+                console.log('success: ', data.json);
+                // alert(data.json.message);
+                // window.location.reload();
+                const info = data.json.data;
+                let fields = {
+                    username: info.user_id,
+                    name: info.name,
+                    email: info.email,
+                    university: info.university,
+                    age: 20,
                 }
-
-                response.json().then((data) => {
-                    let questions = [];
-                    let fields = this.state.fields;
-                    if (!data || !data.data || data.data.length < 1) {
-
-                    } else {
-                        data.data.forEach(ques => {
-                            questions.push({
-                                value: ques.id,
-                                label: ques.content
-                            });
-                        });
-                        fields['question'] = data.data[0].id;
-                    }
-                    this.setState({
-                        fields: fields,
-                        securityQuestions: questions
-                    })
-                })
-            }
-            )
-            .catch((err) => {
-                console.log('Fetch Error: -S', err);
+                this.setState({
+                    fields: fields,
+                    errors: {},
+                });
+            })
+            .catch((err, ...rest) => {
+                console.log(err.status, err.message);
+                alert(err.message);
             });
     }
 
@@ -97,6 +94,7 @@ class ProfileForm extends React.Component {
 
     handleReset = event => {
         let fields = {
+            username: this.state.fields.username,
             name: '',
             email: '',
             university: '',
@@ -169,16 +167,21 @@ class ProfileForm extends React.Component {
 
         if (this.handleValidation()) {
             let body = JSON.parse(JSON.stringify(this.state.fields));
+            delete body['username'];
+            console.log(body);
 
-            let url = ApiUrl + '/api/user/edit';
+            let url = ApiUrl + '/api/user/update';
             let options = {}
+            let token = localStorage.getItem('accessToken') || '';
             options.headers = new Headers({ Accept: 'application/json' });
+            options.headers.set('x-auth-token', token);
             options.method = 'POST'
             options.body = JSON.stringify(body);
             fetchUtils.fetchJson(url, options)
                 .then(data => {
+                    localStorage.setItem('userName', data.json.data.name);
                     alert(data.json.message);
-                    this.props.history.push('/profile')
+                    window.location.reload();
                 })
                 .catch((err, ...rest) => {
                     console.log(err.status, err.message);
@@ -203,6 +206,16 @@ class ProfileForm extends React.Component {
 
         return (
             <form className={classes.container} noValidate autoComplete="off" onSubmit={this.handleSubmit}>
+                <TextField
+                    disabled
+                    id="username"
+                    label="Username"
+                    value={this.state.fields["username"]}
+                    className={classes.textField}
+                    margin="normal"
+                    variant="outlined"
+                />
+                <br />
                 <TextField
                     required
                     id="name"

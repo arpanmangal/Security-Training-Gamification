@@ -1,36 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import NameCard from '../Cards/NameCard';
 import ProfileCard from '../Cards/ProfileCard';
 import AccountCard from '../Cards/AccountCard';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { red, blue, pink, green } from '@material-ui/core/colors'
 
-// const theme = createMuiTheme({
-//     palette: {
-//         // primary: blue,
-//         secondary: {
-//             main: red.A700
-//         },
-//         error: {
-//             main: red.A700
-//         }
-//     },
-// });
-
-const ProfilePage = ({ props }) => {
-    return (
-        <span>
-            {/* <MuiThemeProvider theme={theme}> */}
-            <br />
-            <NameCard title="Profile"/>
-            <br />
-            <ProfileCard />
-            <br />
-            <AccountCard />
-            <br />
-            {/* </MuiThemeProvider> */}
-        </span>
-    );
+class ProfilePage extends React.Component {
+    render() {
+        return (
+            <span>
+                <br />
+                <NameCard title="Profile"/>
+                <br />
+                <ProfileCard history={this.props.history}/>
+                <br />
+                <AccountCard history={this.props.history}/>
+                <br />
+            </span>
+        );
+    }
 }
 
 export default ProfilePage;

@@ -20,7 +20,6 @@ import { ApiUrl } from './Utils/config';
 const httpClient = (url, options = {}) => {
   let token = localStorage.getItem('accessToken');
   if (!token) token = '';
-  console.log(token);
 
   if (!options.headers) {
     options.headers = new Headers({ Accept: 'application/json' });

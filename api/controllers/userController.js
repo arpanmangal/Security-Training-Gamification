@@ -87,7 +87,7 @@ function createUser(req, res) {
         newUser.save()
             .then(function () {
                 // Create log
-                logController.createLog(user.user_id, function(status) {
+                logController.createLog(user.user_id, function (status) {
                     console.log(status);
                     if (status == 200) {
                         // User successfully created
@@ -287,7 +287,7 @@ function login(req, res) {
 }
 
 /** Viewing the basic user info */
-function view(req, res) {
+function viewSelf(req, res) {
     if (req == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -299,7 +299,7 @@ function view(req, res) {
     // Fetch the user info
     models.User.findOne({
         'user_id': req.user_id
-    }, 'user_id name email university role total_coins cyber_IQ', function (err, loggedUser) {
+    }, 'user_id name email university total_coins cyber_IQ', function (err, loggedUser) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
         }
@@ -312,13 +312,176 @@ function view(req, res) {
             'user_id': loggedUser.user_id,
             'name': loggedUser.name,
             'email': loggedUser.email,
-            'university': loggedUser.university || 'Not Provided',
-            'role': loggedUser.role,
+            'university': loggedUser.university || 'NA',
             'total_coins': loggedUser.total_coins,
             'cyber_IQ': loggedUser.cyber_IQ,
         }
 
         return utils.res(res, 200, 'Retrieval Successful', user);
+    });
+}
+
+/** Updating the user */
+function updateSelf(req, res) {
+    if (req == null || req.body == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    const user = req.body;
+
+    if (user.name == null || user.email == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    // Validate user input
+    if (!user.email.match(config.emailRegex)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Please enter a valid email address');
+    }
+
+    if (config.textRegex.test(user.name)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Please enter alphanumeric characters only');
+    }
+
+    if ((!(user.university == null)) && config.textRegex.test(user.university)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'University Name should not contain special characters');
+    }
+
+    let updatedUser = {};
+    updatedUser['name'] = user.name;
+    updatedUser['email'] = user.email;
+    if (!(user.university == null)) {
+        updatedUser['university'] = user.university;
+    }
+
+    // Update the user info
+    models.User.findOneAndUpdate({
+        'user_id': req.user_id
+    }, updatedUser, function (err, oldUser) {
+        if (err || oldUser == null) {
+            return utils.res(res, 401, 'Account Does not exist');
+        }
+
+        return utils.res(res, 200, 'Profile updated successfully!', {
+            name: user.name
+        });
+    });
+}
+
+/** Deleting the user */
+function deleteSelf(req, res) {
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    // Delete the user
+    models.User.findOneAndDelete({
+        'user_id': req.user_id
+    }, function (err, deletedUser) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+
+        if (deletedUser == null) {
+            return utils.res(res, 401, 'Invalid');
+        }
+
+        // Successfull Deletion
+        return utils.res(res, 200, 'Your account is deleted successfully');
+    });
+}
+
+/** Reseting the password */
+function resetPassword(req, res) {
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    const user = req.body;
+
+    if (user.old_password == null || user.new_password == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    if (!config.passwordRegex.test(user.old_password) || !config.passwordRegex.test(user.new_password)) {
+        // Contains dangerous special characters
+        let msg = 'Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
+    }
+
+    // Fetch the user info
+    models.User.findOne({
+        'user_id': req.user_id
+    }, 'password', function (err, loggedUser) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+
+        if (loggedUser == null) {
+            return utils.res(res, 401, 'Invalid Token');
+        }
+
+        // Compare passwords
+        bcrypt.compare(user.old_password, loggedUser.password, function (err, verdict) {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            if (!verdict) {
+                return utils.res(res, 401, 'Incorrect Password');
+            }
+
+            // Successful validation
+            // Hash the new password and then return new token
+            bcrypt.hash(user.new_password, saltRounds, (err, hash) => {
+                if (err) {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
+
+                // Update into DB
+                models.User.findOneAndUpdate({
+                    'user_id': req.user_id
+                }, {
+                        'password': hash
+                    }, function (err, updatedUser) {
+                        if (err || updatedUser == null) {
+                            // Some problem occured
+                            // console.log(err);
+                            return utils.res(res, 500, 'Internal Server Error');
+                        }
+
+                        // Password changed successfully
+                        const payload = {
+                            'user_id': updatedUser.user_id,
+                            'name': updatedUser.name
+                        }
+
+                        const token = jwt.sign(payload, config.jwtSecret, {
+                            expiresIn: config.jwtExpiry
+                        });
+
+                        return utils.res(res, 200, 'Password Reset Successfully', {
+                            'token': token,
+                        });
+                    });
+
+            });
+        });
     });
 }
 
@@ -436,33 +599,6 @@ function deleteUser(req, res) {
     });
 }
 
-/** Deleting the user */
-function deleteAccount(req, res) {
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    // Delete the user
-    models.User.findOneAndDelete({
-        'user_id': req.user_id
-    }, function (err, deletedUser) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
-
-        if (deletedUser == null) {
-            return utils.res(res, 401, 'Invalid');
-        }
-
-        // Successfull Deletion
-        return utils.res(res, 200, 'Your account is deleted successfully');
-    });
-}
-
 /** Fogot Password */
 function forgotPassword(req, res) {
     if (req == null || req.body == null) {
@@ -541,100 +677,20 @@ function forgotPassword(req, res) {
     });
 }
 
-/** Reseting the password */
-function resetPassword(req, res) {
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    const user = req.body;
-
-    if (user.old_password == null || user.new_password == null) {
-        return utils.res(res, 400, 'Bad Request, Incomplete Information');
-    }
-
-    if (!config.passwordRegex.test(user.old_password) || !config.passwordRegex.test(user.new_password)) {
-        // Contains dangerous special characters
-        let msg = 'Password should be of 8-13 characters, ' +
-            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
-        return utils.res(res, 400, msg);
-    }
-
-    // Fetch the user info
-    models.User.findOne({
-        'user_id': req.user_id
-    }, 'password', function (err, loggedUser) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
-
-        if (loggedUser == null) {
-            return utils.res(res, 401, 'Invalid Token');
-        }
-
-        // Compare passwords
-        bcrypt.compare(user.old_password, loggedUser.password, function (err, verdict) {
-            if (err) {
-                return utils.res(res, 500, 'Internal Server Error');
-            }
-
-            if (!verdict) {
-                return utils.res(res, 401, 'Incorrect Password');
-            }
-
-            // Successful validation
-            // Hash the new password and then return new token
-            bcrypt.hash(user.new_password, saltRounds, (err, hash) => {
-                if (err) {
-                    return utils.res(res, 500, 'Internal Server Error');
-                }
-
-                // Update into DB
-                models.User.findOneAndUpdate({
-                    'user_id': req.user_id
-                }, {
-                        'password': hash
-                    }, function (err, updatedUser) {
-                        if (err || updatedUser == null) {
-                            // Some problem occured
-                            // console.log(err);
-                            return utils.res(res, 500, 'Internal Server Error');
-                        }
-
-                        // Password changed successfully
-                        const payload = {
-                            'user_id': updatedUser.user_id,
-                            'name': updatedUser.name
-                        }
-
-                        const token = jwt.sign(payload, config.jwtSecret, {
-                            expiresIn: config.jwtExpiry
-                        });
-
-                        return utils.res(res, 200, 'Password Reset Successfully', {
-                            'token': token,
-                        });
-                    });
-
-            });
-        });
-    });
-}
-
 
 module.exports = {
-    'viewUser': viewUser,
     'listUsers': listUsers,
+    'viewUser': viewUser,
     'deleteUser': deleteUser,
+
+    'forgotPassword': forgotPassword,
+
     'createUser': createUser,
     'createAdmin': createAdmin,
-    // 'createLevelAdmin': createLevelAdmin,
     'login': login,
-    'deleteAccount': deleteAccount,
-    'forgotPassword': forgotPassword,
+    'viewSelf': viewSelf,
+    'updateSelf': updateSelf,
+    'deleteSelf': deleteSelf,
     'resetPassword': resetPassword
+    // 'createLevelAdmin': createLevelAdmin,
 }

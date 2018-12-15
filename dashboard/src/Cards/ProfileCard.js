@@ -8,6 +8,8 @@ import green from '@material-ui/core/colors/green';
 import { CardContent, Typography } from '@material-ui/core';
 import ProfileForm from '../Forms/profileForm';
 import Divider from '@material-ui/core/Divider';
+import CoinIcon from '@material-ui/icons/EuroSymbol';
+import LaptopIcon from '@material-ui/icons/LaptopMac';
 
 const styles = theme => ({
     card: {
@@ -37,7 +39,15 @@ class NameCard extends React.Component {
                 <Divider />
                 <CardContent>
                     <Typography component={'span'}>
-                        <ProfileForm />
+                        <ProfileForm history={this.props.history} />
+                    </Typography>
+                    <Divider />
+                    <br />
+                    <Typography variant='display1'>
+                        <LaptopIcon /> Cyber IQ: 8
+                    </Typography>
+                    <Typography variant='display1'>
+                        <CoinIcon /> Coins: 100
                     </Typography>
                 </CardContent>
             </Card>

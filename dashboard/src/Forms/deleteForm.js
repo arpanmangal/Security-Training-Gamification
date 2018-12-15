@@ -2,18 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl, PasswordRegex, NameRegex, TextRegex, AlphaNumericRegex } from '../Utils/config';
+import { ApiUrl } from '../Utils/config';
 
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import red from '@material-ui/core/colors/red';
 
 const styles = theme => ({
     container: {
@@ -54,15 +49,15 @@ class DeleteForm extends React.Component {
         // Prevent default
         event.preventDefault();
 
-        alert('submitted')
-
-        let body = JSON.parse(JSON.stringify(this.state));
+        alert('submitted');
 
         let url = ApiUrl + '/api/user/delete';
         let options = {}
+        let token = localStorage.getItem('accessToken') || '';
         options.headers = new Headers({ Accept: 'application/json' });
+        options.headers.set('x-auth-token', token);
         options.method = 'POST'
-        options.body = JSON.stringify(body);
+        options.body = JSON.stringify({});
         fetchUtils.fetchJson(url, options)
             .then(data => {
                 alert(data.json.message);

@@ -67,19 +67,21 @@ function setUpAPIs() {
     app.get('/api/users', utils.validateToken, utils.checkAdmin, userController.listUsers);
     app.get('/api/users/:id/', utils.validateToken, utils.checkAdmin, userController.viewUser);
     app.delete('/api/users/:id/', utils.validateToken, utils.checkAdmin, userController.deleteUser);
+    
+    app.post('/api/user/forgot', userController.forgotPassword);
 
     app.post('/api/user/create', userController.createUser);
     app.post('/api/user/createAdmin', userController.createAdmin);
     app.post('/api/user/login', userController.login);
-    app.get('/api/user/view', utils.validateToken, userController.viewUser);
+    app.get('/api/user/view', utils.validateToken, userController.viewSelf);
+    app.post('/api/user/update', utils.validateToken, userController.updateSelf);
+    app.post('/api/user/delete', utils.validateToken, userController.deleteSelf);
+    app.post('/api/user/resetPassword', utils.validateToken, userController.resetPassword);
     // app.get('/api/user/adminViewUser', utils.validateToken, utils.checkAdmin, userController.adminViewUser);
-    app.post('/api/user/delete', utils.validateToken, userController.deleteUser);
     // app.post('/api/user/modify', utils.validateToken, userController.modifyUser);
     // app.post('/api/user/updateScore', utils.validateToken, userController.updateScore);
     // app.post('/api/user/updateLevelInfo', utils.validateToken, userController.updateLevelInfo);
     // app.post('/api/user/updateAssessment', utils.validateToken, userController.updateAssessment);
-    app.post('/api/user/forgot', userController.forgotPassword);
-    app.post('/api/user/resetPassword', utils.validateToken, userController.resetPassword);
     /***************** End User API *****************/
 
     /***************** Security Question API ********/

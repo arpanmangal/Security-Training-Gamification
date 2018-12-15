@@ -1,11 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import NameCard from '../Cards/NameCard';
 import ProfileCard from '../Cards/ProfileCard';
 import AccountCard from '../Cards/AccountCard';
 
 class ProfilePage extends React.Component {
+    constructor() {
+        super();
+    }
+
     render() {
+        if (localStorage.getItem('accessToken'))
         return (
             <span>
                 <br />
@@ -17,6 +21,8 @@ class ProfilePage extends React.Component {
                 <br />
             </span>
         );
+        else
+        return (<h1>Login to View</h1>);
     }
 }
 

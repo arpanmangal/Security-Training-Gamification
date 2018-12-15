@@ -47,7 +47,7 @@ class NameCard extends React.Component {
                 <CardHeader
                     avatar={
                         <Avatar aria-label="Avatar" className={classes.avatar}>
-                            {localStorage.getItem('userName')[0].toUpperCase() || 'A'}
+                            {localStorage.getItem('userName') ? localStorage.getItem('userName')[0].toUpperCase() : 'A'}
                         </Avatar>
                     }
                     title={localStorage.getItem('userName')}

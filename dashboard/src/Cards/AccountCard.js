@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 
-import Avatar from '@material-ui/core/Avatar';
 import green from '@material-ui/core/colors/green';
 import { CardContent, Typography } from '@material-ui/core';
 import ResetForm from '../Forms/resetForm';

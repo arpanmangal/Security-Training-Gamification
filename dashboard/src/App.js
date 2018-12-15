@@ -43,14 +43,16 @@ const App = () => (
     locale="en"
   >
     {permissions => [
-      <Resource
-        name="level"
-        list={LevelList}
-        icon={LevelIcon}
-        edit={permissions === 'admin' ? LevelEdit : null}
-        show={LevelShow}
-        create={permissions === 'admin' ? LevelCreate : null}
-      />,
+      permissions !== 'guest'
+        ? <Resource
+          name="level"
+          list={LevelList}
+          icon={LevelIcon}
+          edit={permissions === 'admin' ? LevelEdit : null}
+          show={LevelShow}
+          create={permissions === 'admin' ? LevelCreate : null}
+        />
+        : null,
 
       // Only Admin can see users
       permissions === 'admin'

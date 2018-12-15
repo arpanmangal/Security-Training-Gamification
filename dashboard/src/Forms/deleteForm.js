@@ -49,8 +49,6 @@ class DeleteForm extends React.Component {
         // Prevent default
         event.preventDefault();
 
-        alert('submitted');
-
         let url = ApiUrl + '/api/user/delete';
         let options = {}
         let token = localStorage.getItem('accessToken') || '';

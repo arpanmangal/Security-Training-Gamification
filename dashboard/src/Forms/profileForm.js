@@ -68,7 +68,7 @@ class ProfileForm extends React.Component {
                     name: info.name,
                     email: info.email,
                     university: info.university,
-                    age: 20,
+                    age: info.age || 20,
                 }
                 this.setState({
                     fields: fields,

@@ -14,13 +14,13 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     name: {type: String, required: true},
     email: {type: String, required: true},
+    age: {type: Number, required: true},
     university: String,
     role: {type: String, required: true, default: "player"},
     total_coins: {type: Number, required: true, default: 100},
     cyber_IQ: {type: Number, required: true, default: 0},
     security_question: {type: {}, required: true},
     levels: {type: {}, required: true},
-    assessments: {type: {}, required: true}
 });
 
 // Creating the database schemas
@@ -55,7 +55,6 @@ const User = mongoose.model('User', userSchema);
 const SecurityQuestion = mongoose.model('SecurityQuestion', securityQuestionSchema);
 const level = mongoose.model('level', levelSchema);
 const Logs = mongoose.model('Logs', logSchema);
-// const Assessment = mongoose.model('Assessment', assessmentSchema);
 
 
 // Exporting the schemas

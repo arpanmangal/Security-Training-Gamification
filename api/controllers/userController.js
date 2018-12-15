@@ -19,8 +19,9 @@ function createUser(req, res) {
     if (user == null) {
         return utils.res(res, 400, 'Bad Request');
     }
+    console.log(user);
 
-    if (user.user_id == null || user.name == null || user.email == null || user.password == null ||
+    if (user.user_id == null || user.name == null || user.email == null || user.password == null || user.age == null ||
         user.security_question_id == null || user.security_answer == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
@@ -34,6 +35,12 @@ function createUser(req, res) {
     if (!user.email.match(config.emailRegex)) {
         // Contains dangerous special characters
         return utils.res(res, 400, 'Please enter a valid email address');
+    }
+
+    const age = parseInt(user.age)
+    if (typeof(age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid Age');
     }
 
     if (!config.passwordRegex.test(user.password)) {
@@ -70,12 +77,12 @@ function createUser(req, res) {
             "password": hash,
             "name": user.name,
             "email": user.email,
+            "age": user.age,
             "security_question": {
                 "question_id": user.security_question_id,
                 "answer": user.security_answer
             },
             "levels": {}, // No level for new user
-            "assessments": {} // No assessment for new user
         };
 
         // Add additional parameters 
@@ -127,7 +134,7 @@ function createAdmin(req, res) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    if (user.user_id == null || user.name == null || user.email == null || user.password == null || user.admin_secret == null) {
+    if (user.user_id == null || user.name == null || user.email == null || user.age == null || user.password == null || user.admin_secret == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
@@ -140,6 +147,12 @@ function createAdmin(req, res) {
     if (!user.email.match(config.emailRegex)) {
         // Contains dangerous special characters
         return utils.res(res, 400, 'Please enter a valid email address');
+    }
+
+    const age = parseInt(user.age)
+    if (typeof(age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid Age');
     }
 
     if (!config.passwordRegex.test(user.password)) {
@@ -181,13 +194,13 @@ function createAdmin(req, res) {
                 "password": hash,
                 "name": user.name,
                 "email": user.email,
+                "age": user.age,
                 "security_question": {
                     "question_id": "admin10",
                     "answer": "Yes"
                 },
                 "role": "admin",
                 "levels": {}, // No level for new user
-                "assessments": {} // No assessment for new user
             };
 
             // Leave coins and user_IQ at default values
@@ -274,7 +287,6 @@ function login(req, res) {
                 'total_coins': loggedUser.total_coins,
                 'cyber_IQ': loggedUser.cyber_IQ,
                 'levels': loggedUser.levels,
-                'assessments': loggedUser.assessments
             }
 
             return utils.res(res, 200, 'Login Successful', {
@@ -299,7 +311,7 @@ function viewSelf(req, res) {
     // Fetch the user info
     models.User.findOne({
         'user_id': req.user_id
-    }, 'user_id name email university total_coins cyber_IQ', function (err, loggedUser) {
+    }, 'user_id name email age university total_coins cyber_IQ', function (err, loggedUser) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
         }
@@ -311,6 +323,7 @@ function viewSelf(req, res) {
         const user = {
             'user_id': loggedUser.user_id,
             'name': loggedUser.name,
+            'age': loggedUser.age,
             'email': loggedUser.email,
             'university': loggedUser.university || 'NA',
             'total_coins': loggedUser.total_coins,
@@ -333,7 +346,7 @@ function updateSelf(req, res) {
 
     const user = req.body;
 
-    if (user.name == null || user.email == null) {
+    if (user.name == null || user.email == null || user.age == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
@@ -341,6 +354,12 @@ function updateSelf(req, res) {
     if (!user.email.match(config.emailRegex)) {
         // Contains dangerous special characters
         return utils.res(res, 400, 'Please enter a valid email address');
+    }
+
+    const age = parseInt(user.age)
+    if (typeof(age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid Age');
     }
 
     if (config.textRegex.test(user.name)) {
@@ -356,6 +375,7 @@ function updateSelf(req, res) {
     let updatedUser = {};
     updatedUser['name'] = user.name;
     updatedUser['email'] = user.email;
+    updatedUser['age'] = user.age;
     if (!(user.university == null)) {
         updatedUser['university'] = user.university;
     }
@@ -503,7 +523,7 @@ function listUsers(req, res) {
     }
 
     // Fetch User lists
-    models.User.find({}, 'user_id name email university total_coins cyber_IQ role')
+    models.User.find({}, 'user_id name email age university total_coins cyber_IQ role')
         .lean()
         .exec(function (err, users) {
             if (err) {
@@ -554,7 +574,7 @@ function viewUser(req, res) {
     // Fetch the user info
     models.User.findOne({
         'user_id': req.params.id
-    }, 'user_id name role email university total_coins cyber_IQ')
+    }, 'user_id name role email age university total_coins cyber_IQ')
         .lean()
         .exec(function (err, user) {
             if (err || user == null) {

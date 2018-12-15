@@ -178,7 +178,8 @@ class SignupForm extends React.Component {
             errors['name'] = 'Name should be of minimum 3 characters';
             formIsValid = false;
         } else if (TextRegex.test(fields['name'])) {
-            errors['name'] = 'Name should not contain special characters'
+            errors['name'] = 'Name should not contain special characters';
+            formIsValid = false;
         } else {
             errors['name'] = null;
         }

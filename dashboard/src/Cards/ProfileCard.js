@@ -10,6 +10,8 @@ import ProfileForm from '../Forms/profileForm';
 import Divider from '@material-ui/core/Divider';
 import CoinIcon from '@material-ui/icons/EuroSymbol';
 import LaptopIcon from '@material-ui/icons/LaptopMac';
+import { fetchUtils } from 'react-admin';
+import { ApiUrl, TextRegex } from '../Utils/config';
 
 const styles = theme => ({
     card: {
@@ -28,6 +30,45 @@ const styles = theme => ({
 });
 
 class NameCard extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            info: {
+                coins: '',
+                IQ: ''
+            },
+        }
+    }
+
+    componentDidMount() {
+        this.loadUserInfo();
+    }
+
+    loadUserInfo = () => {
+        let url = ApiUrl + '/api/user/view';
+        let options = {}
+        let token = localStorage.getItem('accessToken') || '';
+        options.headers = new Headers({ Accept: 'application/json' });
+        options.headers.set('x-auth-token', token);
+        options.method = 'GET'
+        fetchUtils.fetchJson(url, options)
+            .then(data => {
+                console.log('success: ', data.json);
+                const info = data.json.data;
+                this.setState({
+                    info: {
+                        coins: info.total_coins,
+                        IQ: info.cyber_IQ,
+                    }
+                });
+            })
+            .catch((err, ...rest) => {
+                console.log(err.status, err.message);
+                alert(err.message);
+            });
+    }
+
     render() {
         const { classes } = this.props;
 
@@ -39,15 +80,15 @@ class NameCard extends React.Component {
                 <Divider />
                 <CardContent>
                     <Typography component={'span'}>
-                        <ProfileForm history={this.props.history} />
+                        <ProfileForm info={this.state.info} history={this.props.history} />
                     </Typography>
                     <Divider />
                     <br />
                     <Typography variant='display1'>
-                        <LaptopIcon /> Cyber IQ: 8
+                        <LaptopIcon /> Cyber IQ: {this.state.info.IQ}
                     </Typography>
                     <Typography variant='display1'>
-                        <CoinIcon /> Coins: 100
+                        <CoinIcon /> Coins: {this.state.info.coins}
                     </Typography>
                 </CardContent>
             </Card>

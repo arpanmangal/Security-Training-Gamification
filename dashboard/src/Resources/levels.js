@@ -7,7 +7,10 @@ import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin
 import PlayButton from '@material-ui/icons/PlayCircleFilled';
 import Button from '@material-ui/core/Button';
 import $ from 'jquery'
-
+import GameCard from '../Cards/GameCard';
+import GameGrid from '../Cards/GameGrid';
+import { fetchUtils } from 'react-admin';
+import { ApiUrl, TextRegex } from '../Utils/config';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
@@ -79,7 +82,6 @@ export const LevelList = ({ permissions, ...props }) => {
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-                <UrlField source="image_url" />
                 {permissions !== 'admin' &&
                     <PlayField
                         field="game_url"
@@ -92,7 +94,6 @@ export const LevelList = ({ permissions, ...props }) => {
         </List>
     );
 }
-
 
 export const LevelEdit = props => {
     return (
@@ -152,6 +153,16 @@ const ListField = ({ record, source, name }) => {
 }
 ListField.defaultProps = { addLabel: true };
 
+const ImageField = ({ record = {}, source }) => {
+    const url = record[source] ? (record[source].substr(0, 20) + '...') : '-';
+    return (
+        <a href={record[source]}>
+            {url}
+        </a>
+    );
+}
+ImageField.defaultProps = { addLabel: true };
+
 export const LevelShow = props => {
     console.log(props);
     return (
@@ -162,8 +173,8 @@ export const LevelShow = props => {
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-                <UrlField source="image_url" />
-                <UrlField source="game_url" />
+                <ImageField source="image_url" />
+                <UrlField source="game_url"/>
                 <TextField source="description" />
                 <NumberField source="qualification_iq" />
 
@@ -172,4 +183,49 @@ export const LevelShow = props => {
             </SimpleShowLayout>
         </Show>
     );
+}
+
+// export const PlayerLevelList = props => {
+//     return (
+//         <GameGrid />
+//     );
+// }
+export class PlayerLevelList extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            levels: []
+        }
+    }
+
+    componentDidMount() {
+        this.loadLevelInfo();
+    }
+
+    loadLevelInfo = () => {
+        let url = ApiUrl + '/api/level?range=[0,20000]';
+        let options = {}
+        let token = localStorage.getItem('accessToken') || '';
+        options.headers = new Headers({ Accept: 'application/json' });
+        options.headers.set('x-auth-token', token);
+        options.method = 'GET'
+        fetchUtils.fetchJson(url, options)
+            .then(data => {
+                const info = data.json.data;
+                this.setState({
+                    levels: info,
+                });
+            })
+            .catch((err, ...rest) => {
+                alert(err.message);
+                this.props.history.push('/');
+            });
+    }
+
+    render() {
+        return (
+            <GameGrid record={this.state.levels} />
+        );
+    }
 }

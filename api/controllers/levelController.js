@@ -22,7 +22,7 @@ function listLevels(req, res) {
     }
 
     // Fetch the level info
-    models.level.find({}, '_id name subheading category difficulty type image_url game_url qualification_iq')
+    models.level.find({}, '_id name subheading category description difficulty type image_url game_url qualification_iq rules')
         .lean()
         .exec(function (err, levels) {
             if (err) {
@@ -89,10 +89,10 @@ function createLevel(req, res) {
         return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
     }
 
-    if (config.urlRegex.test(level.image_url)) {
-        // Contains dangerous special characters
-        return utils.res(res, 400, 'Invalid Image URL');
-    }
+    // if (config.urlRegex.test(level.image_url)) {
+    //     // Contains dangerous special characters
+    //     return utils.res(res, 400, 'Invalid Image URL');
+    // }
 
     if (level.game_url == null) level.game_url = '#';
 
@@ -228,11 +228,12 @@ function modifyLevel(req, res) {
         updatedLevel.description = level.description;
     }
     if (!(level.image_url == null)) {
-        if (config.urlRegex.test(level.image_url))
-            return utils.res(res, 400, 'Invalid Image URL');
-        else
+        // if (config.urlRegex.test(level.image_url))
+        //     return utils.res(res, 400, 'Invalid Image URL');
+        // else
             updatedLevel.image_url = level.image_url;
     }
+    
     if (!(level.game_url == null)) {
         updatedLevel.game_url = level.game_url;
     }

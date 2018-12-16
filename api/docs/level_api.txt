@@ -5,6 +5,8 @@ GET: /api/level
     params:
         header:
             x-auth-token                            // token for verifying that any user is logged in
+        query:
+            range
     return:
         status_code
         error: false/true
@@ -18,7 +20,9 @@ GET: /api/level
             type
             image_url
             game_url
+            description
             qualification_iq
+            rules: []
         }, ...]
 
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Admin, Resource, fetchUtils, ListGuesser, ShowGuesser, EditGuesser } from 'react-admin';
-import { LevelList, LevelEdit, LevelCreate, LevelShow } from './Resources/levels';
+import { LevelList, LevelEdit, LevelCreate, LevelShow, PlayerLevelList } from './Resources/levels';
 import { LeaderboardList } from './Resources/LeaderBoard';
 import { UserList, UserShow } from './Resources/users';
 import { QuestionList, QuestionShow, QuestionCreate } from './Resources/questions';
@@ -46,7 +46,7 @@ const App = () => (
       permissions !== 'guest'
         ? <Resource
           name="level"
-          list={LevelList}
+          list={permissions === 'admin' ? LevelList : PlayerLevelList}
           icon={LevelIcon}
           edit={permissions === 'admin' ? LevelEdit : null}
           show={LevelShow}

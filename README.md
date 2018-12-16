@@ -30,3 +30,10 @@ $ cp -r build/* ../api/build/client
 $ cd api
 ```
 Follow the instructions in the `README.md` there. 
+
+
+## Notes
+
+### Level categories
+Level categories are stored in `/database/utils/config.js`. You can add new categories there (and restart following above procedure), but do not delete existing ones if the database is already set-up.  
+Reference: https://searchsecurity.techtarget.com/resources  

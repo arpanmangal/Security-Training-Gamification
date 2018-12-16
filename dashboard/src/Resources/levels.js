@@ -4,34 +4,28 @@ import { Edit, EditButton, DeleteButton, ShowButton, SimpleFormIterator } from '
 import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
 import { BulkDeleteButton, CardActions } from 'react-admin';
 import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin';
-import PlayButton from '@material-ui/icons/PlayCircleFilled';
-import Button from '@material-ui/core/Button';
-import $ from 'jquery'
-import GameCard from '../Cards/GameCard';
 import GameGrid from '../Cards/GameGrid';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl, TextRegex } from '../Utils/config';
+import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
 }
 
-const categories = [
-    { id: "general", name: "General" },
-    { id: "hack", name: "Hacking" },
-    { id: "other", name: "Other" }
-];
+const genList = (dict) => {
+    let list = [];
+    for (let key in dict) {
+        list.push({
+            id: key,
+            name: dict[key] || "Other",
+        });
+    }
+    return list;
+}
 
-const types = [
-    { id: "single", name: "Single Player" },
-    { id: "multi", name: "Multi Player" }
-];
-
-const difficulties = [
-    { id: "easy", name: "Easy" },
-    { id: "med", name: "Medium" },
-    { id: "hard", name: "Hard" }
-]
+const types = genList(Types);
+const difficulties = genList(Difficulties);
+const categories = genList(Categories);
 
 const NoneActions = props => (
     <CardActions />
@@ -42,34 +36,6 @@ const PostBulkActionButtons = props => (
         <BulkDeleteButton {...props} />
     </Fragment>
 );
-
-const PlayField = ({ record, field }) => {
-    let handleClick = () => {
-        console.log('hello, handle clik');
-
-        let redirect = record[field];
-        let token = localStorage.getItem('accessToken');
-
-        // jquery extend function
-        $.extend(
-            {
-                redirectPost: function (location, args) {
-                    var form = '';
-                    $.each(args, function (key, value) {
-                        value = value.split('"').join('\"')
-                        form += '<input type="hidden" name="' + key + '" value="' + value + '">';
-                    });
-                    $('<form action="' + location + '" method="POST" target="_blank">' + form + '</form>').appendTo($(document.body)).submit();
-                }
-            });
-        $.redirectPost(redirect, { token: token });
-    }
-    return (
-        <Button variant="contained" aria-label="Play" onClick={() => { handleClick() }} color="primary">
-            <PlayButton />&nbsp;Play
-        </Button>
-    )
-}
 
 // LevelList
 export const LevelList = ({ permissions, ...props }) => {
@@ -82,10 +48,6 @@ export const LevelList = ({ permissions, ...props }) => {
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-                {permissions !== 'admin' &&
-                    <PlayField
-                        field="game_url"
-                    />}
                 <ShowButton />
                 {permissions === 'admin' &&
                     <DeleteButton
@@ -185,11 +147,6 @@ export const LevelShow = props => {
     );
 }
 
-// export const PlayerLevelList = props => {
-//     return (
-//         <GameGrid />
-//     );
-// }
 export class PlayerLevelList extends React.Component {
     constructor() {
         super();

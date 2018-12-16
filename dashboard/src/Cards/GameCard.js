@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Icon } from '@material-ui/core';
 import $ from 'jquery'
+import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
 
 const styles = theme => ({
     card: {
@@ -122,13 +123,13 @@ class GameCard extends React.Component {
                         {level.description}
                     </Typography>
                     <Typography >
-                        <b>Category:</b> <em>{level.category}</em>
+                        <b>Category:</b> <em>{Categories[level.category] || ''}</em>
                     </Typography>
                     <Typography >
-                        <b>Difficulty:</b> <em>{level.difficulty}</em>
+                        <b>Difficulty:</b> <em>{Difficulties[level.difficulty] || ''}</em>
                     </Typography>
                     <Typography >
-                        <b>Type:</b> <em>{level.type}</em>
+                        <b>Type:</b> <em>{Types[level.type] || ''}</em>
                     </Typography>
                     <Typography >
                         <b>Qualification IQ:</b> <em>{level.qualification_iq}</em>
@@ -186,32 +187,3 @@ GameCard.propTypes = {
 };
 
 export default withStyles(styles)(GameCard);
-
-
-// const PlayField = ({ record, field }) => {
-//     let handleClick = () => {
-//         console.log('hello, handle clik');
-
-//         let redirect = record[field];
-//         let token = localStorage.getItem('accessToken');
-
-//         // jquery extend function
-//         $.extend(
-//             {
-//                 redirectPost: function (location, args) {
-//                     var form = '';
-//                     $.each(args, function (key, value) {
-//                         value = value.split('"').join('\"')
-//                         form += '<input type="hidden" name="' + key + '" value="' + value + '">';
-//                     });
-//                     $('<form action="' + location + '" method="POST" target="_blank">' + form + '</form>').appendTo($(document.body)).submit();
-//                 }
-//             });
-//         $.redirectPost(redirect, { token: token });
-//     }
-//     return (
-//         <Button variant="contained" aria-label="Play" onClick={() => { handleClick() }} color="primary">
-//             <PlayIcon />&nbsp;Play
-//         </Button>
-//     )
-// }

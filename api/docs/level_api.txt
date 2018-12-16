@@ -46,6 +46,7 @@ GET: /api/level/<name>            // Get particular level information
             rules
             hints
             qualification_iq
+            attributes
         }
 
 POST: /api/level/                             // For creating a new level

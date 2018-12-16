@@ -11,6 +11,7 @@
     "react-admin": "^2.4.1",
     "react-dom": "^16.6.0",
     "react-favicon": "0.0.14",
+    "react-json-pretty": "^1.7.9",
     "react-scripts": "^2.1.1"
   },
   "scripts": {

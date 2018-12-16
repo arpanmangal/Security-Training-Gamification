@@ -1,12 +1,14 @@
 import React, { Fragment } from 'react';
-import { List, Datagrid, TextField, UrlField, SelectField, NumberField } from 'react-admin'
+import PropTypes from 'prop-types';
+import { List, Datagrid, TextField, UrlField, SelectField, NumberField, ImageField } from 'react-admin'
 import { Edit, EditButton, DeleteButton, ShowButton, SimpleFormIterator } from 'react-admin';
 import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
 import { BulkDeleteButton, CardActions } from 'react-admin';
 import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin';
-import GameGrid from '../Cards/GameGrid';
 import { fetchUtils } from 'react-admin';
 import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
+import GameGrid from '../Cards/GameGrid';
+import AttibuteDisplayGrid from '../Cards/AttDispGrid';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
@@ -115,7 +117,7 @@ const ListField = ({ record, source, name }) => {
 }
 ListField.defaultProps = { addLabel: true };
 
-const ImageField = ({ record = {}, source }) => {
+const ImageUrlField = ({ record = {}, source }) => {
     const url = record[source] ? (record[source].substr(0, 20) + '...') : '-';
     return (
         <a href={record[source]}>
@@ -123,7 +125,34 @@ const ImageField = ({ record = {}, source }) => {
         </a>
     );
 }
-ImageField.defaultProps = { addLabel: true };
+ImageUrlField.defaultProps = { addLabel: true };
+
+const AttributeField = ({ source, record = {} }) => {
+    console.log(source, record);
+    let attributes = [];
+    for (let key in record[source]) {
+        attributes.push({
+            name: key,
+            value: record[source][key]
+        });
+    }
+    console.log(attributes);
+    return (
+        <span>
+            {attributes.map((att, idx) => {
+                return (
+                    <AttibuteDisplayGrid key={idx} name={att.name} value={att.value} />
+                )
+            })}
+        </span>
+    );
+}
+AttributeField.propTypes = {
+    label: PropTypes.string,
+    record: PropTypes.object,
+    source: PropTypes.string.isRequired,
+};
+AttributeField.defaultProps = { addLabel: true };
 
 export const LevelShow = props => {
     console.log(props);
@@ -135,13 +164,15 @@ export const LevelShow = props => {
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-                <ImageField source="image_url" />
-                <UrlField source="game_url"/>
+                <ImageUrlField source="image_url" label="Level Image"/>
+                <ImageField source="image_url" title="Level Image" />
+                <UrlField source="game_url" />
                 <TextField source="description" />
                 <NumberField source="qualification_iq" />
 
                 <ListField source="rules" name="rule" />
                 <ListField source="hints" name="hint" />
+                <AttributeField source="attributes" />
             </SimpleShowLayout>
         </Show>
     );

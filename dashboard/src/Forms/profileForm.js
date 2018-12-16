@@ -182,7 +182,7 @@ class ProfileForm extends React.Component {
                 .then(data => {
                     localStorage.setItem('userName', data.json.data.name);
                     alert(data.json.message);
-                    window.location.reload();
+                    // window.location.reload();
                 })
                 .catch((err, ...rest) => {
                     console.log(err.status, err.message);

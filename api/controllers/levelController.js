@@ -154,7 +154,7 @@ function viewLevel(req, res) {
     // Fetch the user info
     models.level.findOne({
         'name': req.params.name
-    }, '_id name subheading category type difficulty description image_url game_url rules hints qualification_iq', function (err, mylevel) {
+    }, '_id name subheading category type difficulty description image_url game_url rules hints qualification_iq attributes', function (err, mylevel) {
         if (err || mylevel == null) {
             // console.log(err);
             return utils.res(res, 404, 'Level does not exist');
@@ -172,6 +172,7 @@ function viewLevel(req, res) {
             'rules': mylevel.rules || [],
             'hints': mylevel.hints || [],
             'qualification_iq': mylevel.qualification_iq,
+            'attributes': mylevel.attributes || {},
         }
 
         return utils.res(res, 200, 'Retrieval Successful', lev);

@@ -37,3 +37,18 @@ Follow the instructions in the `README.md` there.
 ### Level categories
 Level categories are stored in `/database/utils/config.js`. You can add new categories there (and restart following above procedure), but do not delete existing ones if the database is already set-up.  
 Reference: https://searchsecurity.techtarget.com/resources  
+
+
+## Trouble-shooting
+### Problems with React App
+If the app gives npm error, try:  
+```
+$ rm -rf node_modules && npm cache clean --force && npm install
+```
+
+### Problems with NodeJS Server
+If the app gives mongoDB network error, try:
+```
+$ sudo service mongod restart
+```
+and then try restarting the app until it starts.

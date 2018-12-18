@@ -89,10 +89,27 @@ function generateAdminSecret(secret) {
     });
 }
 
+function sortObjects(list, key, order='ASC') {
+    function compare(a, b) {
+        a = a[key];
+        b = b[key];
+        var type = (typeof(a) === 'string' ||
+                    typeof(b) === 'string') ? 'string' : 'number';
+        var result;
+        if (type === 'string') result = a.localeCompare(b);
+        else result = a - b;
+        return result;
+    }
+    list.sort(compare);
+    if (order === 'DESC') list.reverse();
+    return list;
+}
+
 
 module.exports = {
     'res': resp,
     'validateToken': validateToken,
     'checkAdmin': checkAdmin,
-    'generateAdminSecret': generateAdminSecret
+    'generateAdminSecret': generateAdminSecret,
+    'sortObjects': sortObjects,
 }

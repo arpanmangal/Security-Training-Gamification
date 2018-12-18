@@ -38,7 +38,7 @@ function createUser(req, res) {
     }
 
     const age = parseInt(user.age)
-    if (typeof(age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
+    if (typeof (age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid Age');
     }
@@ -150,7 +150,7 @@ function createAdmin(req, res) {
     }
 
     const age = parseInt(user.age)
-    if (typeof(age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
+    if (typeof (age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid Age');
     }
@@ -357,7 +357,7 @@ function updateSelf(req, res) {
     }
 
     const age = parseInt(user.age)
-    if (typeof(age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
+    if (typeof (age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid Age');
     }
@@ -511,19 +511,34 @@ function listUsers(req, res) {
         return utils.res(res, 400, 'Bad Request');
     }
 
-    try {
-        // Pagination
-        const range = JSON.parse(req.query.range);
-    } catch (err) {
-        return utils.res(res, 400, 'Please provide appropriate range');
-    }
-
     if (req.user_id == null) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
+    console.log(req.query);
+    try {
+        // Pagination
+        const range = JSON.parse(req.query.range);
+        const r0 = range[0], r1 = range[1] + 1;
+
+        // Sort
+        const sorting = JSON.parse(req.query.sort);
+        const sortPara = sorting[0];
+        const sortOrder = sorting[1];
+
+        // Filter
+        const filter = JSON.parse(req.query.filter);
+    } catch (err) {
+        return utils.res(res, 400, 'Please provide appropriate range, sort & filter arguments');
+    }
+
+
+    let qFilter = JSON.parse(req.query.filter);
+    let filter = {};
+    if (!(qFilter.user_id == null) && typeof (qFilter.user_id) === 'string') filter['user_id'] = { $regex: qFilter.user_id, $options: 'i' };
+
     // Fetch User lists
-    models.User.find({}, 'user_id name email age university total_coins cyber_IQ role')
+    models.User.find(filter, 'user_id name email age university total_coins cyber_IQ role')
         .lean()
         .exec(function (err, users) {
             if (err) {
@@ -549,11 +564,17 @@ function listUsers(req, res) {
             const response = users.slice(range[0], range[1] + 1);
             const contentRange = 'users ' + range[0] + '-' + range[1] + '/' + len;
 
+            // Sort
+            const sorting = JSON.parse(req.query.sort);
+            let sortPara = sorting[0] || 'name';
+            let sortOrder = sorting[1] || 'ASC';
+            if (sortOrder !== 'ASC' && sortOrder != 'DESC') sortOrder = 'ASC';
+
             res.set({
                 'Access-Control-Expose-Headers': 'Content-Range',
                 'Content-Range': contentRange
             });
-            return utils.res(res, 200, 'Retrieval Successful', response);
+            return utils.res(res, 200, 'Retrieval Successful', utils.sortObjects(response, sortPara, sortOrder));
         })
 }
 
@@ -698,7 +719,7 @@ function forgotPassword(req, res) {
 }
 
 /** Update Coins/IQ */
-function updateScore (req, res) {
+function updateScore(req, res) {
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -714,13 +735,13 @@ function updateScore (req, res) {
 
     // Validate user input
     const coins = parseInt(user.coins)
-    if (typeof(coins) !== 'number' || !Number.isInteger(coins)) {
+    if (typeof (coins) !== 'number' || !Number.isInteger(coins)) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid Coins');
     }
 
     const IQ = parseInt(user.IQ)
-    if (typeof(IQ) !== 'number' || !Number.isInteger(IQ) || IQ < 0 || IQ >= 10) {
+    if (typeof (IQ) !== 'number' || !Number.isInteger(IQ) || IQ < 0 || IQ >= 10) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid IQ');
     }
@@ -754,7 +775,7 @@ function updateLevels(req, res) {
     }
 
     const info = req.body;
-    if (info.name == null || info.score == null ||info.cleared == null ||info.coins == null) {
+    if (info.name == null || info.score == null || info.cleared == null || info.coins == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
@@ -765,18 +786,18 @@ function updateLevels(req, res) {
     }
 
     const score = parseInt(info.score)
-    if (typeof(score) !== 'number' || !Number.isInteger(score)) {
+    if (typeof (score) !== 'number' || !Number.isInteger(score)) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid Score');
     }
 
     const coins = parseInt(info.coins)
-    if (typeof(coins) !== 'number' || !Number.isInteger(coins)) {
+    if (typeof (coins) !== 'number' || !Number.isInteger(coins)) {
         // Not integer or invalid range
         return utils.res(res, 400, 'Invalid Coins');
     }
 
-    if (typeof(info.cleared) !== typeof(true)) {
+    if (typeof (info.cleared) !== typeof (true)) {
         return utils.res(res, 400, 'Invalid Cleared');
     }
 

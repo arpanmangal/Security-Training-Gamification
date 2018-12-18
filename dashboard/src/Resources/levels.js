@@ -9,6 +9,7 @@ import { fetchUtils } from 'react-admin';
 import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
 import GameGrid from '../Cards/GameGrid';
 import AttibuteDisplayGrid from '../Cards/AttDispGrid';
+import { Filter, ReferenceInput } from 'react-admin';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
@@ -39,11 +40,20 @@ const PostBulkActionButtons = props => (
     </Fragment>
 );
 
+const LevelFilter = (props) => (
+    <Filter {...props}>
+        <TextInput label="Level Name" source="name" alwaysOn />
+        <SelectInput source="category" label="Category" choices={categories} optionText="name" optionValue="id" alwaysOn />
+        <SelectInput source="difficulty" label="Difficulty" choices={difficulties} optionText="name" optionValue="id" />
+        <SelectInput source="type" label="Type" choices={types} optionText="name" optionValue="id" />
+    </Filter>
+);
+
 // LevelList
 export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
     return (
-        <List {...props} bulkActionButtons={permissions === 'admin' ? <PostBulkActionButtons /> : <NoneActions />}>
+        <List {...props} filters={<LevelFilter />} bulkActionButtons={permissions === 'admin' ? <PostBulkActionButtons /> : <NoneActions />}>
             <Datagrid>
                 <TextField source="name" />
                 <TextField source="subheading" />
@@ -164,7 +174,7 @@ export const LevelShow = props => {
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-                <ImageUrlField source="image_url" label="Level Image"/>
+                <ImageUrlField source="image_url" label="Level Image" />
                 <ImageField source="image_url" title="Level Image" />
                 <UrlField source="game_url" />
                 <TextField source="description" />

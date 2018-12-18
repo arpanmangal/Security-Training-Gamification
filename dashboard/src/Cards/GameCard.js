@@ -61,7 +61,6 @@ class GameCard extends React.Component {
     };
 
     play = (gameUrl) => {
-        console.log('YYYYYaay');
         let token = localStorage.getItem('accessToken');
 
         // jquery extend function

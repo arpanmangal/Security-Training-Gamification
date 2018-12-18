@@ -14,15 +14,32 @@ function listLevels(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
+    console.log(req.query);
     try {
         // Pagination
         const range = JSON.parse(req.query.range);
+        const r0 = range[0], r1 = range[1] + 1;
+
+        // Sort
+        const sorting = JSON.parse(req.query.sort);
+        const sortPara = sorting[0];
+        const sortOrder = sorting[1];
+
+        // Filter
+        const filter = JSON.parse(req.query.filter);
     } catch (err) {
-        return utils.res(res, 400, 'Please provide appropriate range');
+        return utils.res(res, 400, 'Please provide appropriate range, sort & filter arguments');
     }
 
+    let qFilter = JSON.parse(req.query.filter);
+    let filter = {};
+    if (!(qFilter.category == null) && typeof(qFilter.category) === 'string') filter['category'] = qFilter.category;
+    if (!(qFilter.difficulty == null) && typeof(qFilter.difficulty) === 'string') filter['difficulty'] = qFilter.difficulty;
+    if (!(qFilter.type == null) && typeof(qFilter.type) === 'string') filter['type'] = qFilter.type;
+    if (!(qFilter.name == null) && typeof(qFilter.name) === 'string') filter['name'] = { $regex: qFilter.name, $options: 'i' };
+
     // Fetch the level info
-    models.level.find({}, '_id name subheading category description difficulty type image_url game_url qualification_iq rules')
+    models.level.find(filter, '_id name subheading category description difficulty type image_url game_url qualification_iq rules')
         .lean()
         .exec(function (err, levels) {
             if (err) {
@@ -43,12 +60,18 @@ function listLevels(req, res) {
             const response = levels.slice(range[0], range[1] + 1);
             const contentRange = 'levels ' + range[0] + '-' + range[1] + '/' + len;
 
+            // Sort
+            const sorting = JSON.parse(req.query.sort);
+            let sortPara = sorting[0] || 'name';
+            let sortOrder = sorting[1] || 'ASC';
+            if (sortOrder !== 'ASC' && sortOrder != 'DESC') sortOrder = 'ASC';
+
             res.set({
                 'Access-Control-Expose-Headers': 'Content-Range',
                 'Content-Range': contentRange
             })
 
-            return utils.res(res, 200, 'Retrieval Successful', response);
+            return utils.res(res, 200, 'Retrieval Successful', utils.sortObjects(response, sortPara, sortOrder));
         });
 }
 
@@ -232,9 +255,9 @@ function modifyLevel(req, res) {
         // if (config.urlRegex.test(level.image_url))
         //     return utils.res(res, 400, 'Invalid Image URL');
         // else
-            updatedLevel.image_url = level.image_url;
+        updatedLevel.image_url = level.image_url;
     }
-    
+
     if (!(level.game_url == null)) {
         updatedLevel.game_url = level.game_url;
     }

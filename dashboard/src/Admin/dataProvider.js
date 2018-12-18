@@ -48,6 +48,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     filter: JSON.stringify(params.filter),
                 };
                 url = `${apiUrl}/${resource}?${stringify(query)}`;
+                console.log(query);
                 break;
             }
             case GET_ONE:
@@ -119,6 +120,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     }
                 }
             case GET_LIST:
+            case GET_MANY:
             case GET_MANY_REFERENCE:
                 if (!headers.has('content-range')) {
                     throw new Error(

@@ -11,6 +11,7 @@ import GameGrid from '../Cards/GameGrid';
 import AttibuteDisplayGrid from '../Cards/AttDispGrid';
 import { Filter, ReferenceInput } from 'react-admin';
 import { Button } from '@material-ui/core';
+import { Field } from 'redux-form';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
@@ -79,6 +80,13 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
     </List>
 );
 
+const LatLngInput = () => (
+    <span>
+        <Field name="lat" component="input" type="number" placeholder="latitude" />
+        &nbsp;
+        <Field name="lng" component="input" type="number" placeholder="longitude" />
+    </span>
+);
 export const LevelEdit = props => {
     return (
         <Edit title={<LevelTitle />} {...props}>
@@ -102,6 +110,7 @@ export const LevelEdit = props => {
                         <TextInput source="hint" />
                     </SimpleFormIterator>
                 </ArrayInput>
+                <LatLngInput />
             </SimpleForm>
         </Edit>
     );

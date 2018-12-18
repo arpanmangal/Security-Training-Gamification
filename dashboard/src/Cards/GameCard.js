@@ -113,7 +113,6 @@ class GameCard extends React.Component {
                 <CardMedia
                     className={classes.media}
                     image={level.image_url}
-                    title="Paella dish"
                 />
                 <CardContent>
                     <Typography component="p" paragraph>

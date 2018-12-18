@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { fetchUtils } from 'react-admin';
 import { ApiUrl, TextRegex } from '../Utils/config';
-
+ 
 const styles = theme => ({
     container: {
         // display: 'flex',
@@ -47,7 +47,11 @@ class ProfileForm extends React.Component {
     }
 
     componentDidMount() {
-        this.loadUserInfo();
+        if (!localStorage.getItem('accessToken')) {
+            this.props.history.push('/login');
+        } else {
+            this.loadUserInfo();
+        }
     }
 
     loadUserInfo = () => {
@@ -59,9 +63,6 @@ class ProfileForm extends React.Component {
         options.method = 'GET'
         fetchUtils.fetchJson(url, options)
             .then(data => {
-                console.log('success: ', data.json);
-                // alert(data.json.message);
-                // window.location.reload();
                 const info = data.json.data;
                 let fields = {
                     username: info.user_id,

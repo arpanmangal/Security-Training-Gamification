@@ -54,7 +54,6 @@ class NameCard extends React.Component {
         options.method = 'GET'
         fetchUtils.fetchJson(url, options)
             .then(data => {
-                console.log('success: ', data.json);
                 const info = data.json.data;
                 this.setState({
                     info: {
@@ -82,14 +81,18 @@ class NameCard extends React.Component {
                     <Typography component={'span'}>
                         <ProfileForm info={this.state.info} history={this.props.history} />
                     </Typography>
-                    <Divider />
-                    <br />
-                    <Typography variant='display1'>
-                        <LaptopIcon /> Cyber IQ: {this.state.info.IQ}
-                    </Typography>
-                    <Typography variant='display1'>
-                        <CoinIcon /> Coins: {this.state.info.coins}
-                    </Typography>
+                    {localStorage.getItem('role') === 'player'
+                        ? <span>
+                            <Divider />
+                            <br />
+                            <Typography variant='display1'>
+                                <LaptopIcon /> Cyber IQ: {this.state.info.IQ}
+                            </Typography>
+                            <Typography variant='display1'>
+                                <CoinIcon /> Coins: {this.state.info.coins}
+                            </Typography>
+                        </span>
+                        : null}
                 </CardContent>
             </Card>
         );

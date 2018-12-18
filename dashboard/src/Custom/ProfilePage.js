@@ -9,7 +9,6 @@ class ProfilePage extends React.Component {
     }
 
     render() {
-        if (localStorage.getItem('accessToken'))
         return (
             <span>
                 <br />
@@ -21,8 +20,6 @@ class ProfilePage extends React.Component {
                 <br />
             </span>
         );
-        else
-        return (<h1>Login to View</h1>);
     }
 }
 

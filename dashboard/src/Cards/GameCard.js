@@ -13,13 +13,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red, pink, purple, blue, cyan, teal, lime, yellow, amber, brown } from '@material-ui/core/colors/';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { Icon } from '@material-ui/core';
 import $ from 'jquery'
-import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
+import { Types, Categories, Difficulties } from '../Utils/config';
 
 const styles = theme => ({
     card: {

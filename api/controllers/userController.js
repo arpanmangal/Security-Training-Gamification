@@ -697,6 +697,91 @@ function forgotPassword(req, res) {
     });
 }
 
+/** Update Coins/IQ */
+function updateScore (req, res) {
+    if (req == null || req.body == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    const user = req.body;
+    if (user.coins == null || user.IQ == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    // Validate user input
+    const coins = parseInt(user.coins)
+    if (typeof(coins) !== 'number' || !Number.isInteger(coins)) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid Coins');
+    }
+
+    const IQ = parseInt(user.IQ)
+    if (typeof(IQ) !== 'number' || !Number.isInteger(IQ) || IQ < 0 || IQ >= 10) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid IQ');
+    }
+
+    let updatedUser = {};
+    updatedUser['total_coins'] = coins;
+    updatedUser['cyber_IQ'] = IQ;
+
+    models.User.findOneAndUpdate({
+        'user_id': req.user_id
+    }, updatedUser, function (err, oldUser) {
+        if (err || oldUser == null) {
+            return utils.res(res, 500, 'Information could not be updated');
+        }
+
+        return utils.res(res, 200, 'Information Successfully updated!', {
+            total_coins: coins,
+            cyber_IQ: IQ,
+        });
+    });
+}
+
+/** Update played levels */
+function updateLevels(req, res) {
+    if (req == null || req.body == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    const info = req.body;
+    if (info.name == null || info.score == null ||info.cleared == null ||info.coins == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    // Validate user input
+    if (config.nameRegex.test(info.name)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Invalid Level Name');
+    }
+
+    const score = parseInt(info.score)
+    if (typeof(score) !== 'number' || !Number.isInteger(score)) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid Score');
+    }
+
+    const coins = parseInt(info.coins)
+    if (typeof(coins) !== 'number' || !Number.isInteger(coins)) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid Coins');
+    }
+
+    if (typeof(info.cleared) !== typeof(true)) {
+        return utils.res(res, 400, 'Invalid Cleared');
+    }
+
+    return utils.res(res, 200, 'Success');
+}
 
 module.exports = {
     'listUsers': listUsers,
@@ -711,6 +796,8 @@ module.exports = {
     'viewSelf': viewSelf,
     'updateSelf': updateSelf,
     'deleteSelf': deleteSelf,
-    'resetPassword': resetPassword
-    // 'createLevelAdmin': createLevelAdmin,
+    'resetPassword': resetPassword,
+
+    'updateScore': updateScore,
+    'updateLevels': updateLevels,
 }

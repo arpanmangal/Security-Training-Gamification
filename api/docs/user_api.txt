@@ -194,34 +194,37 @@ POST: /api/user/updateScore
         header:
             x-auth-token    //token for verifying that user is logged in
         body:
-            //all the field that need to be edited
-            //should be among [coins, cyber_IQ]
+            coins: 1000
+            IQ: 8           // Should be 0-10
         return:
             status_code
             error: false/true
             message: "..string"
+            data: {
+                total_coins: 1000,
+                cyber_IQ: 8
+            }
             
 
-POST: /api/user/updateLevelInfo
+POST: /api/user/updateLevelInfo             // Update User levels info, called after finishing a game
     params:
         header:
             x-auth-token    //token for verifying that user is logged in
         body:
-            level_id
-            level_object
+            name: string,
+            score: Number,          // Score earned in this instance
+            cleared: Boolean,       // Whether game cleared in this instance
+            coins: Number,          // Coins earned in this instance
         return:
             status_code
             error: false/true
             message: "..string"
+            data: {                                 // User level info corresponding to this level
+                high_score: Number,                  // Player high-score on that level
+                cleared: Boolean,                    // Has player cleared that level or not
+                high_coins: Nubmer,                  // Highest # of coins earned
+                coins_earned: Number                 // Total Money earned in this level
+                num_attempts: Number                 // Number of Attempts to this level
+                num_cleared: Number                  // Number of times cleared this level
+            }
             
-POST: /api/user/updateAssessment
-    params:
-        header:
-            x-auth-token    //token for verifying that user is logged in
-        body:
-            assessment_id
-            assessment_object
-        return:
-            status_code
-            error: false/true
-            message: "..string"

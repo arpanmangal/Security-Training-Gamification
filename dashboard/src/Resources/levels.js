@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { List, Datagrid, TextField, UrlField, SelectField, NumberField, ImageField } from 'react-admin'
 import { Edit, EditButton, DeleteButton, ShowButton, SimpleFormIterator } from 'react-admin';
 import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
-import { BulkDeleteButton, CardActions } from 'react-admin';
+import { BulkDeleteButton, CardActions, RefreshButton, FilterButton } from 'react-admin';
 import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin';
 import { fetchUtils } from 'react-admin';
 import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
 import GameGrid from '../Cards/GameGrid';
 import AttibuteDisplayGrid from '../Cards/AttDispGrid';
 import { Filter, ReferenceInput } from 'react-admin';
+import { Button } from '@material-ui/core';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
@@ -44,10 +45,13 @@ const LevelFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Level Name" source="name" alwaysOn />
         <SelectInput source="category" label="Category" choices={categories} optionText="name" optionValue="id" alwaysOn />
-        <SelectInput source="difficulty" label="Difficulty" choices={difficulties} optionText="name" optionValue="id" />
-        <SelectInput source="type" label="Type" choices={types} optionText="name" optionValue="id" />
+        <SelectInput source="difficulty" label="Difficulty" choices={difficulties} optionText="name" optionValue="id" alwaysOn={props.on === 'always'} />
+        <SelectInput source="type" label="Type" choices={types} optionText="name" optionValue="id" alwaysOn={props.on === 'always'} />
     </Filter>
 );
+LevelFilter.propTypes = {
+    on: PropTypes.string,
+};
 
 // LevelList
 export const LevelList = ({ permissions, ...props }) => {
@@ -68,6 +72,12 @@ export const LevelList = ({ permissions, ...props }) => {
         </List>
     );
 }
+
+export const PlayerLevelList = ({ permissions, ...props }) => (
+    <List {...props} actions={<NoneActions />} sort={{ field: 'name', order: 'ASC' }} filters={<LevelFilter on={'always'} />}>
+        <GameGrid />
+    </List>
+);
 
 export const LevelEdit = props => {
     return (
@@ -186,44 +196,4 @@ export const LevelShow = props => {
             </SimpleShowLayout>
         </Show>
     );
-}
-
-export class PlayerLevelList extends React.Component {
-    constructor() {
-        super();
-
-        this.state = {
-            levels: []
-        }
-    }
-
-    componentDidMount() {
-        this.loadLevelInfo();
-    }
-
-    loadLevelInfo = () => {
-        let url = ApiUrl + '/api/level?range=[0,20000]';
-        let options = {}
-        let token = localStorage.getItem('accessToken') || '';
-        options.headers = new Headers({ Accept: 'application/json' });
-        options.headers.set('x-auth-token', token);
-        options.method = 'GET'
-        fetchUtils.fetchJson(url, options)
-            .then(data => {
-                const info = data.json.data;
-                this.setState({
-                    levels: info,
-                });
-            })
-            .catch((err, ...rest) => {
-                alert(err.message);
-                this.props.history.push('/');
-            });
-    }
-
-    render() {
-        return (
-            <GameGrid record={this.state.levels} />
-        );
-    }
 }

@@ -22,7 +22,7 @@ import { Types, Categories, Difficulties } from '../Utils/config';
 const styles = theme => ({
     card: {
         minWidth: 400,
-        maxWidth: 600,
+        maxWidth: 500,
     },
     media: {
         height: 0,

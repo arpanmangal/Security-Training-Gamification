@@ -14,7 +14,6 @@ function listLevels(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    console.log(req.query);
     try {
         // Pagination
         const range = JSON.parse(req.query.range);

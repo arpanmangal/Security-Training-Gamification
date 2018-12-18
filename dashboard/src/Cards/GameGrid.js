@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import GameCard from './GameCard';
-import { Title } from 'react-admin';
 
 const styles = theme => ({
     root: {
@@ -24,21 +24,21 @@ class GameGrid extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { record } = this.props;
-        console.log(record);
+        const { data, ids } = this.props;
         return (
-            <div className={classes.root} >
-                <Title title='Levels'></Title>
-                <Grid container spacing={24}>
-                    {record.map(l => {
-                        return (
-                            <Grid item xs key={l._id} >
-                                <GameCard level={l} />
-                            </Grid>
-                        )
-                    })}
-                </Grid>
-            </div>
+            <Card>
+                <CardContent>
+                    <Grid container spacing={24}>
+                        {ids.map(id => {
+                            return (
+                                <Grid item xs key={id} >
+                                    <GameCard level={data[id]} />
+                                </Grid>
+                            )
+                        })}
+                    </Grid>
+                </CardContent>
+            </Card>
         );
     }
 }

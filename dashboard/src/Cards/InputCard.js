@@ -83,7 +83,6 @@ class InputCard extends React.Component {
     }
 
     add = () => {
-        console.log('adding');
         let elements = this.state.elements;
         elements['' + this.state.count] = 'content';
         this.setState({
@@ -91,9 +90,9 @@ class InputCard extends React.Component {
             count: this.state.count + 1,
             error: false,
         });
-        setTimeout(() => {
-            console.log(this.state);
-        }, 200);
+        // setTimeout(() => {
+        //     console.log(this.state);
+        // }, 200);
     }
 
     update = (id) => (content) => {
@@ -103,7 +102,7 @@ class InputCard extends React.Component {
             elements: elements,
             error: false,
         });
-        console.log(id);
+        // console.log(id);
     }
 
     remove = (id) => () => {

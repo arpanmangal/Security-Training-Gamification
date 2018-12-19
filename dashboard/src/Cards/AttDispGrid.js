@@ -31,22 +31,8 @@ class AttibuteDisplayGrid extends React.Component {
         super();
 
         this.state = {
-            attributeName: '',
-            attributeArray: [],
-            showOnly: true,
             inEdit: false,
-            isJSON: false,
         }
-    }
-
-    componentDidMount = () => {
-        console.log(this.props);
-        this.setState({
-            attributeName: this.props.name,
-            attributeArray: this.props.attributes,
-            showOnly: this.props.showOnly,
-            isJSON: this.props.isJSON,
-        });
     }
 
     handleEdit = () => {
@@ -57,23 +43,31 @@ class AttibuteDisplayGrid extends React.Component {
 
     handleSave = (name, elements, isJSON) => {
         console.log(name, elements, isJSON);
+        if(!this.props.onUpdate(name, isJSON, elements)) {
+            alert('Duplicate Attribute Name');
+        } else {
+            this.setState({
+                inEdit: false,
+            });
+        }
+    }
 
-        this.setState({
-            inEdit: false,
-        });
+    handleDelete = () => {
+        this.props.onDelete();
     }
 
     showView = () => {
         return (
             <CardContent>
                 <Typography variant='headline'>
-                    {this.state.attributeName.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toUpperCase()}
+                    {this.props.name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toUpperCase()}
 
-                    {this.state.showOnly
+                    {this.props.showOnly
                         ? null
                         : <span>
                             <IconButton
                                 aria-label="Delete"
+                                onClick={this.handleDelete}
                                 style={{ float: 'right' }}>
                                 <DeleteIcon />
                             </IconButton>
@@ -89,10 +83,10 @@ class AttibuteDisplayGrid extends React.Component {
                 <br />
 
                 <Grid container spacing={24}>
-                    {this.state.attributeArray.map((v, idx) => {
+                    {this.props.attributes.map((v, idx) => {
                         return (
                             <Grid item xs key={idx} >
-                                <AttibuteDisplayCard content={v} isJSON={this.state.isJSON}/>
+                                <AttibuteDisplayCard content={v} isJSON={this.props.isJSON}/>
                             </Grid>
                         )
                     })}
@@ -104,17 +98,16 @@ class AttibuteDisplayGrid extends React.Component {
     editView = () => {
         return (
             <InputCard
-                attributeName={this.state.attributeName}
-                attributeArray={this.state.attributeArray}
+                attributeName={this.props.name}
+                attributeArray={this.props.attributes}
                 onSave={this.handleSave}
-                isJSON={this.state.isJSON}
+                isJSON={this.props.isJSON}
             />
         )
     }
 
     render() {
         const { classes } = this.props;
-        console.log(this.state);
         return (
             <Card>
                 {this.state.inEdit
@@ -132,6 +125,8 @@ AttibuteDisplayGrid.propTypes = {
     attributes: PropTypes.array.isRequired,
     showOnly: PropTypes.bool.isRequired,
     isJSON: PropTypes.bool.isRequired,
+    onDelete: PropTypes.func,
+    onUpdate: PropTypes.func,
 };
 
 export default withStyles(styles)(AttibuteDisplayGrid);

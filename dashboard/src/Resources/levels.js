@@ -12,6 +12,7 @@ import AttibuteDisplayGrid from '../Cards/AttDispGrid';
 import { Filter, ReferenceInput } from 'react-admin';
 import { Button } from '@material-ui/core';
 import { Field } from 'redux-form';
+import TextFieldMU from '@material-ui/core/TextField';
 
 const LevelTitle = ({ record }) => {
     return <span>Level {record ? `"${record.name}"` : ''}</span>
@@ -66,6 +67,7 @@ export const LevelList = ({ permissions, ...props }) => {
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
                 <ShowButton />
+                {/* <EditButton /> */}
                 {permissions === 'admin' &&
                     <DeleteButton
                     />}
@@ -80,11 +82,68 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
     </List>
 );
 
+// const renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => {
+//     console.log(input, label, touched, error, custom);
+//     return (<h1>Hi</h1>)
+//     // return (
+//     //     <TextField
+//     //         label={label}
+//     //         error={!!(touched && error)}
+//     //         helperText={touched && error}
+//     //         {...input}
+//     //         {...custom}
+//     //     />
+//     // );
+// }
+
+class renderTextField extends React.Component {
+    state = {
+        first: 'Arpan',
+        second: 'Mangal'
+    }
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        const { input } = this.props;
+        input.onChange(event);
+        console.log(input);
+    }
+
+    handleChange = name => event => {
+        this.setState({
+            [name]: event.target.value,
+        });
+    };
+
+    render() {
+        return (
+            <span>
+                <TextFieldMU
+                    required
+                    id="first"
+                    label="first"
+                    value={this.state.first}
+                    onChange={this.handleChange('first')}
+                    placeholder="first"
+                />
+                <br />
+                <Button
+                    type="submit"
+                    key="submit"
+                    label="Submit"
+                    color='primary'
+                    variant="raised"
+                    onClick={this.handleSubmit}
+                >Submit</Button>
+            </span>
+        );
+
+    }
+}
 const LatLngInput = () => (
     <span>
-        <Field name="lat" component="input" type="number" placeholder="latitude" />
-        &nbsp;
-        <Field name="lng" component="input" type="number" placeholder="longitude" />
+        <Field name="attributes" component={renderTextField} label="Attri" />
     </span>
 );
 export const LevelEdit = props => {

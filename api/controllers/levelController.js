@@ -218,7 +218,6 @@ function modifyLevel(req, res) {
 
     const level = req.body;
     let updatedLevel = {}
-    console.log(level);
 
     if (!(level.name == null)) {
         if (config.nameRegex.test(level.name))
@@ -282,15 +281,13 @@ function modifyLevel(req, res) {
             updatedLevel.attributes = level.attributes;
     }
 
-    console.log(updatedLevel);
-
     // Update the level info
     models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
         if (err || newLevel == null) {
             return utils.res(res, 400, 'Level Does not exist');
         }
 
-        return utils.res(res, 200, 'Retrieval Successful', newLevel);
+        return utils.res(res, 200, 'Record Updated Successfully', newLevel);
     });
 }
 

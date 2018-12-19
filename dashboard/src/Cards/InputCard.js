@@ -51,7 +51,7 @@ class InputCard extends React.Component {
     componentDidMount = () => {
         let elements = {}, count = 0;
         this.props.attributeArray.forEach(attri => {
-            elements['' + count] = JSON.stringify(attri);
+            elements['' + count] = attri;
             count++;
         });
 
@@ -90,9 +90,6 @@ class InputCard extends React.Component {
             count: this.state.count + 1,
             error: false,
         });
-        // setTimeout(() => {
-        //     console.log(this.state);
-        // }, 200);
     }
 
     update = (id) => (content) => {
@@ -102,7 +99,6 @@ class InputCard extends React.Component {
             elements: elements,
             error: false,
         });
-        // console.log(id);
     }
 
     remove = (id) => () => {
@@ -118,19 +114,10 @@ class InputCard extends React.Component {
         if (typeof (this.state.name) !== 'string' || this.state.name.length < 1) return false;
         for (let key in this.state.elements) {
             let e = this.state.elements[key];
-            if (typeof (e) !== 'string' || e.length < 1) return false;
-            if (this.state.isJSON && !this.validJSON(e)) return false;
+            if (this.state.isJSON && typeof (e) !== 'object') return false;
+            if (!this.state.isJSON && (typeof (e) === 'string' && e.length < 1)) return false;
         }
         return true;
-    }
-
-    validJSON = (str) => {
-        try {
-            let json = JSON.parse(str);
-            return (typeof json === 'object');
-        } catch (e) {
-            return false;
-        }
     }
 
     handleSubmit = () => {
@@ -152,7 +139,6 @@ class InputCard extends React.Component {
 
         return (
             <Card className={classes.card}>
-                {/* <Title title={this.props.title}></Title> */}
                 <CardContent>
                     <Typography variant='headline'>
                         <TextField
@@ -206,7 +192,12 @@ class InputCard extends React.Component {
                             {this.displayList().map(e => {
                                 return (
                                     <Grid item key={e.id} >
-                                        <JSONCard json={this.state.isJSON} content={e.val} onsave={this.update(e.id)} ondelete={this.remove(e.id)} />
+                                        <JSONCard
+                                            json={this.state.isJSON}
+                                            content={e.val}
+                                            onSave={this.update(e.id)}
+                                            onDelete={this.remove(e.id)}
+                                        />
                                     </Grid>
                                 )
                             })}

@@ -44,6 +44,7 @@ class JSONCard extends React.Component {
     }
 
     componentDidMount() {
+        console.log(this.props.content);
         this.setState({
             content: this.props.content,
         });
@@ -74,14 +75,14 @@ class JSONCard extends React.Component {
             });
         }
 
-        this.props.onsave(this.state.content);
+        this.props.onSave(this.state.content);
     }
 
-    onDelete = () => {
-        this.props.ondelete();
+    handleDelete = () => {
+        this.props.onDelete();
     }
 
-    onEdit = () => {
+    handleEdit = () => {
         console.log('editing')
         this.setState({
             inEdit: true,
@@ -98,6 +99,7 @@ class JSONCard extends React.Component {
     }
 
     isJSONstr = (str) => {
+        if (typeof(str) === 'object') return true;
         try {
             let json = JSON.parse(str);
             return (typeof json === 'object');
@@ -132,16 +134,16 @@ class JSONCard extends React.Component {
                 <span>
                     <Typography component={'span'} style={{ backgroundColor: 'primary' }}>
                         {(this.props.json && this.state.validJSON)
-                            ? <JSONPretty json={JSON.parse(this.state.content)}></JSONPretty>
-                            : <p>{this.state.content}</p>
+                            ? <JSONPretty json={typeof(this.state.content) === 'object' ? this.state.content : JSON.parse(this.state.content)}></JSONPretty>
+                            : <p>{typeof(this.state.content) === 'object' ? JSON.stringify(this.state.content) : this.state.content}</p>
                         }
                     </Typography>
                     <Divider />
                     <CardActions className={classes.actions} disableActionSpacing>
-                        <IconButton aria-label="Edit" onClick={this.onEdit}>
+                        <IconButton aria-label="Edit" onClick={this.handleEdit}>
                             <EditIcon />
                         </IconButton>
-                        <IconButton aria-label="Delete" onClick={this.onDelete}>
+                        <IconButton aria-label="Delete" onClick={this.handleDelete}>
                             <DeleteIcon />
                         </IconButton>
                     </CardActions>
@@ -172,6 +174,8 @@ class JSONCard extends React.Component {
 
 JSONCard.propTypes = {
     classes: PropTypes.object.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(JSONCard);

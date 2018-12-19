@@ -42,7 +42,7 @@ class AttibuteDisplayGrid extends React.Component {
     }
 
     handleSave = (name, elements, isJSON) => {
-        console.log(name, elements, isJSON);
+        // console.log(name, elements, isJSON);
         if(!this.props.onUpdate(name, isJSON, elements)) {
             alert('Duplicate Attribute Name');
         } else {

@@ -48,13 +48,10 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     filter: JSON.stringify(params.filter),
                 };
                 url = `${apiUrl}/${resource}?${stringify(query)}`;
-                console.log(query);
                 break;
             }
             case GET_ONE:
                 url = `${apiUrl}/${resource}/${params.id}`;
-                console.log('GET ONE ', params.id);
-                console.log(url);
                 break;
             case GET_MANY: {
                 const query = {
@@ -97,7 +94,6 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);
         }
-        console.log(type, resource, params, url, options);
         return { url, options };
     };
 
@@ -110,7 +106,6 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
      */
     const convertHTTPResponse = (response, type, resource, params) => {
         const { headers, json } = response;
-        console.log('In response: ', type, resource, headers, json, params);
         switch (type) {
             case GET_ONE:
                 return {
@@ -127,7 +122,6 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                         'The Content-Range header is missing in the HTTP Response. The simple REST data provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare Content-Range in the Access-Control-Expose-Headers header?'
                     );
                 }
-                console.log(json, json.data);
                 return {
                     data: json.data,
                     total: parseInt(

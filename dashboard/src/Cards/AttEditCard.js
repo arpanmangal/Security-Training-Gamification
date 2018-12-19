@@ -50,7 +50,7 @@ class AttributeEditCard extends React.Component {
         this.state = {
             levelName: '',
             subheading: '',
-            attributes: [],
+            attributes: {},
             count: 0,
         }
     }
@@ -63,10 +63,6 @@ class AttributeEditCard extends React.Component {
 
         this.loadLevelInfo(name);
     }
-
-    // handleChange = name => event => {
-    //     this.setState({ 'isJSON': event.target.checked, 'error': false });
-    // };
 
     loadLevelInfo = (name) => {
         let url = ApiUrl + '/api/level/' + name;
@@ -96,8 +92,6 @@ class AttributeEditCard extends React.Component {
             attributes: attributes,
             count: Object.keys(attributes).length,
         });
-
-        return;
     }
 
     dispAttriArray = () => {
@@ -114,7 +108,7 @@ class AttributeEditCard extends React.Component {
 
     addAttribute = () => {
         let attributes = this.state.attributes;
-        attributes['attribute' + this.state.count] = {
+        attributes['attribute' + (this.state.count + 1)] = {
             isJSON: false,
             list: [],
         };
@@ -137,20 +131,45 @@ class AttributeEditCard extends React.Component {
         if ((id !== name && name in attributes) || !Array.isArray(elements))
             return false;
 
+        delete attributes[id];
         attributes[name] = {
             isJSON: isJSON,
             list: elements,
-        }
+        };
         this.setState({
             attributes: attributes,
         });
         return true;
     }
 
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        let url = ApiUrl + '/api/level/' + this.state.levelName;
+        let body = {
+            'attributes': this.state.attributes
+        };
+        let options = {}
+        let token = localStorage.getItem('accessToken') || '';
+        options.headers = new Headers({ Accept: 'application/json' });
+        options.headers.set('x-auth-token', token);
+        options.method = 'PUT'
+        options.body = JSON.stringify(body);
+        fetchUtils.fetchJson(url, options)
+            .then(data => {
+                alert(data.json.message);
+                this.props.history.push('/level/' + this.state.levelName + '/show');
+            })
+            .catch((err, ...rest) => {
+                alert(err.message);
+                this.props.history.push('/level/' + this.state.levelName + '/show');
+            });
+    }
+
     render() {
         const { classes } = this.props;
 
-        console.log(this.state);
+        // console.log(this.state);
         return (
             <Card className={classes.card}>
                 <Title title={this.state.levelName + ' Attributes'}></Title>
@@ -192,6 +211,15 @@ class AttributeEditCard extends React.Component {
                             <AddIcon />
                         </Button>
                         <br /><br />
+                        <Button
+                            key="submit"
+                            label="Save"
+                            color='primary'
+                            variant="raised"
+                            style={{ float: 'left' }}
+                            onClick={this.handleSubmit}
+                        ><SaveIcon /> &nbsp; Save</Button>
+                        <br />
                     </Typography>
                 </CardContent>
             </Card>

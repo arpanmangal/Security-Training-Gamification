@@ -82,70 +82,6 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
     </List>
 );
 
-// const renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => {
-//     console.log(input, label, touched, error, custom);
-//     return (<h1>Hi</h1>)
-//     // return (
-//     //     <TextField
-//     //         label={label}
-//     //         error={!!(touched && error)}
-//     //         helperText={touched && error}
-//     //         {...input}
-//     //         {...custom}
-//     //     />
-//     // );
-// }
-
-class renderTextField extends React.Component {
-    state = {
-        first: 'Arpan',
-        second: 'Mangal'
-    }
-
-    handleSubmit = (event) => {
-        event.preventDefault();
-
-        const { input } = this.props;
-        input.onChange(event);
-        console.log(input);
-    }
-
-    handleChange = name => event => {
-        this.setState({
-            [name]: event.target.value,
-        });
-    };
-
-    render() {
-        return (
-            <span>
-                <TextFieldMU
-                    required
-                    id="first"
-                    label="first"
-                    value={this.state.first}
-                    onChange={this.handleChange('first')}
-                    placeholder="first"
-                />
-                <br />
-                <Button
-                    type="submit"
-                    key="submit"
-                    label="Submit"
-                    color='primary'
-                    variant="raised"
-                    onClick={this.handleSubmit}
-                >Submit</Button>
-            </span>
-        );
-
-    }
-}
-const LatLngInput = () => (
-    <span>
-        <Field name="attributes" component={renderTextField} label="Attri" />
-    </span>
-);
 export const LevelEdit = props => {
     return (
         <Edit title={<LevelTitle />} {...props}>
@@ -169,14 +105,12 @@ export const LevelEdit = props => {
                         <TextInput source="hint" />
                     </SimpleFormIterator>
                 </ArrayInput>
-                <LatLngInput />
             </SimpleForm>
         </Edit>
     );
 }
 
 export const LevelCreate = props => {
-    console.log(props);
     return (
         <Create {...props}>
             <SimpleForm>
@@ -193,7 +127,6 @@ export const LevelCreate = props => {
     );
 }
 const ListField = ({ record, source, name }) => {
-    // console.log(record, source, record[source])
     if (!record[source]) record[source] = [];
     return (
         <ul>
@@ -216,7 +149,6 @@ const ImageUrlField = ({ record = {}, source }) => {
 ImageUrlField.defaultProps = { addLabel: true };
 
 const AttributeField = ({ source, record = {} }) => {
-    console.log(source, record);
     let attributes = [];
     for (let key in record[source]) {
         attributes.push({
@@ -225,13 +157,13 @@ const AttributeField = ({ source, record = {} }) => {
             value: record[source][key]['list'],
         });
     }
-    console.log(attributes);
+
     return (
         <span>
             {attributes.map((att, idx) => {
                 return (
                     <span key={idx}>
-                        <AttibuteDisplayGrid name={att.name} isJSON={att.isJSON} attributes={att.value} showOnly={false} />
+                        <AttibuteDisplayGrid name={att.name} isJSON={att.isJSON} attributes={att.value} showOnly={true} />
                         <br />
                     </span>
                 )
@@ -247,7 +179,6 @@ AttributeField.propTypes = {
 AttributeField.defaultProps = { addLabel: true };
 
 export const LevelShow = props => {
-    console.log(props);
     return (
         <Show title={<LevelTitle />} {...props}>
             <SimpleShowLayout>

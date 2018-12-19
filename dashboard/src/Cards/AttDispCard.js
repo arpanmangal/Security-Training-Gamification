@@ -28,17 +28,22 @@ const styles = theme => ({
 });
 
 class AttributeDisplayCard extends React.Component {
+    contentStr = (content) => {
+        if (typeof (content) === 'string') return content;
+        else return JSON.stringify(content);
+    }
     render() {
         const { classes } = this.props;
         const { content } = this.props;
-        const { theme } = this.props;
-        console.log(theme);
 
         return (
             <Card className={classes.card} >
                 <CardContent>
                     <Typography component={'span'}>
-                        <JSONPretty json={content}></JSONPretty>
+                        {this.props.isJSON
+                            ? <JSONPretty json={content}></JSONPretty>
+                            : <span>{this.contentStr(content)}</span>
+                        }
                     </Typography>
                 </CardContent>
             </Card>
@@ -48,6 +53,7 @@ class AttributeDisplayCard extends React.Component {
 
 AttributeDisplayCard.propTypes = {
     classes: PropTypes.object.isRequired,
+    isJSON: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(AttributeDisplayCard);

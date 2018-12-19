@@ -162,7 +162,8 @@ const AttributeField = ({ source, record = {} }) => {
     for (let key in record[source]) {
         attributes.push({
             name: key,
-            value: record[source][key]
+            isJSON: record[source][key]['isJSON'],
+            value: record[source][key]['list'],
         });
     }
     console.log(attributes);
@@ -170,7 +171,10 @@ const AttributeField = ({ source, record = {} }) => {
         <span>
             {attributes.map((att, idx) => {
                 return (
-                    <AttibuteDisplayGrid key={idx} name={att.name} value={att.value} />
+                    <span key={idx}>
+                        <AttibuteDisplayGrid name={att.name} isJSON={att.isJSON} attributes={att.value} showOnly={false} />
+                        <br />
+                    </span>
                 )
             })}
         </span>

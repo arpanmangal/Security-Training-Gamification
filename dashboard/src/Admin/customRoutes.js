@@ -13,5 +13,5 @@ export default [
     <Route exact path="/registerAdmin" component={RegAdminForm} noLayout/>,
     <Route exact path="/profile" component={ProfilePage} />,
     <Route exact path="/configuration" component={Configuration} />,
-    <Route path="/input" component={InputCard} />,
+    // <Route path="/input" component={InputCard} />,
 ]; 

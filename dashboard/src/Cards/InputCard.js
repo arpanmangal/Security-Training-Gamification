@@ -7,9 +7,12 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
+import IconButton from '@material-ui/core/IconButton';
+import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 
 import JSONCard from './Attributes/jsonCard';
 
@@ -41,12 +44,32 @@ class InputCard extends React.Component {
             name: '',
             elements: {},
             count: 0,
+            error: false,
         }
     }
 
+    componentDidMount = () => {
+        let elements = {}, count = 0;
+        this.props.attributeArray.forEach(attri => {
+            elements['' + count] = JSON.stringify(attri);
+            count++;
+        });
+
+        this.setState({
+            name: this.props.attributeName,
+            elements: elements,
+            count: count,
+            isJSON: this.props.isJSON,
+        });
+    }
+
     handleChange = name => event => {
-        this.setState({ 'isJSON': event.target.checked });
+        this.setState({ 'isJSON': event.target.checked, 'error': false });
     };
+
+    handleName = name => event => {
+        this.setState({ 'name': event.target.value, 'error': false });
+    }
 
     displayList = () => {
         let list = [];
@@ -66,6 +89,7 @@ class InputCard extends React.Component {
         this.setState({
             elements: elements,
             count: this.state.count + 1,
+            error: false,
         });
         setTimeout(() => {
             console.log(this.state);
@@ -77,6 +101,7 @@ class InputCard extends React.Component {
         elements[id] = content;
         this.setState({
             elements: elements,
+            error: false,
         });
         console.log(id);
     }
@@ -86,7 +111,41 @@ class InputCard extends React.Component {
         delete elements[id];
         this.setState({
             elements: elements,
+            error: false,
         });
+    }
+
+    validate = () => {
+        if (typeof (this.state.name) !== 'string' || this.state.name.length < 1) return false;
+        for (let key in this.state.elements) {
+            let e = this.state.elements[key];
+            if (typeof (e) !== 'string' || e.length < 1) return false;
+            if (this.state.isJSON && !this.validJSON(e)) return false;
+        }
+        return true;
+    }
+
+    validJSON = (str) => {
+        try {
+            let json = JSON.parse(str);
+            return (typeof json === 'object');
+        } catch (e) {
+            return false;
+        }
+    }
+
+    handleSubmit = () => {
+        if (this.validate()) {
+            let list = [];
+            for (let e in this.state.elements) {
+                list.push(this.state.elements[e]);
+            }
+            this.props.onSave(this.state.name, list, this.state.isJSON);
+        } else {
+            this.setState({
+                error: true,
+            });
+        }
     }
 
     render() {
@@ -96,20 +155,31 @@ class InputCard extends React.Component {
             <Card className={classes.card}>
                 {/* <Title title={this.props.title}></Title> */}
                 <CardContent>
-                    <Typography variant='headline'>Passwords</Typography>
+                    <Typography variant='headline'>
+                        <TextField
+                            label="Attribute Name"
+                            value={this.state.name}
+                            onChange={this.handleName()}
+                            margin="normal"
+                            value={this.state.name}
+                        />
+                        <IconButton
+                            onClick={this.handleSubmit}
+                            color='primary'
+                        >
+                            <SaveIcon />
+                        </IconButton>
+                    </Typography>
+                    {this.state.error
+                        ? <Typography variant='caption' color='error'>
+                            *Please check for errors in the form
+                          </Typography>
+                        : null
+                    }
                     <FormGroup
                         style={{ float: 'right' }}
+                        row
                     >
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={this.state.isJSON}
-                                    onChange={this.handleChange('isJSON')}
-                                    value="isJSON"
-                                />
-                            }
-                            label="JSON"
-                        />
                         <FormControlLabel
                             control={
                                 <Switch
@@ -119,6 +189,16 @@ class InputCard extends React.Component {
                                 />
                             }
                             label="String"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.isJSON}
+                                    onChange={this.handleChange('isJSON')}
+                                    value="isJSON"
+                                />
+                            }
+                            label="JSON"
                         />
                     </FormGroup>
                     <br />
@@ -154,6 +234,10 @@ class InputCard extends React.Component {
 
 InputCard.propTypes = {
     classes: PropTypes.object.isRequired,
+    attributeName: PropTypes.string.isRequired,
+    attributeArray: PropTypes.array.isRequired,
+    onSave: PropTypes.func.isRequired,
+    isJSON: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(InputCard);

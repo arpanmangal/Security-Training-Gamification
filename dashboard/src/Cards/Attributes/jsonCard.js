@@ -44,8 +44,6 @@ class JSONCard extends React.Component {
     }
 
     componentDidMount() {
-        console.log('Mounted!: ', this.props.content);
-
         this.setState({
             content: this.props.content,
         });
@@ -156,7 +154,6 @@ class JSONCard extends React.Component {
         const { classes } = this.props;
         const style = (!this.props.json || this.state.validJSON) ? {} : { backgroundColor: '#00ff00' };
         const cardClass = (!this.props.json || this.state.validJSON) ? classes.card : classes.errCard;
-        console.log(this.state, this.props);
         return (
             <Card className={cardClass}>
                 <CardContent>

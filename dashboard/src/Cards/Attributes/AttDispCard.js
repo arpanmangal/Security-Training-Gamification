@@ -2,13 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import Avatar from '@material-ui/core/Avatar';
-import green from '@material-ui/core/colors/green';
 import { CardContent, Typography } from '@material-ui/core';
-import { Title } from 'react-admin';
 import JSONPretty from 'react-json-pretty';
-import { teal } from '@material-ui/core/colors/';
 
 const styles = theme => ({
     card: {
@@ -21,9 +16,6 @@ const styles = theme => ({
     },
     actions: {
         display: 'flex',
-    },
-    avatar: {
-        backgroundColor: green[500],
     },
 });
 

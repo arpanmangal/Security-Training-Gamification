@@ -14,7 +14,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
-import JSONCard from './Attributes/jsonCard';
+import JSONCard from './jsonCard';
 
 const styles = theme => ({
     card: {
@@ -112,8 +112,10 @@ class InputCard extends React.Component {
 
     validate = () => {
         if (typeof (this.state.name) !== 'string' || this.state.name.length < 1) return false;
+        console.log('correct name');
         for (let key in this.state.elements) {
             let e = this.state.elements[key];
+            console.log(this.state.isJSON, e);
             if (this.state.isJSON && typeof (e) !== 'object') return false;
             if (!this.state.isJSON && (typeof (e) === 'string' && e.length < 1)) return false;
         }

@@ -2,24 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import Avatar from '@material-ui/core/Avatar';
-import green from '@material-ui/core/colors/green';
 import { CardContent, Typography, Divider } from '@material-ui/core';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-
-import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import ShowIcon from '@material-ui/icons/Visibility';
 
-import JSONCard from './Attributes/jsonCard';
 import AttibuteDisplayGrid from './AttDispGrid';
-import { ApiUrl } from '../Utils/config';
+import { ApiUrl } from '../../Utils/config';
 import { fetchUtils, Title } from 'react-admin';
 
 
@@ -169,16 +159,26 @@ class AttributeEditCard extends React.Component {
     render() {
         const { classes } = this.props;
 
-        // console.log(this.state);
+        console.log(this.state);
         return (
             <Card className={classes.card}>
                 <Title title={this.state.levelName + ' Attributes'}></Title>
                 <CardContent>
                     <Typography variant='headline'>
                         {this.state.levelName}
+                        <Button
+                            color="primary"
+                            style={{ float: 'right' }}
+                            onClick={() => { this.props.history.push('/level/' + this.state.levelName + '/show') }}
+                        >
+                            <ShowIcon /> &nbsp; Show
+                        </Button>
                     </Typography>
                     <Typography variant='caption'>
                         {this.state.subheading}
+                        {/* </Typography> */}
+                        {/* <Typography> */}
+
                     </Typography>
                     <Divider />
                     <br />

@@ -8,9 +8,10 @@ import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin
 import { fetchUtils } from 'react-admin';
 import { ApiUrl, Types, Categories, Difficulties } from '../Utils/config';
 import GameGrid from '../Cards/GameGrid';
-import AttibuteDisplayGrid from '../Cards/AttDispGrid';
+import AttibuteDisplayGrid from '../Cards/Attributes/AttDispGrid';
 import { Filter, ReferenceInput } from 'react-admin';
 import { Button } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
 import { Field } from 'redux-form';
 import TextFieldMU from '@material-ui/core/TextField';
 
@@ -82,9 +83,20 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
     </List>
 );
 
+const LevelEditActions = ({ basePath, data, resource, history, ...props }) => {
+    console.log(basePath, data, resource, props);
+    const levelName = (data && data.id) ? data.id : '';
+    return (
+        <CardActions>
+            <ShowButton basePath={basePath} record={data} />
+            <Button color="primary" onClick={() => {history.push('/attributes/' + levelName)}}><EditIcon /> &nbsp; Edit Attributes</Button>
+        </CardActions>
+    );
+}
+
 export const LevelEdit = props => {
     return (
-        <Edit title={<LevelTitle />} {...props}>
+    <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history}/>} {...props}>
             <SimpleForm>
                 <TextInput source="name" />
                 <TextInput source="subheading" />
@@ -178,9 +190,19 @@ AttributeField.propTypes = {
 };
 AttributeField.defaultProps = { addLabel: true };
 
+const LevelShowActions = ({ basePath, data, resource, history, ...props }) => {
+    const levelName = (data && data.id) ? data.id : '';
+    return (
+        <CardActions>
+            <EditButton basePath={basePath} record={data} />
+            <Button color="primary" onClick={() => {history.push('/attributes/' + levelName)}}><EditIcon /> &nbsp; Edit Attributes</Button>
+        </CardActions>
+    );
+}
+
 export const LevelShow = props => {
     return (
-        <Show title={<LevelTitle />} {...props}>
+        <Show title={<LevelTitle />} actions={<LevelShowActions history={props.history} />} {...props}>
             <SimpleShowLayout>
                 <TextField source="name" />
                 <TextField source="subheading" />

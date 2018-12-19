@@ -6,7 +6,7 @@ import RegAdminForm from '../Forms/regAdminForm';
 import ProfilePage from '../Custom/ProfilePage';
 import Configuration from '../Configuration/Configuration';
 import PropTypes from "prop-types";
-import AttributeEditCard from '../Cards/AttEditCard';
+import AttributeEditCard from '../Cards/Attributes/AttributeEditCard';
 
 const Attribute = ({ match: { params }, ...props }) => {
     return (

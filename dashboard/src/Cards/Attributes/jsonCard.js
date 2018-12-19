@@ -64,9 +64,12 @@ class JSONCard extends React.Component {
         event.preventDefault();
 
         if (this.isJSONstr(this.state.content)) {
+            const content = (typeof(this.state.content) === 'object') ? this.state.content : JSON.parse(this.state.content);
+            console.log(content);
             this.setState({
                 validJSON: true,
                 inEdit: false,
+                content: content,
             });
         } else {
             this.setState({
@@ -87,9 +90,6 @@ class JSONCard extends React.Component {
         this.setState({
             inEdit: true,
         });
-        setTimeout(() => {
-            console.log(this.state);
-        }, 200);
     }
 
     handleChange = name => event => {

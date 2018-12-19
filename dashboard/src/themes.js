@@ -11,6 +11,9 @@ export const darkTheme = {
         attributes: {
             main: brown[600],
         },
+        attributeError: {
+            main: red[500],
+        },
     },
 };
 
@@ -28,6 +31,9 @@ export const lightTheme = {
         },
         attributes: {
             main: yellow[100]
+        },
+        attributeError: {
+            main: red[500],
         },
     },
 };

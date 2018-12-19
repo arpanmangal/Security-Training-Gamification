@@ -2,29 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import Avatar from '@material-ui/core/Avatar';
-import green from '@material-ui/core/colors/green';
 import { CardContent, Typography } from '@material-ui/core';
-import CardActions from '@material-ui/core/CardActions';
-import { Title } from 'react-admin';
-import { Field } from 'redux-form';
-import { Edit, SimpleForm } from 'react-admin';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-// import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import Icon from '@material-ui/core/Icon';
-import DeleteIcon from '@material-ui/icons/Delete';
-import JSONPretty from 'react-json-pretty';
-import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import GameCard from './GameCard';
 
 import JSONCard from './Attributes/jsonCard';
 
@@ -38,9 +23,6 @@ const styles = theme => ({
     },
     actions: {
         display: 'flex',
-    },
-    avatar: {
-        backgroundColor: green[500],
     },
     fab: {
         margin: theme.spacing.unit,
@@ -80,7 +62,7 @@ class InputCard extends React.Component {
     add = () => {
         console.log('adding');
         let elements = this.state.elements;
-        elements['' + this.state.count] = '{}';
+        elements['' + this.state.count] = 'content';
         this.setState({
             elements: elements,
             count: this.state.count + 1,
@@ -127,6 +109,16 @@ class InputCard extends React.Component {
                                 />
                             }
                             label="JSON"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled
+                                    checked={!this.state.isJSON}
+                                    value="isString"
+                                />
+                            }
+                            label="String"
                         />
                     </FormGroup>
                     <br />

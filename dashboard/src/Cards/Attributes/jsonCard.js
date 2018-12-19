@@ -2,32 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import Avatar from '@material-ui/core/Avatar';
-import green from '@material-ui/core/colors/green';
 import { CardContent, Typography, Divider } from '@material-ui/core';
 import CardActions from '@material-ui/core/CardActions';
-import { Title } from 'react-admin';
-import { Field } from 'redux-form';
-import { Edit, SimpleForm } from 'react-admin';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 
 import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-// import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
-import Icon from '@material-ui/core/Icon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import JSONPretty from 'react-json-pretty';
 import TextField from '@material-ui/core/TextField';
 
 const styles = theme => ({
     card: {
-        maxWidth: 500,
+        maxWidth: 400,
+        backgroundColor: theme.palette.attributes.main,
+    },
+    errCard: {
+        maxWidth: 400,
+        backgroundColor: theme.palette.attributeError.main,
     },
     media: {
         height: 0,
@@ -35,9 +27,6 @@ const styles = theme => ({
     },
     actions: {
         display: 'flex',
-    },
-    avatar: {
-        backgroundColor: green[500],
     },
     fab: {
         margin: theme.spacing.unit,
@@ -49,8 +38,8 @@ const styles = theme => ({
 
 class JSONCard extends React.Component {
     state = {
-        content: '',
-        validJSON: true,
+        content: 'content',
+        validJSON: false,
         inEdit: false,
     }
 
@@ -75,17 +64,15 @@ class JSONCard extends React.Component {
     handleSubmit = (event) => {
         event.preventDefault();
 
-        this.setState({
-            inEdit: false,
-        });
-
         if (this.isJSONstr(this.state.content)) {
             this.setState({
                 validJSON: true,
+                inEdit: false,
             });
         } else {
             this.setState({
                 validJSON: false,
+                inEdit: false,
             });
         }
 
@@ -132,12 +119,11 @@ class JSONCard extends React.Component {
                         value={this.state.content}
                         onChange={this.handleChange()}
                         margin="normal"
+                        multiline
                     />
                     <br />
                     <IconButton
-                        color="primary"
                         onClick={this.handleSubmit}
-                    // variant="raised"
                     >
                         <SaveIcon />
                     </IconButton>
@@ -148,7 +134,7 @@ class JSONCard extends React.Component {
                 <span>
                     <Typography component={'span'} style={{ backgroundColor: 'primary' }}>
                         {(this.props.json && this.state.validJSON)
-                            ? <JSONPretty json={this.state.content}></JSONPretty>
+                            ? <JSONPretty json={JSON.parse(this.state.content)}></JSONPretty>
                             : <p>{this.state.content}</p>
                         }
                     </Typography>
@@ -169,11 +155,18 @@ class JSONCard extends React.Component {
     render() {
         const { classes } = this.props;
         const style = (!this.props.json || this.state.validJSON) ? {} : { backgroundColor: '#00ff00' };
+        const cardClass = (!this.props.json || this.state.validJSON) ? classes.card : classes.errCard;
         console.log(this.state, this.props);
         return (
-            <Card className={classes.card} style={style}>
+            <Card className={cardClass}>
                 <CardContent>
                     {this.display()}
+                    {(!this.props.json || this.state.validJSON)
+                        ? null
+                        : <Typography variant='caption'>
+                            Incorrect JSON format
+                          </Typography>
+                    }
                 </CardContent>
             </Card>
         );

@@ -89,14 +89,14 @@ const LevelEditActions = ({ basePath, data, resource, history, ...props }) => {
     return (
         <CardActions>
             <ShowButton basePath={basePath} record={data} />
-            <Button color="primary" onClick={() => {history.push('/attributes/' + levelName)}}><EditIcon /> &nbsp; Edit Attributes</Button>
+            <Button color="primary" onClick={() => { history.push('/attributes/' + levelName) }}><EditIcon /> &nbsp; Edit Attributes</Button>
         </CardActions>
     );
 }
 
 export const LevelEdit = props => {
     return (
-    <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history}/>} {...props}>
+        <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
                 <TextInput source="name" />
                 <TextInput source="subheading" />
@@ -175,7 +175,12 @@ const AttributeField = ({ source, record = {} }) => {
             {attributes.map((att, idx) => {
                 return (
                     <span key={idx}>
-                        <AttibuteDisplayGrid name={att.name} isJSON={att.isJSON} attributes={att.value} showOnly={true} />
+                        <AttibuteDisplayGrid
+                            name={att.name}
+                            isJSON={att.isJSON}
+                            attributes={att.value}
+                            showOnly={true}
+                        />
                         <br />
                     </span>
                 )
@@ -195,7 +200,7 @@ const LevelShowActions = ({ basePath, data, resource, history, ...props }) => {
     return (
         <CardActions>
             <EditButton basePath={basePath} record={data} />
-            <Button color="primary" onClick={() => {history.push('/attributes/' + levelName)}}><EditIcon /> &nbsp; Edit Attributes</Button>
+            <Button color="primary" onClick={() => { history.push('/attributes/' + levelName) }}><EditIcon /> &nbsp; Edit Attributes</Button>
         </CardActions>
     );
 }

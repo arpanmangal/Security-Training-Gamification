@@ -44,7 +44,6 @@ class JSONCard extends React.Component {
     }
 
     componentDidMount() {
-        console.log(this.props.content);
         this.setState({
             content: this.props.content,
         });
@@ -64,7 +63,7 @@ class JSONCard extends React.Component {
         event.preventDefault();
 
         if (this.isJSONstr(this.state.content)) {
-            const content = (typeof(this.state.content) === 'object') ? this.state.content : JSON.parse(this.state.content);
+            const content = (typeof (this.state.content) === 'object') ? this.state.content : JSON.parse(this.state.content);
             console.log(content);
             this.setState({
                 validJSON: true,
@@ -101,7 +100,7 @@ class JSONCard extends React.Component {
     }
 
     isJSONstr = (str) => {
-        if (typeof(str) === 'object') return true;
+        if (typeof (str) === 'object') return true;
         try {
             let json = JSON.parse(str);
             return (typeof json === 'object' && json !== null && json !== undefined);
@@ -118,7 +117,7 @@ class JSONCard extends React.Component {
                 <form noValidate>
                     <TextField
                         label="Content"
-                        value={typeof(this.state.content) === 'object' ? JSON.stringify(this.state.content) : this.state.content}
+                        value={typeof (this.state.content) === 'object' ? JSON.stringify(this.state.content) : this.state.content}
                         onChange={this.handleChange()}
                         margin="normal"
                     />
@@ -135,8 +134,8 @@ class JSONCard extends React.Component {
                 <span>
                     <Typography component={'span'} style={{ backgroundColor: 'primary' }}>
                         {(this.props.json && this.state.validJSON)
-                            ? <JSONPretty json={typeof(this.state.content) === 'object' ? this.state.content : JSON.parse(this.state.content)}></JSONPretty>
-                            : <p>{typeof(this.state.content) === 'object' ? JSON.stringify(this.state.content) : this.state.content}</p>
+                            ? <JSONPretty json={typeof (this.state.content) === 'object' ? this.state.content : JSON.parse(this.state.content)}></JSONPretty>
+                            : <p>{typeof (this.state.content) === 'object' ? JSON.stringify(this.state.content) : this.state.content}</p>
                         }
                     </Typography>
                     <Divider />

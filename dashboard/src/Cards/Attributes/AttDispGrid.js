@@ -40,7 +40,7 @@ class AttibuteDisplayGrid extends React.Component {
 
     handleSave = (name, elements, isJSON) => {
         // console.log(name, elements, isJSON);
-        if(!this.props.onUpdate(name, isJSON, elements)) {
+        if (!this.props.onUpdate(name, isJSON, elements)) {
             alert('Duplicate Attribute Name');
         } else {
             this.setState({
@@ -83,7 +83,20 @@ class AttibuteDisplayGrid extends React.Component {
                     {this.props.attributes.map((v, idx) => {
                         return (
                             <Grid item xs key={idx} >
-                                <AttibuteDisplayCard content={v} isJSON={this.props.isJSON}/>
+                                {this.props.showOnly
+                                    ? <AttibuteDisplayCard
+                                        content={v}
+                                        isJSON={this.props.isJSON}
+                                        showOnly={this.props.showOnly}
+                                    />
+                                    : <AttibuteDisplayCard
+                                        content={v}
+                                        isJSON={this.props.isJSON}
+                                        showOnly={this.props.showOnly}
+                                        moveLeft={this.props.moveLeft(idx)}
+                                        moveRight={this.props.moveRight(idx)}
+                                    />
+                                }
                             </Grid>
                         )
                     })}
@@ -124,6 +137,8 @@ AttibuteDisplayGrid.propTypes = {
     isJSON: PropTypes.bool.isRequired,
     onDelete: PropTypes.func,
     onUpdate: PropTypes.func,
+    moveLeft: PropTypes.func,
+    moveRight: PropTypes.func,
 };
 
 export default withStyles(styles)(AttibuteDisplayGrid);

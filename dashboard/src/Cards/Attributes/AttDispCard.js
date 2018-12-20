@@ -4,10 +4,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import { CardContent, Typography } from '@material-ui/core';
 import JSONPretty from 'react-json-pretty';
+import IconButton from '@material-ui/core/IconButton';
+import LeftIcon from '@material-ui/icons/ChevronLeft';
+import RightIcon from '@material-ui/icons/ChevronRight';
 
 const styles = theme => ({
     card: {
         maxWidth: 400,
+        minWidth: 200,
         backgroundColor: theme.palette.attributes.main,
     },
     media: {
@@ -37,6 +41,23 @@ class AttributeDisplayCard extends React.Component {
                             : <span>{this.contentStr(content)}</span>
                         }
                     </Typography>
+                    {!this.props.showOnly
+                        ? <Typography>
+                            <IconButton
+                                style={{ float: 'left' }}
+                                onClick={this.props.moveLeft}
+                            >
+                                <LeftIcon />
+                            </IconButton>
+                            <IconButton
+                                style={{ float: 'right' }}
+                                onClick={this.props.moveRight}
+                            >
+                                <RightIcon />
+                            </IconButton>
+                        </Typography>
+                        : null
+                    }
                 </CardContent>
             </Card>
         );
@@ -46,6 +67,9 @@ class AttributeDisplayCard extends React.Component {
 AttributeDisplayCard.propTypes = {
     classes: PropTypes.object.isRequired,
     isJSON: PropTypes.bool.isRequired,
+    showOnly: PropTypes.bool.isRequired,
+    moveLeft: PropTypes.func,
+    moveRight: PropTypes.func,
 };
 
 export default withStyles(styles)(AttributeDisplayCard);

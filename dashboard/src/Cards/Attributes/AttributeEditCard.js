@@ -132,6 +132,24 @@ class AttributeEditCard extends React.Component {
         return true;
     }
 
+    swap(array, idx1, idx2) {
+        if (idx1 < 0 || idx2 < 0 || idx1 >= array.length || idx2 >= array.length) return array;
+        let elem1 = array[idx1];
+        array[idx1] = array[idx2];
+        array[idx2] = elem1;
+        return array;
+    }
+
+    moveCard = (name, offset) => (index) => () => {
+        // console.log(this.state.attributes);
+        let attributes = this.state.attributes;
+        attributes[name].list = this.swap(attributes[name].list, index, index + offset);
+
+        this.setState({
+            attributes: attributes,
+        });
+    }
+
     handleSubmit = (event) => {
         event.preventDefault();
 
@@ -159,7 +177,6 @@ class AttributeEditCard extends React.Component {
     render() {
         const { classes } = this.props;
 
-        console.log(this.state);
         return (
             <Card className={classes.card}>
                 <Title title={this.state.levelName + ' Attributes'}></Title>
@@ -176,9 +193,6 @@ class AttributeEditCard extends React.Component {
                     </Typography>
                     <Typography variant='caption'>
                         {this.state.subheading}
-                        {/* </Typography> */}
-                        {/* <Typography> */}
-
                     </Typography>
                     <Divider />
                     <br />
@@ -193,6 +207,8 @@ class AttributeEditCard extends React.Component {
                                         showOnly={false}
                                         onDelete={this.deleteAttribute(att.name)}
                                         onUpdate={this.updateAttribute(att.name)}
+                                        moveLeft={this.moveCard(att.name, -1)}
+                                        moveRight={this.moveCard(att.name, 1)}
                                     />
                                     <br />
                                 </span>

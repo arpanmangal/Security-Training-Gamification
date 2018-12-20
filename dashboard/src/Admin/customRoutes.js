@@ -13,7 +13,7 @@ const Attribute = ({ match: { params }, ...props }) => {
         <AttributeEditCard name={params.attri} history={props.history} />
     )
 }
-Attribute.defaultProps = {
+Attribute.propTypes = {
     match: PropTypes.object.isRequired,
 }
 

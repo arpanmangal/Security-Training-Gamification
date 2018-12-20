@@ -211,8 +211,10 @@ class AttributeEditCard extends React.Component {
                             <AddIcon />
                         </Button>
                         <br /><br />
+                        <Typography variant='caption' style={{ color: '#ff0000' }}>
+                            * Don't forget to save all the attributes before hitting the final save button!
+                        </Typography>
                         <Button
-                            key="submit"
                             label="Save"
                             color='primary'
                             variant="raised"

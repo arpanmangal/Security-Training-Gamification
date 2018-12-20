@@ -65,10 +65,32 @@ class InputCard extends React.Component {
 
     handleChange = name => event => {
         this.setState({ 'isJSON': event.target.checked, 'error': false });
+
+        // Make all elements as objects if possible
+        this.makeObjects();
     };
 
     handleName = name => event => {
         this.setState({ 'name': event.target.value, 'error': false });
+    }
+
+    makeObjects = () => {
+        let elements = this.state.elements;
+        for (let e in elements) {
+            if (typeof(elements[e]) === "string") {
+                try {
+                    let parsed = JSON.parse(elements[e]);
+                    if (parsed !== null || parsed !== undefined) 
+                        elements[e] = parsed;
+                } catch (e) {
+
+                }
+            }
+        }
+
+        this.setState({
+            elements: elements,
+        });
     }
 
     displayList = () => {

@@ -71,14 +71,16 @@ class JSONCard extends React.Component {
                 inEdit: false,
                 content: content,
             });
+            this.props.onSave(content);
         } else {
+            /* Remember to make inEdit true here if this.props.json is true */
             this.setState({
                 validJSON: false,
-                inEdit: false,
+                inEdit: (this.props.json ? true : false),
             });
+            this.props.onSave(this.state.content);
         }
 
-        this.props.onSave(this.state.content);
     }
 
     handleDelete = () => {
@@ -102,7 +104,7 @@ class JSONCard extends React.Component {
         if (typeof(str) === 'object') return true;
         try {
             let json = JSON.parse(str);
-            return (typeof json === 'object');
+            return (typeof json === 'object' && json !== null && json !== undefined);
         } catch (e) {
             return false;
         }
@@ -116,10 +118,9 @@ class JSONCard extends React.Component {
                 <form noValidate>
                     <TextField
                         label="Content"
-                        value={this.state.content}
+                        value={typeof(this.state.content) === 'object' ? JSON.stringify(this.state.content) : this.state.content}
                         onChange={this.handleChange()}
                         margin="normal"
-                        multiline
                     />
                     <br />
                     <IconButton
@@ -164,6 +165,8 @@ class JSONCard extends React.Component {
                         ? null
                         : <Typography variant='caption'>
                             Incorrect JSON format
+                            <br />
+                            (Hint: Use " " for strings)
                           </Typography>
                     }
                 </CardContent>

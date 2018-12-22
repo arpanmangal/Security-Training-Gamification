@@ -84,7 +84,6 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
 );
 
 const LevelEditActions = ({ basePath, data, resource, history, ...props }) => {
-    console.log(basePath, data, resource, props);
     const levelName = (data && data.id) ? data.id : '';
     return (
         <CardActions>
@@ -98,7 +97,7 @@ export const LevelEdit = props => {
     return (
         <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
-                <TextInput source="name" />
+                <DisabledInput source="name" />
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
                 <SelectInput source="difficulty" choices={difficulties} />

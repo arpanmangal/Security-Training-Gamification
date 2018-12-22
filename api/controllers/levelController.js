@@ -219,12 +219,6 @@ function modifyLevel(req, res) {
     const level = req.body;
     let updatedLevel = {}
 
-    if (!(level.name == null)) {
-        if (config.nameRegex.test(level.name))
-            return utils.res(res, 400, 'Level Name should contain only alphanumeric and [ _ - ] characters');
-        else
-            updatedLevel.name = level.name;
-    }
     if (!(level.subheading == null)) {
         updatedLevel.subheading = level.subheading;
     }

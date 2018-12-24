@@ -133,8 +133,8 @@ function createAdmin(req, res) {
     if (user == null) {
         return utils.res(res, 400, 'Bad Request');
     }
-
-    if (user.user_id == null || user.name == null || user.email == null || user.age == null || user.password == null || user.admin_secret == null) {
+    console.log(user);
+    if (user.user_id == null || user.name == null || user.email == null || user.password == null || user.admin_secret == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
@@ -147,12 +147,6 @@ function createAdmin(req, res) {
     if (!user.email.match(config.emailRegex)) {
         // Contains dangerous special characters
         return utils.res(res, 400, 'Please enter a valid email address');
-    }
-
-    const age = parseInt(user.age)
-    if (typeof (age) !== 'number' || !Number.isInteger(age) || user.age <= 5 || user.age >= 100) {
-        // Not integer or invalid range
-        return utils.res(res, 400, 'Invalid Age');
     }
 
     if (!config.passwordRegex.test(user.password)) {
@@ -194,7 +188,6 @@ function createAdmin(req, res) {
                 "password": hash,
                 "name": user.name,
                 "email": user.email,
-                "age": user.age,
                 "security_question": {
                     "question_id": "admin10",
                     "answer": "Yes"

@@ -66,6 +66,14 @@ function checkAdmin(req, res, next) {
     }
 }
 
+function checkLevelAdmin(req, res, next) {
+    if (req == null || req.role == null || req.role != "level_admin") {
+        return resp(res, 403, "You do not have required permissions");
+    }
+    else {
+        return next();
+    }
+}
 
 function generateAdminSecret(secret) {
     // generate an admin secret
@@ -110,6 +118,7 @@ module.exports = {
     'res': resp,
     'validateToken': validateToken,
     'checkAdmin': checkAdmin,
+    'checkLevelAdmin': checkLevelAdmin,
     'generateAdminSecret': generateAdminSecret,
     'sortObjects': sortObjects,
 }

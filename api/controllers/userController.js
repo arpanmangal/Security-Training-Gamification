@@ -188,11 +188,107 @@ function createAdmin(req, res) {
                 "password": hash,
                 "name": user.name,
                 "email": user.email,
+                "age": 20,
                 "security_question": {
                     "question_id": "admin10",
                     "answer": "Yes"
                 },
                 "role": "admin",
+                "levels": {}, // No level for new user
+            };
+
+            // Leave coins and user_IQ at default values
+            // Insert into DB
+            let newUser = new models.User(db_user);
+            newUser.save()
+                .then(function () {
+                    // User successfully created
+                    return utils.res(res, 200, "Account Created Successfully!")
+                })
+                .catch(function (err) {
+                    if (err.code == 11000) {
+                        return utils.res(res, 400, 'User ID already exists');
+                    } else {
+                        return utils.res(res, 500, 'Internal Server Error');
+                    }
+                });
+        });
+    });
+}
+
+/** Creating the level_admin */
+function createLevelAdmin(req, res) {
+    console.log(config.level_secret);
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    // Check Request Body
+    const user = req.body;
+    if (user == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+    console.log(user);
+    if (user.user_id == null || user.name == null || user.email == null || user.password == null || user.level_secret == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    // Validate user input
+    if (config.nameRegex.test(user.user_id)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'User ID should contain only alphanumeric and [ _ - ] characters');
+    }
+
+    if (!user.email.match(config.emailRegex)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Please enter a valid email address');
+    }
+
+    if (!config.passwordRegex.test(user.password)) {
+        // Contains dangerous special characters
+        let msg = 'Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
+    }
+
+    if (!config.adminSecretRegex.test(user.level_secret)) {
+        // Contains dangerous special characters
+        return utils.res(res, 401, 'Incorrect Level Secret');
+    }
+
+    if (config.textRegex.test(user.name)) {
+        // Contains dangerous special characters
+        return utils.res(res, 400, 'Name should contain alphanumeric characters only');
+    }
+
+    // Check the validity of Admin_Secret
+    bcrypt.compare(user.level_secret, config.level_secret, function (err, verdict) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+
+        if (!verdict) {
+            return utils.res(res, 401, 'Incorrect level Secret');
+        }
+
+        // Successful authentication
+        // Hash the password and then create the user
+        bcrypt.hash(user.password, saltRounds, (err, hash) => {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            let db_user = {
+                "user_id": user.user_id,
+                "password": hash,
+                "name": user.name,
+                "email": user.email,
+                "age": 20,
+                "security_question": {
+                    "question_id": "level_admin10",
+                    "answer": "Yes"
+                },
+                "role": "level_admin",
                 "levels": {}, // No level for new user
             };
 
@@ -805,6 +901,7 @@ module.exports = {
 
     'createUser': createUser,
     'createAdmin': createAdmin,
+    'createLevelAdmin': createLevelAdmin,
     'login': login,
     'viewSelf': viewSelf,
     'updateSelf': updateSelf,

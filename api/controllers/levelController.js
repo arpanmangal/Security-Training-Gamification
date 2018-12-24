@@ -3,6 +3,8 @@ const utils = require('../utils');
 const jwt = require('jsonwebtoken');
 
 const models = require('../models/models');
+const bcrypt = require('bcryptjs');
+const saltRounds = 10;
 
 /** List all the levels */
 function listLevels(req, res) {
@@ -84,7 +86,7 @@ function createLevel(req, res) {
     // check request body
     const level = req.body;
     if (level.name == null || level.subheading == null || level.category == null || level.difficulty == null ||
-        level.type == null || level.image_url == null || level.qualification_iq == null) {
+        level.type == null || level.image_url == null || level.qualification_iq == null || level.level_secret == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
@@ -118,44 +120,53 @@ function createLevel(req, res) {
 
     if (level.game_url == null) level.game_url = '#';
 
-    let db_level = {
-        "name": level.name,
-        "subheading": level.subheading,
-        "category": level.category,
-        "difficulty": level.difficulty,
-        "type": level.type,
-        "description": '',
-        "image_url": level.image_url,
-        "game_url": level.game_url,
-        "qualification_iq": level.qualification_iq,
-        "rules": [],
-        "hints": [],
-        "players": [],
-        "leaderboard": {}, // No level for new user
-        "attributes": {} // No assessment for new user
-    };
+    // Hash the secret and then create the level
+    bcrypt.hash(level.level_secret, saltRounds, (err, hash) => {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+        console.log(hash);
+        let db_level = {
+            "name": level.name,
+            "subheading": level.subheading,
+            "category": level.category,
+            "difficulty": level.difficulty,
+            "level_secret": hash,
+            "type": level.type,
+            "description": '',
+            "image_url": level.image_url,
+            "game_url": level.game_url,
+            "qualification_iq": level.qualification_iq,
+            "rules": [],
+            "hints": [],
+            "players": [],
+            "leaderboard": {}, // No level for new user
+            "attributes": {} // No assessment for new user
+        };
 
-    if (!(level.description == null)) db_level["description"] = level.description;
-    if (!(level.rules == null) && level.rules.length > 0) db_level["rules"] = level.rules;
-    if (!(level.hints == null) && level.hints.length > 0) db_level["hints"] = level.hints;
-    if (!(level.attributes == null)) db_level["attributes"] = level.attributes;
+        if (!(level.description == null)) db_level["description"] = level.description;
+        if (!(level.rules == null) && level.rules.length > 0) db_level["rules"] = level.rules;
+        if (!(level.hints == null) && level.hints.length > 0) db_level["hints"] = level.hints;
+        if (!(level.attributes == null)) db_level["attributes"] = level.attributes;
+        if (!(level.isAvailable == null)) db_level["isAvailable"] = level.isAvailable;
 
-    let newLevel = new models.level(db_level);
-    newLevel.save()
-        .then(function () {
-            // Level successfully created
-            return utils.res(res, 200, 'Level Registered Successfully', {
-                '_id': newLevel.name
+        let newLevel = new models.level(db_level);
+        newLevel.save()
+            .then(function () {
+                // Level successfully created
+                return utils.res(res, 200, 'Level Registered Successfully', {
+                    '_id': newLevel.name
+                });
+            })
+            .catch(function (err) {
+                if (err.code == 11000) {
+                    console.log(err);
+                    return utils.res(res, 400, 'Level already exists');
+                } else {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
             });
-        })
-        .catch(function (err) {
-            if (err.code == 11000) {
-                console.log(err);
-                return utils.res(res, 400, 'Level already exists');
-            } else {
-                return utils.res(res, 500, 'Internal Server Error');
-            }
-        });
+    });
 }
 
 
@@ -276,6 +287,7 @@ function modifyLevel(req, res) {
     }
 
     // Update the level info
+    console.log(req.params.name)
     models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
         if (err || newLevel == null) {
             return utils.res(res, 400, 'Level Does not exist');
@@ -283,6 +295,74 @@ function modifyLevel(req, res) {
 
         return utils.res(res, 200, 'Record Updated Successfully', newLevel);
     });
+}
+
+
+/** Modifying the level info */
+function modify_secret(req, res) {
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    if (req.body.name == null) {
+        return utils.res(res, 400, 'Provide Level name');
+    }
+
+    const level = req.body;
+    let updatedLevel = {}
+
+    if (level.old_secret == null) {
+        return utils.res(res, 400, 'Please, enter your old password');
+    }else{
+        if (config.adminSecretRegex.test(level.old_secret)){
+            return utils.res(res, 400, 'old_password doesn\'t match');
+        }else{
+            // Fetch the level info
+            models.level.findOne({
+                'name': level.name
+            }, 'name level_secret', function (err, mylevel) {
+                if (err) {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
+
+                if (mylevel == null) {
+                    return utils.res(res, 401, 'Invalid name provided');
+                }
+
+                // Compare passwords
+                bcrypt.compare(level.old_secret, mylevel.level_secret, function (err, verdict) {
+                    if (err) {
+                        return utils.res(res, 500, 'Internal Server Error');
+                    }
+
+                    if (!verdict) {
+                        return utils.res(res, 401, 'Incorrect Secret');
+                    }
+
+                    // Successful validation
+                    // Hash the new password and then return new token
+                    bcrypt.hash(level.new_secret, saltRounds, (err, hash) => {
+                        if (err) {
+                            return utils.res(res, 500, 'Internal Server Error');
+                        }
+
+                        // Update the level info
+                        models.level.findOneAndUpdate({ 'name': req.body.name }, {'level_secret': hash}, { new: true }, function (err, newLevel) {
+                            if (err || newLevel == null) {
+                                return utils.res(res, 400, 'Level Does not exist');
+                            }
+
+                            return utils.res(res, 200, 'Record Updated Successfully', newLevel);
+                        });
+                    });
+                });
+            });            
+        }
+    }
 }
 
 
@@ -565,6 +645,7 @@ module.exports = {
     'viewLevel': viewLevel,
     'createLevel': createLevel,
     'modifyLevel': modifyLevel,
+    'modify_secret': modify_secret,
     'deleteLevel': deleteLevel,
 
     'getAttributes': getAttributes,

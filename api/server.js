@@ -72,6 +72,7 @@ function setUpAPIs() {
 
     app.post('/api/user/create', userController.createUser);
     app.post('/api/user/createAdmin', userController.createAdmin);
+    app.post('/api/user/createLevelAdmin', userController.createLevelAdmin);
     app.post('/api/user/login', userController.login);
     app.get('/api/user/view', utils.validateToken, userController.viewSelf);
     app.post('/api/user/update', utils.validateToken, userController.updateSelf);
@@ -95,9 +96,10 @@ function setUpAPIs() {
     app.get('/api/level/', utils.validateToken, levelController.listLevels);
     app.get('/api/level/:name/', utils.validateToken, levelController.viewLevel);
     app.post('/api/level/', utils.validateToken, utils.checkAdmin, levelController.createLevel);
-    app.put('/api/level/:name', utils.validateToken, utils.checkAdmin, levelController.modifyLevel);
+    app.put('/api/level/:name', utils.validateToken, utils.checkLevelAdmin, levelController.modifyLevel);
     app.delete('/api/level/:name', utils.validateToken, utils.checkAdmin, levelController.deleteLevel);
 
+    app.post('/api/level/modify_secret', utils.validateToken, utils.checkAdmin, levelController.modify_secret);
     app.post('/api/leaderboard', utils.validateToken, levelController.getLeaderboard);
     
     app.post('/api/level/getattributes', utils.validateToken, levelController.getAttributes);

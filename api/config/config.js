@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 5380;
 const dbName = process.env.DBNAME || 'gameDB';
 const ML_secret = process.env.ML || 'Dummy_Secret';
 const admin_secret = process.env.ADMIN_SECRET || 'You have not exported a secret';
+const level_secret = process.env.LEVEL_SECRET || 'You have not exported a secret';
 
 
 // Regex for input validation
@@ -33,6 +34,7 @@ module.exports = {
     'dbName': dbName,
     'ML_secret': ML_secret,
     'admin_secret': admin_secret,
+    'level_secret': level_secret,
     'emailRegex': EmailRegex,
     'nameRegex': nameRegex,
     'textRegex': textRegex,

@@ -72,7 +72,6 @@ function setUpAPIs() {
 
     app.post('/api/user/create', userController.createUser);
     app.post('/api/user/createAdmin', userController.createAdmin);
-    app.post('/api/user/createLevelAdmin', userController.createLevelAdmin);
     app.post('/api/user/login', userController.login);
     app.get('/api/user/view', utils.validateToken, userController.viewSelf);
     app.post('/api/user/update', utils.validateToken, userController.updateSelf);
@@ -106,8 +105,6 @@ function setUpAPIs() {
     app.post('/api/level/playerUpdate', utils.validateToken, levelController.playerUpdate);
 
     // app.post('/api/level/upadteLeaderboard', utils.validateToken, levelController.getLeaderboard);
-    // app.post('/api/level/getCategories', utils.validateToken, levelController.getCategories);
-    // app.post('/api/level/getType', utils.validateToken, levelController.getType);
     /***************** End Level API *****************/
 
     /***************** Leaderboard API  *************/

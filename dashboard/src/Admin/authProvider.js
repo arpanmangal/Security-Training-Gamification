@@ -23,7 +23,6 @@ export default (type, params) => {
                 return response.json();
             })
             .then((res) => {
-                console.log(res.data);
                 // localStorage.removeItem('accessToken');
                 // localStorage.removeItem('role');
                 // if (res.data.admin) {

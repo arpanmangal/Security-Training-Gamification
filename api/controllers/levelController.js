@@ -113,6 +113,10 @@ function createLevel(req, res) {
         return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
     }
 
+    if (level.isAvailable !== null && level.isAvailable !== undefined && typeof(level.isAvailable) !== 'boolean') {
+        return utils.res(res, 400, 'isAvailable should be boolean');
+    }
+
     // if (config.urlRegex.test(level.image_url)) {
     //     // Contains dangerous special characters
     //     return utils.res(res, 400, 'Invalid Image URL');
@@ -137,6 +141,7 @@ function createLevel(req, res) {
             "image_url": level.image_url,
             "game_url": level.game_url,
             "qualification_iq": level.qualification_iq,
+            "isAvailable": level.isAvailable || false,
             "rules": [],
             "hints": [],
             "players": [],
@@ -148,7 +153,6 @@ function createLevel(req, res) {
         if (!(level.rules == null) && level.rules.length > 0) db_level["rules"] = level.rules;
         if (!(level.hints == null) && level.hints.length > 0) db_level["hints"] = level.hints;
         if (!(level.attributes == null)) db_level["attributes"] = level.attributes;
-        if (!(level.isAvailable == null)) db_level["isAvailable"] = level.isAvailable;
 
         let newLevel = new models.level(db_level);
         newLevel.save()
@@ -284,6 +288,9 @@ function modifyLevel(req, res) {
             return utils.res(res, 400, 'Attributes should be an Object');
         else
             updatedLevel.attributes = level.attributes;
+    }
+    if (level.isAvailable !== null && level.isAvailable !== undefined && typeof(level.isAvailable) === 'boolean') {
+        updatedLevel.isAvailable = level.isAvailable;
     }
 
     // Update the level info
@@ -522,85 +529,6 @@ function getAttributes(req, res) {
     });
 }
 
-// function getCategories(req, res) {
-//     if (req == null || req.body == null) {
-//         return utils.res(res, 400, 'Bad Request');
-//     }
-
-//     if (req.user_id == null) {
-//         return utils.res(res, 401, 'Invalid Token');
-//     }
-
-//     if (req.body.category == null) {
-//         return utils.res(res, 401, 'Invalid category');
-//     }
-
-//     // Fetch the level info
-//     models.level.find({
-//         'category': req.body.category
-//     }, 'name _id difficulty type image_url qualification_iq', function (err, mylevel) {
-//         if (err) {
-//             return utils.res(res, 500, 'Internal Server Error');
-//         }
-
-//         if (mylevel == null) {
-//             return utils.res(res, 401, 'Invalid category provided');
-//         }
-//         const levs = mylevel;
-//         console.log(req.body.category);
-//         console.log(mylevel);
-//         console.log(levs);
-//         // const lev = {
-//         //           '_id': mylevel[0]._id,
-//         //           'name': mylevel[0].name,
-//         //           'type': mylevel[0].type,
-//         //           'difficulty': mylevel[0].difficulty,
-//         //           'image_url': mylevel[0].image_url,
-//         //           'qualification_iq': mylevel[0].qualification_iq,
-//         //       }
-//         return utils.res(res, 200, 'Retrieval Successful', mylevel);
-//     });
-// }
-
-
-// function getType(req, res) {
-//     if (req == null) {
-//         return utils.res(res, 400, 'Bad Request');
-//     }
-
-//     if (req.user_id == null) {
-//         return utils.res(res, 401, 'Invalid Token');
-//     }
-
-//     if (req.body.type == null) {
-//         return utils.res(res, 401, 'Type undefined');
-//     }
-
-//     // Fetch the level info
-//     models.level.find({
-//         'type': req.body.type
-//     }, 'name _id category difficulty image_url qualification_iq', function (err, mylevel) {
-//         if (err) {
-//             return utils.res(res, 500, 'Internal Server Error');
-//         }
-
-//         if (mylevel == null) {
-//             return utils.res(res, 401, 'Invalid type provided');
-//         }
-//         // console.log(req.body.type);
-//         // console.log(mylevel);
-//         // const lev = {
-//         //           '_id': mylevel[0]._id,
-//         //           'name': mylevel[0].name,
-//         //           'category': mylevel[0].category,
-//         //           'difficulty': mylevel[0].difficulty,
-//         //           'image_url': mylevel[0].image_url,
-//         //           'qualification_iq': mylevel[0].qualification_iq,
-//         //       }
-//         return utils.res(res, 200, 'Retrieval Successful', mylevel);
-//     });
-// }
-
 
 /** Viewing the level info */
 function playerUpdate(req, res) {
@@ -649,8 +577,6 @@ module.exports = {
     'deleteLevel': deleteLevel,
 
     'getAttributes': getAttributes,
-    // 'getCategories': getCategories,
     'playerUpdate': playerUpdate,
-    // 'getType': getType,
     'getLeaderboard': getLeaderboard
 }

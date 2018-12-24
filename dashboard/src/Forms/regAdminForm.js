@@ -7,6 +7,10 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Checkbox from '@material-ui/core/Checkbox';
+import Grid from '@material-ui/core/Grid';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { fetchUtils } from 'react-admin';
 import { ApiUrl, PasswordRegex, NameRegex, TextRegex } from '../Utils/config';
 
@@ -44,6 +48,7 @@ class RegAdminForm extends React.Component {
                 name: '',
                 email: '',
                 adminSecret: '',
+                isSuper: false,
             },
             errors: {},
             securityQuestions: [],
@@ -63,6 +68,12 @@ class RegAdminForm extends React.Component {
         });
     };
 
+    handleToggle = name => event => {
+        let fields = this.state.fields;
+        fields[name] = event.target.checked;
+        this.setState({ fields: fields });
+    };
+
     handleReset = event => {
         let fields = {
             username: '',
@@ -71,6 +82,7 @@ class RegAdminForm extends React.Component {
             name: '',
             email: '',
             adminSecret: '',
+            isSuper: false,
         };
         this.setState({
             fields: fields,
@@ -172,10 +184,12 @@ class RegAdminForm extends React.Component {
         if (this.handleValidation()) {
             let body = JSON.parse(JSON.stringify(this.state.fields));
             body['user_id'] = body['username'];
-            body['admin_secret'] = body['adminSecret'];
+            body['secret'] = body['adminSecret'];
             delete body['username'];
             delete body['adminSecret'];
             delete body['confirmPassword']
+
+            console.log(this.state, body);
 
             let url = ApiUrl + '/api/user/createAdmin';
             let options = {}
@@ -314,10 +328,10 @@ class RegAdminForm extends React.Component {
                     <TextField
                         required
                         id="adminSecret"
-                        label="Admin Secret"
+                        label={this.state.fields.isSuper ? "Admin Secret" : "Level Secret"}
                         value={this.state.fields["adminSecret"]}
                         onChange={this.handleChange('adminSecret')}
-                        placeholder="Admin Secret"
+                        placeholder={this.state.fields.isSuper ? "Admin Secret" : "Level Secret"}
                         className={classes.textField}
                         type="password"
                         margin="normal"
@@ -325,6 +339,21 @@ class RegAdminForm extends React.Component {
                         error={this.state.errors["adminSecret"] ? true : false}
                         helperText={this.state.errors["adminSecret"]}
                     />
+                    <br />
+                    <Grid container justify = "center">
+                        <FormGroup justify='center'>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={this.state.isSuper}
+                                        onChange={this.handleToggle('isSuper')}
+                                        value="isSuper"
+                                    />
+                                }
+                                label="Super Admin"
+                            />
+                        </FormGroup>
+                        </Grid>
                     <div style={{ textAlign: 'right', padding: 40 }}>
                         {actions}
                     </div>

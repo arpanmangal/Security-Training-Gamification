@@ -12,24 +12,17 @@ In the current directory:
 $ node
 $ > const utils = require('./utils');
 $ > utils.generateAdminSecret(<Your Admin Secret>);
-```
-
-Copy the generated hash of the Admin Secret.
-
-```
-$ node
-$ > const utils = require('./utils');
 $ > utils.generateAdminSecret(<Your Level Secret>);
 ```
 
-Copy the generated hash of the Level Secret.
+Copy the generated hash of the Admin Secret & Level Secret.
 
 ```
 $ export ADMIN_SECRET='<Admin_Secret_Hash>'
 $ export LEVEL_SECRET='<Level_Secret_Hash>'
 $ export <OTHER REQUIRED EXPORTS>
 ```
-**Note**: Take care of exporting the `<Admin_Secret_Hash>` and `<Admin_Secret_Hash>` within `''`,
+**Note**: Take care of exporting the `<Admin_Secret_Hash>` and `<Level_Secret_Hash>` within `''`,
 for example if the hash generated is `$I.am.theHash`, then do:
 ```
 $ export ADMIN_SECRET='$I.am.theHash'

@@ -100,7 +100,7 @@ export const LevelEdit = props => {
         <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
                 <DisabledInput source="name" />
-                <TextInput source="level_secret" label="Level Password" type="password"/>
+                <TextInput source="level_secret" label="Level Password" type="password" />
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
                 <SelectInput source="difficulty" choices={difficulties} />
@@ -137,7 +137,7 @@ export const LevelCreate = props => {
                 <LongTextInput source="description" />
                 <TextInput source="image_url" />
                 <NumberInput source="qualification_iq" />
-                <TextInput source="level_secret" label="Level Password"/>
+                <TextInput source="level_secret" label="Level Password" />
             </SimpleForm>
         </Create>
     );
@@ -202,19 +202,24 @@ AttributeField.propTypes = {
 };
 AttributeField.defaultProps = { addLabel: true };
 
-const LevelShowActions = ({ basePath, data, resource, history, ...props }) => {
+const LevelShowActions = ({ permissions, basePath, data, resource, history, ...props }) => {
     const levelName = (data && data.id) ? data.id : '';
     return (
         <CardActions>
-            <EditButton basePath={basePath} record={data} />
-            <Button color="primary" onClick={() => { history.push('/attributes/' + levelName) }}><EditIcon /> &nbsp; Edit Attributes</Button>
+            {permissions === 'level_admin'
+                ? <span>
+                    <EditButton basePath={basePath} record={data} />
+                    <Button color="primary" onClick={() => { history.push('/attributes/' + levelName) }}><EditIcon /> &nbsp; Edit Attributes</Button>
+                </span>
+                : <Button color="primary" onClick={() => { history.push('/levelSecret/' + levelName) }}><EditIcon /> &nbsp; Edit Level Password</Button>
+            }
         </CardActions>
     );
 }
 
-export const LevelShow = ({permissions, ...props }) => {
+export const LevelShow = ({ permissions, ...props }) => {
     return (
-        <Show title={<LevelTitle />} actions={permissions === 'level_admin' ? <LevelShowActions history={props.history} /> : null} {...props}>
+        <Show title={<LevelTitle />} actions={(permissions === 'admin' || permissions === 'level_admin') ? <LevelShowActions permissions={permissions} history={props.history} /> : null} {...props}>
             <SimpleShowLayout>
                 <TextField source="name" />
                 <TextField source="subheading" />

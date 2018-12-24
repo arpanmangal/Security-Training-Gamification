@@ -77,10 +77,10 @@ class InputCard extends React.Component {
     makeObjects = () => {
         let elements = this.state.elements;
         for (let e in elements) {
-            if (typeof(elements[e]) === "string") {
+            if (typeof (elements[e]) === "string") {
                 try {
                     let parsed = JSON.parse(elements[e]);
-                    if (parsed !== null || parsed !== undefined) 
+                    if (parsed !== null || parsed !== undefined)
                         elements[e] = parsed;
                 } catch (e) {
 
@@ -181,7 +181,9 @@ class InputCard extends React.Component {
                         ? <Typography variant='caption' color='error'>
                             *Please check for errors in the form
                           </Typography>
-                        : null
+                        : <Typography variant='caption' color='error'>
+                            *Do remember to click the above save button
+                          </Typography>
                     }
                     <FormGroup
                         style={{ float: 'right' }}

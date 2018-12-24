@@ -7,6 +7,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import ShowIcon from '@material-ui/icons/Visibility';
+import TextField from '@material-ui/core/TextField';
 
 import AttibuteDisplayGrid from './AttDispGrid';
 import { ApiUrl } from '../../Utils/config';
@@ -42,6 +43,7 @@ class AttributeEditCard extends React.Component {
             subheading: '',
             attributes: {},
             count: 0,
+            level_secret: ''
         }
     }
 
@@ -150,12 +152,19 @@ class AttributeEditCard extends React.Component {
         });
     }
 
+    handleChange = name => event => {
+        this.setState({
+            [name]: event.target.value,
+        });
+    };
+
     handleSubmit = (event) => {
         event.preventDefault();
 
         let url = ApiUrl + '/api/level/' + this.state.levelName;
         let body = {
-            'attributes': this.state.attributes
+            'attributes': this.state.attributes,
+            'level_secret': this.state.level_secret,
         };
         let options = {}
         let token = localStorage.getItem('accessToken') || '';
@@ -194,6 +203,15 @@ class AttributeEditCard extends React.Component {
                     <Typography variant='caption'>
                         {this.state.subheading}
                     </Typography>
+                    {/* <Divider /> */}
+                    <TextField
+                        id="level-password"
+                        type='password'
+                        label="Level Password"
+                        value={this.state.level_secret}
+                        onChange={this.handleChange('level_secret')}
+                        margin="normal"
+                    />
                     <Divider />
                     <br />
                     <Typography paragraph component={'span'}>
@@ -227,7 +245,7 @@ class AttributeEditCard extends React.Component {
                             <AddIcon />
                         </Button>
                         <br /><br />
-                        <Typography variant='caption' style={{ color: '#ff0000' }}>
+                        <Typography variant='caption' color='error'>
                             * Don't forget to save all the attributes before hitting the final save button!
                         </Typography>
                         <Button

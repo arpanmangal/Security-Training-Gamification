@@ -34,6 +34,7 @@ const types = genList(Types);
 const difficulties = genList(Difficulties);
 const categories = genList(Categories);
 
+/****************** Listing Levels **********************/
 const NoneActions = props => (
     <CardActions />
 );
@@ -56,7 +57,6 @@ LevelFilter.propTypes = {
     on: PropTypes.string,
 };
 
-// LevelList
 export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
     return (
@@ -83,6 +83,8 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
     </List>
 );
 
+
+/************** Editing Levels ***************/
 const LevelEditActions = ({ basePath, data, resource, history, ...props }) => {
     const levelName = (data && data.id) ? data.id : '';
     return (
@@ -98,6 +100,7 @@ export const LevelEdit = props => {
         <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
                 <DisabledInput source="name" />
+                <TextInput source="level_secret" label="Level Password" type="password"/>
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
                 <SelectInput source="difficulty" choices={difficulties} />
@@ -121,6 +124,7 @@ export const LevelEdit = props => {
     );
 }
 
+/************** Creating Levels ***************/
 export const LevelCreate = props => {
     return (
         <Create {...props}>
@@ -133,10 +137,14 @@ export const LevelCreate = props => {
                 <LongTextInput source="description" />
                 <TextInput source="image_url" />
                 <NumberInput source="qualification_iq" />
+                <TextInput source="level_secret" label="Level Password"/>
             </SimpleForm>
         </Create>
     );
 }
+
+
+/************** Showing Levels ***************/
 const ListField = ({ record, source, name }) => {
     if (!record[source]) record[source] = [];
     return (
@@ -204,9 +212,9 @@ const LevelShowActions = ({ basePath, data, resource, history, ...props }) => {
     );
 }
 
-export const LevelShow = props => {
+export const LevelShow = ({permissions, ...props }) => {
     return (
-        <Show title={<LevelTitle />} actions={<LevelShowActions history={props.history} />} {...props}>
+        <Show title={<LevelTitle />} actions={permissions === 'level_admin' ? <LevelShowActions history={props.history} /> : null} {...props}>
             <SimpleShowLayout>
                 <TextField source="name" />
                 <TextField source="subheading" />

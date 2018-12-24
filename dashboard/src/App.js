@@ -44,10 +44,10 @@ const App = () => (
       permissions !== 'guest'
         ? <Resource
           name="level"
-          list={permissions === 'admin' ? LevelList : PlayerLevelList}
           icon={LevelIcon}
-          edit={permissions === 'admin' ? LevelEdit : null}
-          show={LevelShow}
+          list={permissions !== 'player' ? LevelList : PlayerLevelList }
+          edit={permissions === 'level_admin' ? LevelEdit : null}
+          show={permissions !== 'player' ? LevelShow : null}
           create={permissions === 'admin' ? LevelCreate : null}
         />
         : null,

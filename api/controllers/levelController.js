@@ -34,13 +34,13 @@ function listLevels(req, res) {
 
     let qFilter = JSON.parse(req.query.filter);
     let filter = {};
-    if (!(qFilter.category == null) && typeof(qFilter.category) === 'string') filter['category'] = qFilter.category;
-    if (!(qFilter.difficulty == null) && typeof(qFilter.difficulty) === 'string') filter['difficulty'] = qFilter.difficulty;
-    if (!(qFilter.type == null) && typeof(qFilter.type) === 'string') filter['type'] = qFilter.type;
-    if (!(qFilter.name == null) && typeof(qFilter.name) === 'string') filter['name'] = { $regex: qFilter.name, $options: 'i' };
+    if (!(qFilter.category == null) && typeof (qFilter.category) === 'string') filter['category'] = qFilter.category;
+    if (!(qFilter.difficulty == null) && typeof (qFilter.difficulty) === 'string') filter['difficulty'] = qFilter.difficulty;
+    if (!(qFilter.type == null) && typeof (qFilter.type) === 'string') filter['type'] = qFilter.type;
+    if (!(qFilter.name == null) && typeof (qFilter.name) === 'string') filter['name'] = { $regex: qFilter.name, $options: 'i' };
 
     // Fetch the level info
-    models.level.find(filter, '_id name subheading category description difficulty type image_url game_url qualification_iq rules')
+    models.level.find(filter, '_id name subheading category description difficulty type image_url game_url isAvailable qualification_iq rules')
         .lean()
         .exec(function (err, levels) {
             if (err) {
@@ -113,8 +113,15 @@ function createLevel(req, res) {
         return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
     }
 
-    if (level.isAvailable !== null && level.isAvailable !== undefined && typeof(level.isAvailable) !== 'boolean') {
+    if (level.isAvailable !== null && level.isAvailable !== undefined && typeof (level.isAvailable) !== 'boolean') {
         return utils.res(res, 400, 'isAvailable should be boolean');
+    }
+
+    if (!config.passwordRegex.test(level.level_secret)) {
+        // Contains dangerous special characters
+        let msg = 'Level Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
     }
 
     // if (config.urlRegex.test(level.image_url)) {
@@ -191,7 +198,7 @@ function viewLevel(req, res) {
     // Fetch the user info
     models.level.findOne({
         'name': req.params.name
-    }, '_id name subheading category type difficulty description image_url game_url rules hints qualification_iq attributes', function (err, mylevel) {
+    }, '_id name subheading category type difficulty description image_url game_url isAvailable rules hints qualification_iq attributes', function (err, mylevel) {
         if (err || mylevel == null) {
             // console.log(err);
             return utils.res(res, 404, 'Level does not exist');
@@ -206,6 +213,7 @@ function viewLevel(req, res) {
             'description': mylevel.description || '',
             'image_url': mylevel.image_url,
             'game_url': mylevel.game_url,
+            'isAvailable': mylevel.isAvailable,
             'rules': mylevel.rules || [],
             'hints': mylevel.hints || [],
             'qualification_iq': mylevel.qualification_iq,
@@ -232,75 +240,104 @@ function modifyLevel(req, res) {
     }
 
     const level = req.body;
-    let updatedLevel = {}
-
-    if (!(level.subheading == null)) {
-        updatedLevel.subheading = level.subheading;
-    }
-    if (!(level.category == null)) {
-        if (config.nameRegex.test(level.category))
-            return utils.res(res, 400, 'Category should contain only alphanumeric and [ _ - ] characters');
-        else
-            updatedLevel.category = level.category;
-    }
-    if (!(level.difficulty == null)) {
-        if (config.alphaNumericRegex.test(level.difficulty))
-            return utils.res(res, 400, 'Difficulty should contain only alphanumeric characters');
-        else
-            updatedLevel.difficulty = level.difficulty;
-    }
-    if (!(level.type == null)) {
-        if (config.alphaNumericRegex.test(level.type))
-            return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
-        else
-            updatedLevel.type = level.type;
-    }
-    if (!(level.description == null)) {
-        updatedLevel.description = level.description;
-    }
-    if (!(level.image_url == null)) {
-        // if (config.urlRegex.test(level.image_url))
-        //     return utils.res(res, 400, 'Invalid Image URL');
-        // else
-        updatedLevel.image_url = level.image_url;
+    if (level.level_secret == null || !config.passwordRegex.test(level.level_secret)) {
+        return utils.res(res, 401, 'Incorrect Level Secret');
     }
 
-    if (!(level.game_url == null)) {
-        updatedLevel.game_url = level.game_url;
-    }
-    if (!(level.rules == null)) {
-        if (!Array.isArray(level.rules))
-            return utils.res(res, 400, 'Rules should be an Array');
-        else
-            updatedLevel.rules = level.rules;
-    }
-    if (!(level.hints == null)) {
-        if (!Array.isArray(level.hints))
-            return utils.res(res, 400, 'Hints should be an Array');
-        else
-            updatedLevel.hints = level.hints;
-    }
-    if (!(level.qualification_iq == null)) {
-        updatedLevel.qualification_iq = level.qualification_iq;
-    }
-    if (!(level.attributes == null)) {
-        if (!typeof (level.attributes) === 'object')
-            return utils.res(res, 400, 'Attributes should be an Object');
-        else
-            updatedLevel.attributes = level.attributes;
-    }
-    if (level.isAvailable !== null && level.isAvailable !== undefined && typeof(level.isAvailable) === 'boolean') {
-        updatedLevel.isAvailable = level.isAvailable;
-    }
-
-    // Update the level info
-    console.log(req.params.name)
-    models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
-        if (err || newLevel == null) {
-            return utils.res(res, 400, 'Level Does not exist');
+    // Fetch the level and check if password is correct
+    // Find in the database
+    models.level.findOne({ 'name': req.params.name }, 'level_secret', function (err, oldLevel) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
         }
 
-        return utils.res(res, 200, 'Record Updated Successfully', newLevel);
+        if (oldLevel == null) {
+            return utils.res(res, 401, 'Level does not exist');
+        }
+
+        // Compare passwords
+        bcrypt.compare(level.level_secret, oldLevel.level_secret, function (err, verdict) {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            if (!verdict) {
+                return utils.res(res, 401, 'Incorrect Password');
+            }
+
+            // Authenticated
+            let updatedLevel = {}
+
+            if (!(level.subheading == null)) {
+                updatedLevel.subheading = level.subheading;
+            }
+            if (!(level.category == null)) {
+                if (config.nameRegex.test(level.category))
+                    return utils.res(res, 400, 'Category should contain only alphanumeric and [ _ - ] characters');
+                else
+                    updatedLevel.category = level.category;
+            }
+            if (!(level.difficulty == null)) {
+                if (config.alphaNumericRegex.test(level.difficulty))
+                    return utils.res(res, 400, 'Difficulty should contain only alphanumeric characters');
+                else
+                    updatedLevel.difficulty = level.difficulty;
+            }
+            if (!(level.type == null)) {
+                if (config.alphaNumericRegex.test(level.type))
+                    return utils.res(res, 400, 'Level Type should contain only alphanumeric characters');
+                else
+                    updatedLevel.type = level.type;
+            }
+            if (!(level.description == null)) {
+                updatedLevel.description = level.description;
+            }
+            if (!(level.image_url == null)) {
+                // if (config.urlRegex.test(level.image_url))
+                //     return utils.res(res, 400, 'Invalid Image URL');
+                // else
+                updatedLevel.image_url = level.image_url;
+            }
+
+            if (!(level.game_url == null)) {
+                updatedLevel.game_url = level.game_url;
+            }
+            if (!(level.rules == null)) {
+                if (!Array.isArray(level.rules))
+                    return utils.res(res, 400, 'Rules should be an Array');
+                else
+                    updatedLevel.rules = level.rules;
+            }
+            if (!(level.hints == null)) {
+                if (!Array.isArray(level.hints))
+                    return utils.res(res, 400, 'Hints should be an Array');
+                else
+                    updatedLevel.hints = level.hints;
+            }
+            if (!(level.qualification_iq == null)) {
+                updatedLevel.qualification_iq = level.qualification_iq;
+            }
+            if (!(level.attributes == null)) {
+                if (!typeof (level.attributes) === 'object')
+                    return utils.res(res, 400, 'Attributes should be an Object');
+                else
+                    updatedLevel.attributes = level.attributes;
+            }
+            if (level.isAvailable !== null && level.isAvailable !== undefined && typeof (level.isAvailable) === 'boolean') {
+                updatedLevel.isAvailable = level.isAvailable;
+            }
+
+            // Update the level info
+            console.log(req.params.name)
+            models.level.findOneAndUpdate({ 'name': req.params.name }, updatedLevel, { new: true }, function (err, newLevel) {
+                if (err || newLevel == null) {
+                    return utils.res(res, 400, 'Level Does not exist');
+                }
+
+                return utils.res(res, 200, 'Record Updated Successfully', newLevel);
+            });
+
+        });
     });
 }
 
@@ -324,10 +361,10 @@ function modify_secret(req, res) {
 
     if (level.old_secret == null) {
         return utils.res(res, 400, 'Please, enter your old password');
-    }else{
-        if (config.adminSecretRegex.test(level.old_secret)){
+    } else {
+        if (config.adminSecretRegex.test(level.old_secret)) {
             return utils.res(res, 400, 'old_password doesn\'t match');
-        }else{
+        } else {
             // Fetch the level info
             models.level.findOne({
                 'name': level.name
@@ -358,7 +395,7 @@ function modify_secret(req, res) {
                         }
 
                         // Update the level info
-                        models.level.findOneAndUpdate({ 'name': req.body.name }, {'level_secret': hash}, { new: true }, function (err, newLevel) {
+                        models.level.findOneAndUpdate({ 'name': req.body.name }, { 'level_secret': hash }, { new: true }, function (err, newLevel) {
                             if (err || newLevel == null) {
                                 return utils.res(res, 400, 'Level Does not exist');
                             }
@@ -367,7 +404,7 @@ function modify_secret(req, res) {
                         });
                     });
                 });
-            });            
+            });
         }
     }
 }

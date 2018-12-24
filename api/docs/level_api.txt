@@ -20,6 +20,7 @@ GET: /api/level
             type
             image_url
             game_url
+            isAvailable
             description
             qualification_iq
             rules: []
@@ -43,6 +44,7 @@ GET: /api/level/<name>            // Get particular level information
             description
             image_url
             game_url
+            isAvailable
             rules
             hints
             qualification_iq
@@ -62,6 +64,8 @@ POST: /api/level/                             // For creating a new level
                 type*
                 description
                 image_url*
+                level_secret*
+                isAvailable
                 rules
                 hints
                 qualification_iq*
@@ -129,7 +133,6 @@ POST: /api/leaderboard   // Gets the top 10 players of that level
         }
 
 
----------- Not used APIs -- as of now ----------
 POST: /api/level/getAttributes
     body:
         name
@@ -177,27 +180,3 @@ POST: /api/level/notify/:id     // Send mail to all players of this level about 
         status_code
         error: false/true
         message: "..string"
-
-POST: /api/level/getCategories   // Get ID ,name and image of levels for every category
-    params:
-        header:
-            x-auth-token
-        body: 
-            category: "..string"
-    returns:
-        status_code
-        error: false/true
-        message: "..string"
-        data: "..."         // json of list of all levels with their category as a key
-
-POST: /api/level/getType   // Get ID ,name and image of levels for every category
-    params:
-        header:
-            x-auth-token
-        body: 
-            type: "..string"
-    returns:
-        status_code
-        error: false/true
-        message: "..string"
-        data: "..."         // json of list of all levels with their category as a key

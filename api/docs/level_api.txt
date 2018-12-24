@@ -94,6 +94,22 @@ DELETE: /api/level/<name>		// Delete level with this name
         error: false/true
         message: "..string"
 
+POST: /api/level/modify_secret   // Gets the top 10 players of that level
+    params:
+        header:
+            x-auth-token
+    body:
+        name
+        old_secret
+        new_secret          
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+        data: {
+            name: level_name,
+            leaderboard: []
+        }
 
 ------------------- Leaderboard API --------------------
 
@@ -148,6 +164,20 @@ GET: /api/level/updateLeaderboard/:id   // Gets the top n players of that level
         message: "..string"
         data: "..."         // JSON data to render at frontend
 
+
+-------------------- Not sure if following API is necessary ---------------------------
+
+POST: /api/level/notify/:id     // Send mail to all players of this level about any update
+    params:
+        header:
+            x-auth-token    // token for verifying that admin is logged in
+        body:
+            mail: "<p>Sample mail</p>" // mail to be sent to all players
+    returns:
+        status_code
+        error: false/true
+        message: "..string"
+
 POST: /api/level/getCategories   // Get ID ,name and image of levels for every category
     params:
         header:
@@ -171,16 +201,3 @@ POST: /api/level/getType   // Get ID ,name and image of levels for every categor
         error: false/true
         message: "..string"
         data: "..."         // json of list of all levels with their category as a key
-
--------------------- Not sure if following API is necessary ---------------------------
-
-POST: /api/level/notify/:id     // Send mail to all players of this level about any update
-    params:
-        header:
-            x-auth-token    // token for verifying that admin is logged in
-        body:
-            mail: "<p>Sample mail</p>" // mail to be sent to all players
-    returns:
-        status_code
-        error: false/true
-        message: "..string"

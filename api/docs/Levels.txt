@@ -5,7 +5,9 @@
     category: "Topics/General"     		    			// Level category topic wise or general levels like phishing
     difficulty: "Beginner/Intermediate/Expert",         // Diffculty level 
     type: "multiplayer/single",                         // Level type
-    description: "..long string",						// Level Description
+    description: "..long string",                       // Level Description
+    isAvailable: boolean,                               // Is level available to the user
+    level_secret: "..long string",						// Level secret
     image_url: "string"                                 // URL of Image of that level
     game_url: "string"                                  // URL of the Game
     rules: [											// Level Rules

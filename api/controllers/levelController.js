@@ -522,84 +522,84 @@ function getAttributes(req, res) {
     });
 }
 
-function getCategories(req, res) {
-    if (req == null || req.body == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
+// function getCategories(req, res) {
+//     if (req == null || req.body == null) {
+//         return utils.res(res, 400, 'Bad Request');
+//     }
 
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
+//     if (req.user_id == null) {
+//         return utils.res(res, 401, 'Invalid Token');
+//     }
 
-    if (req.body.category == null) {
-        return utils.res(res, 401, 'Invalid category');
-    }
+//     if (req.body.category == null) {
+//         return utils.res(res, 401, 'Invalid category');
+//     }
 
-    // Fetch the level info
-    models.level.find({
-        'category': req.body.category
-    }, 'name _id difficulty type image_url qualification_iq', function (err, mylevel) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
+//     // Fetch the level info
+//     models.level.find({
+//         'category': req.body.category
+//     }, 'name _id difficulty type image_url qualification_iq', function (err, mylevel) {
+//         if (err) {
+//             return utils.res(res, 500, 'Internal Server Error');
+//         }
 
-        if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid category provided');
-        }
-        const levs = mylevel;
-        console.log(req.body.category);
-        console.log(mylevel);
-        console.log(levs);
-        // const lev = {
-        //           '_id': mylevel[0]._id,
-        //           'name': mylevel[0].name,
-        //           'type': mylevel[0].type,
-        //           'difficulty': mylevel[0].difficulty,
-        //           'image_url': mylevel[0].image_url,
-        //           'qualification_iq': mylevel[0].qualification_iq,
-        //       }
-        return utils.res(res, 200, 'Retrieval Successful', mylevel);
-    });
-}
+//         if (mylevel == null) {
+//             return utils.res(res, 401, 'Invalid category provided');
+//         }
+//         const levs = mylevel;
+//         console.log(req.body.category);
+//         console.log(mylevel);
+//         console.log(levs);
+//         // const lev = {
+//         //           '_id': mylevel[0]._id,
+//         //           'name': mylevel[0].name,
+//         //           'type': mylevel[0].type,
+//         //           'difficulty': mylevel[0].difficulty,
+//         //           'image_url': mylevel[0].image_url,
+//         //           'qualification_iq': mylevel[0].qualification_iq,
+//         //       }
+//         return utils.res(res, 200, 'Retrieval Successful', mylevel);
+//     });
+// }
 
 
-function getType(req, res) {
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
+// function getType(req, res) {
+//     if (req == null) {
+//         return utils.res(res, 400, 'Bad Request');
+//     }
 
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
+//     if (req.user_id == null) {
+//         return utils.res(res, 401, 'Invalid Token');
+//     }
 
-    if (req.body.type == null) {
-        return utils.res(res, 401, 'Type undefined');
-    }
+//     if (req.body.type == null) {
+//         return utils.res(res, 401, 'Type undefined');
+//     }
 
-    // Fetch the level info
-    models.level.find({
-        'type': req.body.type
-    }, 'name _id category difficulty image_url qualification_iq', function (err, mylevel) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
-        }
+//     // Fetch the level info
+//     models.level.find({
+//         'type': req.body.type
+//     }, 'name _id category difficulty image_url qualification_iq', function (err, mylevel) {
+//         if (err) {
+//             return utils.res(res, 500, 'Internal Server Error');
+//         }
 
-        if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid type provided');
-        }
-        // console.log(req.body.type);
-        // console.log(mylevel);
-        // const lev = {
-        //           '_id': mylevel[0]._id,
-        //           'name': mylevel[0].name,
-        //           'category': mylevel[0].category,
-        //           'difficulty': mylevel[0].difficulty,
-        //           'image_url': mylevel[0].image_url,
-        //           'qualification_iq': mylevel[0].qualification_iq,
-        //       }
-        return utils.res(res, 200, 'Retrieval Successful', mylevel);
-    });
-}
+//         if (mylevel == null) {
+//             return utils.res(res, 401, 'Invalid type provided');
+//         }
+//         // console.log(req.body.type);
+//         // console.log(mylevel);
+//         // const lev = {
+//         //           '_id': mylevel[0]._id,
+//         //           'name': mylevel[0].name,
+//         //           'category': mylevel[0].category,
+//         //           'difficulty': mylevel[0].difficulty,
+//         //           'image_url': mylevel[0].image_url,
+//         //           'qualification_iq': mylevel[0].qualification_iq,
+//         //       }
+//         return utils.res(res, 200, 'Retrieval Successful', mylevel);
+//     });
+// }
 
 
 /** Viewing the level info */
@@ -649,8 +649,8 @@ module.exports = {
     'deleteLevel': deleteLevel,
 
     'getAttributes': getAttributes,
-    'getCategories': getCategories,
+    // 'getCategories': getCategories,
     'playerUpdate': playerUpdate,
-    'getType': getType,
+    // 'getType': getType,
     'getLeaderboard': getLeaderboard
 }

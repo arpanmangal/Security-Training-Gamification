@@ -106,8 +106,8 @@ function setUpAPIs() {
     app.post('/api/level/playerUpdate', utils.validateToken, levelController.playerUpdate);
 
     // app.post('/api/level/upadteLeaderboard', utils.validateToken, levelController.getLeaderboard);
-    app.post('/api/level/getCategories', utils.validateToken, levelController.getCategories);
-    app.post('/api/level/getType', utils.validateToken, levelController.getType);
+    // app.post('/api/level/getCategories', utils.validateToken, levelController.getCategories);
+    // app.post('/api/level/getType', utils.validateToken, levelController.getType);
     /***************** End Level API *****************/
 
     /***************** Leaderboard API  *************/

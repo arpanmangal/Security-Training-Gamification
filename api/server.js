@@ -61,9 +61,17 @@ function startApp() {
         if (err) {
             console.error(err);
         } else {
-            console.log('App running successfully on ' + config.port);
+            console.log('App running successfully on port ' + config.port);
         }
     });
+}
+
+function setUpViews() {
+    /*************** Client View  ********************/
+    app.get('/', function (req, res) {
+        res.sendFile(path.join(__dirname, 'build/client/index.html'));
+    });
+    /*************** End Client View  ****************/
 }
 
 function setUpAPIs() {
@@ -92,7 +100,6 @@ function setUpAPIs() {
     app.post('/api/questions', utils.validateToken, utils.checkAdmin, securityQuestionController.addQuestion);
     app.get('/api/questions', securityQuestionController.view);
     app.get('/api/questions/:id', securityQuestionController.viewQuestion);
-    // app.delete('/api/questions/:id', utils.validateToken, utils.checkAdmin, securityQuestionController.viewQuestion);
     /***************** End Security Question API ****/
 
     /***************** Level API *******************/
@@ -142,14 +149,6 @@ function setUpAPIs() {
     /****************End Logs API **********************/
 
     /**************** Game API  *******************/
-    app.get('/testing/', function (req, res) {
-        // if (req == null || req.body == null || req.body.token == null) {
-        //     res.send('Bad Request');
-        // } else {
-        // res.send('Success!! You sent: ' + req.body.token);
-        res.sendFile(path.join(__dirname, 'build/games/game1/index.html'));
-        // }
-    });
     app.post('/game/:name', function (req, res) {
         if (req == null || req.body == null || req.body.token == null || req.params == null || req.params.name == null) {
             res.send('<h1>Bad Request</h1>');
@@ -165,40 +164,6 @@ function setUpAPIs() {
     /**************** End Game API  *******************/
 
 }
-
-function setUpViews() {
-    app.get('/', function (req, res) {
-        // res.sendFile(path.join(__dirname, 'views/index.html'));
-        res.sendFile(path.join(__dirname, 'build/client/index.html'));
-    });
-    app.get('/signup', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/signup.html'));
-    });
-    app.get('/reset', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/reset.html'));
-    });
-    app.get('/forgot', function (req, res) {
-        res.sendfile(path.join(__dirname, 'views/user/forgot.html'));
-    });
-
-    // Old views
-    app.get('/login', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/login.html'));
-    });
-    app.get('/logout', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/logout.html'));
-    });
-    app.get('/profile', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/view.html'));
-    });
-    app.get('/resetPassword', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/resetPass.html'));
-    });
-    app.get('/settings', function (req, res) {
-        res.sendFile(path.join(__dirname, 'views/user/settings.html'));
-    });
-}
-
 
 // Start the DB and the app
 setUpMongoDB();

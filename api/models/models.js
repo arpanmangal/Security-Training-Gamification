@@ -38,7 +38,7 @@ const levelSchema = new mongoose.Schema({
     qualification_iq: {type: Number, required: true, default: 0},
     rules: {type: []},
     hints: {type: []},
-    players: {type: []},
+    players: {type: {}},
     leaderboard: {type: {}},
     attributes: {type: {}}
 });

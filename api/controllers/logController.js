@@ -1,6 +1,9 @@
 const config = require('../config/config');
 const utils = require('../utils');
 const jwt = require('jsonwebtoken');
+var ReadWriteLock = require('rwlock');
+
+var my_lock = new ReadWriteLock();
 
 const models = require('../models/models');
 
@@ -112,57 +115,82 @@ function create_level_info(req, res) {
     }
 
     if (req.body.name == null) {
-        return utils.res(res, 400, 'Please provide level_name of level log to delete');
+        return utils.res(res, 400, 'Please provide level_name of level log to create');
     }
 
-    models.Logs.findOne({
+    models.User.findOne({
         'user_id': req.user_id
-    }, function (err, mylogs) {
+    }, 'cyber_IQ', function (err, loggedUser) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
         }
-
-        if (mylogs == null) {
-            return utils.res(res, 401, 'Invalid token provided');
+        if (loggedUser == null) {
+            return utils.res(res, 401, 'Invalid Token');
         }
-
-        const level = {
-            "number_of_attempts": 1,
-            "number_of_successes": 0,
-            "max_coins_earned": 0,    
-            "info": []   
-        }
-        // const kk = (req.body.id).toString();
-        // console.log(mylogs);        
-        if(mylogs.logs == null){
-            const new_log = {};
-            new_log[req.body.name.toString()] = level;
-            mylogs.logs = new_log;
-        }else{
-            if(mylogs.logs[req.body.name.toString()] == null){
-                mylogs.logs[req.body.name.toString()] = level;                
+            // Fetch the user info
+        models.level.findOne({
+            'name': req.body.name
+        }, 'qualification_iq', function (err, mylevel) {
+            if (err || mylevel == null) {
+                // console.log(err);
+                return utils.res(res, 404, 'Level does not exist');
             }
-        }
-
-        const ll = {
-            'user_id': req.user_id,
-            'logs': mylogs.logs,
-        }
-        
-        models.Logs.findOneAndUpdate({'user_id': req.user_id}, ll, {new: true}, function (err, mylog) {
-            if (err) {
-                return utils.res(res, 500, 'Internal Server Error');
+            console.log(loggedUser.cyber_IQ);
+            console.log(mylevel.qualification_iq);
+            if(loggedUser.cyber_IQ < mylevel.qualification_iq){
+                return utils.res(res, 999, 'unqualified');
             }
 
-            if (mylog == null) {
-                return utils.res(res, 401, 'Invalid token provided');
-            }
+            models.Logs.findOne({
+                'user_id': req.user_id
+            }, function (err, mylogs) {
+                if (err) {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
 
-            const new_lev = {
-                'user_id': mylog.user_id,
-                'logs': mylog.logs,
-            }
-            return utils.res(res, 200, 'Retrieval Successful', new_lev);
+                if (mylogs == null) {
+                    return utils.res(res, 401, 'Invalid token provided');
+                }
+
+                const level = {
+                    "number_of_attempts": 1,
+                    "number_of_successes": 0,
+                    "max_coins_earned": 0,    
+                    "info": []   
+                }
+                // const kk = (req.body.id).toString();
+                // console.log(mylogs);        
+                if(mylogs.logs == null){
+                    const new_log = {};
+                    new_log[req.body.name.toString()] = level;
+                    mylogs.logs = new_log;
+                }else{
+                    if(mylogs.logs[req.body.name.toString()] == null){
+                        mylogs.logs[req.body.name.toString()] = level;                
+                    }
+                }
+
+                const ll = {
+                    'user_id': req.user_id,
+                    'logs': mylogs.logs,
+                }
+                
+                models.Logs.findOneAndUpdate({'user_id': req.user_id}, ll, {new: true}, function (err, mylog) {
+                    if (err) {
+                        return utils.res(res, 500, 'Internal Server Error');
+                    }
+
+                    if (mylog == null) {
+                        return utils.res(res, 401, 'Invalid token provided');
+                    }
+
+                    const new_lev = {
+                        'user_id': mylog.user_id,
+                        'logs': mylog.logs,
+                    }
+                    return utils.res(res, 200, 'Retrieval Successful', new_lev);
+                });
+            });            
         });
     });
 }
@@ -270,76 +298,106 @@ function modify_attempts(req, res) {
         return utils.res(res, 401, 'coins undefined');
     }
 
-    models.Logs.findOne({
+    models.User.findOne({
         'user_id': req.user_id
-    }, function (err, mylogs) {
+    }, 'total_coins cyber_IQ', function (err, loggedUser) {
         if (err) {
             return utils.res(res, 500, 'Internal Server Error');
         }
 
-        if (mylogs == null) {
-            return utils.res(res, 401, 'Invalid token provided');
+        if (loggedUser == null) {
+            return utils.res(res, 401, 'Invalid Token');
         }
-        console.log(mylogs.logs[req.body.name].number_of_attempts);
-        var coins_to_update;
-        // delete mylogs.logs[req.params.name];
-        if(mylogs.logs[req.body.name].number_of_attempts != NaN){
-            (mylogs.logs[req.body.name]).number_of_attempts = mylogs.logs[req.body.name].number_of_attempts + 1;
-        }else{
-            (mylogs.logs[req.body.name]).number_of_attempts = 1;
+        let updatedUser = {};
+        if(loggedUser['total_coins'] != null){
+            updatedUser['total_coins'] = parseInt(loggedUser['total_coins']) + parseInt(req.body.coins);
         }
-        if(mylogs.logs[req.body.name].number_of_successes != NaN){
-            (mylogs.logs[req.body.name]).number_of_successes = Number(req.body.success) + mylogs.logs[req.body.name].number_of_successes;
-        }else{
-            (mylogs.logs[req.body.name]).number_of_successes = Number(req.body.success);
-        }
-        if(mylogs.logs[req.body.name].max_coins_earned != NaN){
-            coins_to_update = Math.max(Number(req.body.coins),(mylogs.logs[req.body.name]).max_coins_earned);
-            (mylogs.logs[req.body.name]).max_coins_earned = Math.max(Number(req.body.coins),(mylogs.logs[req.body.name]).max_coins_earned);
-        }else{
-            coins_to_update = Number(req.body.coins);
-            (mylogs.logs[req.body.name]).max_coins_earned = Number(req.body.coins);
-        }
-        const ll = {
-            'user_id': req.user_id,
-            'logs': mylogs.logs,
-        }
-        
-        models.Logs.findOneAndUpdate({'user_id': req.user_id}, ll, {new: true}, function (err, mylog) {
-            if (err) {
-                return utils.res(res, 500, 'Internal Server Error');
+        console.log(updatedUser);
+        models.User.findOneAndUpdate({
+            'user_id': req.user_id
+        }, JSON.parse(JSON.stringify(updatedUser)), { new: true }, function (err, newUser) {
+            if (err || newUser == null) {
+                return utils.res(res, 500, 'Information could not be updated');
             }
+            console.log(newUser);
 
-            if (mylog == null) {
-                return utils.res(res, 401, 'Invalid token provided');
-            }
-
-            // Fetch the level info
-            models.level.findOne({
-                'name': req.body.name
-            }, 'leaderboard', function (err, mylevel) {
-                if (err) {
-                    return utils.res(res, 500, 'Internal Server Error');
-                }
-
-                if (mylevel == null) {
-                    return utils.res(res, 401, 'Invalid name');
-                }
-
-                var lead = mylevel.leaderboard;
-                console.log(lead);
-                if(lead == undefined){
-                    lead = {}
-                }    
-                lead[req.user_id] = coins_to_update;
-                console.log(lead);
-                models.level.findOneAndUpdate({ 'name': req.body.name }, { 'leaderboard': lead }, { new: true }, function (err, updatelevel) {
+            my_lock.writeLock(function(release){        
+                models.Logs.findOne({
+                    'user_id': req.user_id
+                }, function (err, mylogs) {
                     if (err) {
                         return utils.res(res, 500, 'Internal Server Error');
                     }
-                    // console.log(updatelevel);
-                    // return utils.res(res, 200, 'Update Successful');
-                    return utils.res(res, 200, 'Successful');
+
+                    if (mylogs == null) {
+                        return utils.res(res, 401, 'Invalid token provided');
+                    }
+                    console.log(mylogs.logs[req.body.name].number_of_attempts);
+                    var coins_to_update;
+                    // delete mylogs.logs[req.params.name];
+                    if(mylogs.logs[req.body.name].number_of_attempts != NaN){
+                        (mylogs.logs[req.body.name]).number_of_attempts = mylogs.logs[req.body.name].number_of_attempts + 1;
+                    }else{
+                        (mylogs.logs[req.body.name]).number_of_attempts = 1;
+                    }
+                    if(mylogs.logs[req.body.name].number_of_successes != NaN){
+                        if(req.body.success == true){
+                            (mylogs.logs[req.body.name]).number_of_successes = 1 + mylogs.logs[req.body.name].number_of_successes;
+                        }
+                    }else{
+                        if(req.body.success == true){
+                            (mylogs.logs[req.body.name]).number_of_successes = 1;
+                        }
+                    }
+                    if(mylogs.logs[req.body.name].max_coins_earned != NaN){
+                        coins_to_update = Math.max(Number(req.body.coins),(mylogs.logs[req.body.name]).max_coins_earned);
+                        (mylogs.logs[req.body.name]).max_coins_earned = Math.max(Number(req.body.coins),(mylogs.logs[req.body.name]).max_coins_earned);
+                    }else{
+                        coins_to_update = Number(req.body.coins);
+                        (mylogs.logs[req.body.name]).max_coins_earned = Number(req.body.coins);
+                    }
+                    const ll = {
+                        'user_id': req.user_id,
+                        'logs': mylogs.logs,
+                    }
+                    
+                    models.Logs.findOneAndUpdate({'user_id': req.user_id}, ll, {new: true}, function (err, mylog) {
+                        if (err) {
+                            return utils.res(res, 500, 'Internal Server Error');
+                        }
+
+                        if (mylog == null) {
+                            return utils.res(res, 401, 'Invalid token provided');
+                        }
+
+                        // Fetch the level info
+                        models.level.findOne({
+                            'name': req.body.name
+                        }, 'leaderboard', function (err, mylevel) {
+                            if (err) {
+                                return utils.res(res, 500, 'Internal Server Error');
+                            }
+
+                            if (mylevel == null) {
+                                return utils.res(res, 401, 'Invalid name');
+                            }
+
+                            var lead = mylevel.leaderboard;
+                            console.log(lead);
+                            if(lead == undefined){
+                                lead = {}
+                            }    
+                            lead[req.user_id] = coins_to_update;
+                            console.log(lead);
+                            models.level.findOneAndUpdate({ 'name': req.body.name }, { 'leaderboard': lead }, { new: true }, function (err, updatelevel) {
+                                if (err) {
+                                    return utils.res(res, 500, 'Internal Server Error');
+                                }
+                                release();
+                                return utils.res(res, 200, 'Successful');                        
+                            });
+                        });
+                    });
                 });
             });
         });

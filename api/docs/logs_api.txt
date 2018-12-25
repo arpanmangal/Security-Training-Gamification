@@ -39,8 +39,7 @@ POST: /api/logs/modify_basic
             x-auth-token    //token for verifying that user is logged in        
     body:
             name
-            attempts: number
-            sucess: number
+            sucess: boolean
             coins: number
     return:
         status_code

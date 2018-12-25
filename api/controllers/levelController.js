@@ -1,7 +1,9 @@
 const config = require('../config/config');
 const utils = require('../utils');
 const jwt = require('jsonwebtoken');
+var ReadWriteLock = require('rwlock');
 
+var my_lock = new ReadWriteLock();
 const models = require('../models/models');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
@@ -571,41 +573,53 @@ function getAttributes(req, res) {
 }
 
 
-/** Viewing the level info */
 function playerUpdate(req, res) {
-    if (req == null) {
-        return utils.res(res, 400, 'Bad Request');
-    }
-
-    if (req.user_id == null) {
-        return utils.res(res, 401, 'Invalid Token');
-    }
-
-    if (req.body.name == null) {
-        return utils.res(res, 401, 'Invalid Level name');
-    }
-
-    // Fetch the level info
-    models.level.findOne({
-        'name': req.body.name
-    }, 'players', function (err, mylevel) {
-        if (err) {
-            return utils.res(res, 500, 'Internal Server Error');
+    my_lock.writeLock(function(release){
+        if (req == null) {
+            return utils.res(res, 400, 'Bad Request');
         }
 
-        if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid name');
+        if (req.user_id == null) {
+            return utils.res(res, 401, 'Invalid Token');
         }
 
-        var player = mylevel.players;
-        player.push(req.user_id);
+        if (req.body.name == null) {
+            return utils.res(res, 401, 'Invalid Level name');
+        }
 
-        models.level.findOneAndUpdate({ 'name': req.body.name }, { 'players': player }, { new: false }, function (err, updatelevel) {
+        // Fetch the level info
+        models.level.findOne({
+            'name': req.body.name
+        }, 'players', function (err, mylevel) {
             if (err) {
                 return utils.res(res, 500, 'Internal Server Error');
             }
-            return utils.res(res, 200, 'Update Successful');
-        });
+
+            if (mylevel == null) {
+                return utils.res(res, 401, 'Invalid name');
+            }
+
+            var player;
+            console.log(req.user_id);
+            if(mylevel.players == null){
+                player = {};
+            }else{
+                player = mylevel.players;
+            }
+            player[req.user_id] = true;
+            
+
+            console.log(player);
+
+            models.level.findOneAndUpdate({ 'name': req.body.name }, { 'players': JSON.parse(JSON.stringify(player)) }, { new: true }, function (err, updatelevel) {
+                if (err) {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
+                console.log(updatelevel.players);
+                release();
+                return utils.res(res, 200, 'Update Successful');
+            });
+        });        
     });
 }
 

@@ -67,6 +67,7 @@ export const LevelList = ({ permissions, ...props }) => {
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
+                <UrlField source="game_url" />
                 <ShowButton />
                 {/* <EditButton /> */}
                 {permissions === 'admin' &&
@@ -95,12 +96,15 @@ const LevelEditActions = ({ basePath, data, resource, history, ...props }) => {
     );
 }
 
+const required = (message = 'Required') =>
+    value => value ? undefined : message;
+
 export const LevelEdit = props => {
     return (
         <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
                 <DisabledInput source="name" />
-                <TextInput source="level_secret" label="Level Password" type="password" />
+                <TextInput source="level_secret" label="Level Password" type="password" validate={[required()]}/>
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
                 <SelectInput source="difficulty" choices={difficulties} />
@@ -137,7 +141,7 @@ export const LevelCreate = props => {
                 <LongTextInput source="description" />
                 <TextInput source="image_url" />
                 <NumberInput source="qualification_iq" />
-                <TextInput source="level_secret" label="Level Password" />
+                <TextInput source="level_secret" label="Level Password" type="password" />
             </SimpleForm>
         </Create>
     );

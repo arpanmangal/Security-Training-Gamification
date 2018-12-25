@@ -133,10 +133,9 @@ class ResetForm extends React.Component {
             fetchUtils.fetchJson(url, options)
                 .then(data => {
                     alert(data.json.message);
-                    window.location.reload();
+                    this.props.history.push('/level/' + this.props.levelName + '/show');
                 })
                 .catch((err, ...rest) => {
-                    console.log(err.status, err.message);
                     alert(err.message);
                 });
         }

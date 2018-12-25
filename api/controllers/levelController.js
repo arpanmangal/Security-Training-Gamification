@@ -241,7 +241,7 @@ function modifyLevel(req, res) {
 
     const level = req.body;
     if (level.level_secret == null || !config.passwordRegex.test(level.level_secret)) {
-        return utils.res(res, 401, 'Incorrect Level Secret');
+        return utils.res(res, 400, 'Bad Request, Provide valid Level Password');
     }
 
     // Fetch the level and check if password is correct
@@ -344,7 +344,7 @@ function modifyLevel(req, res) {
 
 /** Modifying the level info */
 function modify_secret(req, res) {
-    if (req == null) {
+    if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
 
@@ -357,56 +357,60 @@ function modify_secret(req, res) {
     }
 
     const level = req.body;
-    let updatedLevel = {}
+    if (level.old_secret == null || level.new_secret == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
 
-    if (level.old_secret == null) {
-        return utils.res(res, 400, 'Please, enter your old password');
-    } else {
-        if (config.adminSecretRegex.test(level.old_secret)) {
-            return utils.res(res, 400, 'old_password doesn\'t match');
-        } else {
-            // Fetch the level info
-            models.level.findOne({
-                'name': level.name
-            }, 'name level_secret', function (err, mylevel) {
+    if (!config.passwordRegex.test(level.old_secret)) {
+        return utils.res(res, 400, 'Incorrect Old Password');
+    }
+
+    if (!config.passwordRegex.test(level.new_secret)) {
+        let msg = 'Level Password should be of 8-13 characters, ' +
+            'at least one uppercase letter, one lowercase letter, one number and one special character from @$!%*?&';
+        return utils.res(res, 400, msg);
+    }
+
+    // Fetch the level info
+    models.level.findOne({
+        'name': level.name
+    }, 'name level_secret', function (err, mylevel) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+
+        if (mylevel == null) {
+            return utils.res(res, 401, 'Invalid name provided');
+        }
+
+        // Compare passwords
+        bcrypt.compare(level.old_secret, mylevel.level_secret, function (err, verdict) {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            if (!verdict) {
+                return utils.res(res, 401, 'Incorrect Secret');
+            }
+
+            // Successful validation
+            // Hash the new password and then return new token
+            bcrypt.hash(level.new_secret, saltRounds, (err, hash) => {
                 if (err) {
                     return utils.res(res, 500, 'Internal Server Error');
                 }
 
-                if (mylevel == null) {
-                    return utils.res(res, 401, 'Invalid name provided');
-                }
-
-                // Compare passwords
-                bcrypt.compare(level.old_secret, mylevel.level_secret, function (err, verdict) {
-                    if (err) {
-                        return utils.res(res, 500, 'Internal Server Error');
+                // Update the level info
+                models.level.findOneAndUpdate({ 'name': req.body.name }, { 'level_secret': hash }, { new: true }, function (err, newLevel) {
+                    if (err || newLevel == null) {
+                        return utils.res(res, 400, 'Level Does not exist');
                     }
 
-                    if (!verdict) {
-                        return utils.res(res, 401, 'Incorrect Secret');
-                    }
-
-                    // Successful validation
-                    // Hash the new password and then return new token
-                    bcrypt.hash(level.new_secret, saltRounds, (err, hash) => {
-                        if (err) {
-                            return utils.res(res, 500, 'Internal Server Error');
-                        }
-
-                        // Update the level info
-                        models.level.findOneAndUpdate({ 'name': req.body.name }, { 'level_secret': hash }, { new: true }, function (err, newLevel) {
-                            if (err || newLevel == null) {
-                                return utils.res(res, 400, 'Level Does not exist');
-                            }
-
-                            return utils.res(res, 200, 'Record Updated Successfully', newLevel);
-                        });
-                    });
+                    return utils.res(res, 200, 'Record Updated Successfully', newLevel);
                 });
             });
-        }
-    }
+        });
+    });
 }
 
 

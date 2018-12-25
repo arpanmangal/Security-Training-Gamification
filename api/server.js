@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { readdirSync, statSync } = require('fs')
 const path = require('path');
 
 const config = require('./config/config');
@@ -23,8 +24,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(express.static('build/client'))
-app.use(express.static('build/game1'))
+app.use(express.static('build/client'));
+const dirs = p => readdirSync(p).filter(f => statSync(path.join(p, f)).isDirectory())
+dirs('build/games').forEach(dir => {
+    app.use('/game', express.static('build/games/' + dir));
+});
 
 /***************** Controllers ******************/
 const userController = require('./controllers/userController');
@@ -67,7 +71,7 @@ function setUpAPIs() {
     app.get('/api/users', utils.validateToken, utils.checkAdmin, userController.listUsers);
     app.get('/api/users/:id/', utils.validateToken, utils.checkAdmin, userController.viewUser);
     app.delete('/api/users/:id/', utils.validateToken, utils.checkAdmin, userController.deleteUser);
-    
+
     app.post('/api/user/forgot', userController.forgotPassword);
 
     app.post('/api/user/create', userController.createUser);
@@ -100,7 +104,7 @@ function setUpAPIs() {
 
     app.post('/api/level/modify_secret', utils.validateToken, utils.checkAdmin, levelController.modify_secret);
     app.post('/api/leaderboard', utils.validateToken, levelController.getLeaderboard);
-    
+
     app.post('/api/level/getattributes', utils.validateToken, levelController.getAttributes);
     app.post('/api/level/playerUpdate', utils.validateToken, levelController.playerUpdate);
 
@@ -137,19 +141,33 @@ function setUpAPIs() {
     app.post('/api/logs/delete_all', utils.validateToken, utils.checkAdmin, logController.delete_user_info);
     /****************End Logs API **********************/
 
-    /**************** Testing  */
-    app.post('/testing/', function (req, res) {
-        if (req == null || req.body == null || req.body.token == null) {
-            res.send('fail');
-        } else {
-            // res.send('Success!! You sent: ' + req.body.token);
-            res.sendFile(path.join(__dirname, 'build/game1/index.html'));
-        }
+    /**************** Game API  *******************/
+    app.get('/testing/', function (req, res) {
+        // if (req == null || req.body == null || req.body.token == null) {
+        //     res.send('Bad Request');
+        // } else {
+        // res.send('Success!! You sent: ' + req.body.token);
+        res.sendFile(path.join(__dirname, 'build/games/game1/index.html'));
+        // }
     });
+    app.post('/game/:name', function (req, res) {
+        if (req == null || req.body == null || req.body.token == null || req.params == null || req.params.name == null) {
+            res.send('<h1>Bad Request</h1>');
+        }
+        let gameName = req.params.name;
+        fileName = path.join(__dirname, 'build', 'games', gameName, 'index.html');
+        res.sendFile(fileName, function (err) {
+            if (err) {
+                res.send('<h1>404 Not Available</h1>')
+            }
+        });
+    })
+    /**************** End Game API  *******************/
+
 }
 
 function setUpViews() {
-    app.get('/', function(req, res) {
+    app.get('/', function (req, res) {
         // res.sendFile(path.join(__dirname, 'views/index.html'));
         res.sendFile(path.join(__dirname, 'build/client/index.html'));
     });

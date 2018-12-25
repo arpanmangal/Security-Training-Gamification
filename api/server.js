@@ -149,8 +149,8 @@ function setUpAPIs() {
     /****************End Logs API **********************/
 
     /**************** Game API  *******************/
-    app.post('/game/:name', function (req, res) {
-        if (req == null || req.body == null || req.body.token == null || req.params == null || req.params.name == null) {
+    app.post('/game/:name', utils.validateToken, userController.updateLevels, function (req, res) {
+        if (req.params == null || req.params.name == null) {
             res.send('<h1>Bad Request</h1>');
         }
         let gameName = req.params.name;
@@ -160,7 +160,7 @@ function setUpAPIs() {
                 res.send('<h1>404 Not Available</h1>')
             }
         });
-    })
+    });
     /**************** End Game API  *******************/
 
 }

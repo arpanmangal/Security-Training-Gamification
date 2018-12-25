@@ -75,7 +75,7 @@ class GameCard extends React.Component {
                     $('<form action="' + location + '" method="POST" target="_blank">' + form + '</form>').appendTo($(document.body)).submit();
                 }
             });
-        $.redirectPost(gameUrl, { token: token });
+        $.redirectPost(gameUrl, { token: token, level_name: this.props.level.name });
     }
 
     toggleFavourite = () => {

@@ -165,7 +165,7 @@ function createAdmin(req, res) {
         return utils.res(res, 400, 'Name should contain alphanumeric characters only');
     }
 
-    if (typeof(user.isSuper) !== 'boolean') {
+    if (typeof (user.isSuper) !== 'boolean') {
         return utils.res(res, 400, 'isSuper should be boolean');
     }
 
@@ -764,8 +764,8 @@ function updateScore(req, res) {
     });
 }
 
-/** Update played levels */
-function updateLevels(req, res) {
+/** Update Played levels of the user */
+function updateLevels(req, res, next) {
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -774,35 +774,50 @@ function updateLevels(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
-    const info = req.body;
-    if (info.name == null || info.score == null || info.cleared == null || info.coins == null) {
-        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    const levelName = req.body.level_name;
+    if (levelName == null || levelName === '') {
+        return utils.res(res, 400, 'Bad Request, Level Name not provided');
     }
 
-    // Validate user input
-    if (config.nameRegex.test(info.name)) {
-        // Contains dangerous special characters
-        return utils.res(res, 400, 'Invalid Level Name');
-    }
+    // Fetch the user info
+    models.User.findOne({
+        'user_id': req.user_id
+    }, 'levels', function (err, loggedUser) {
+        if (err) {
+            return utils.res(res, 500, 'Internal Server Error');
+        }
+        if (loggedUser == null) {
+            return utils.res(res, 401, 'Invalid Token');
+        }
 
-    const score = parseInt(info.score)
-    if (typeof (score) !== 'number' || !Number.isInteger(score)) {
-        // Not integer or invalid range
-        return utils.res(res, 400, 'Invalid Score');
-    }
+        let levels = loggedUser.levels || {};
+        levels[levelName] = true;
 
-    const coins = parseInt(info.coins)
-    if (typeof (coins) !== 'number' || !Number.isInteger(coins)) {
-        // Not integer or invalid range
-        return utils.res(res, 400, 'Invalid Coins');
-    }
+        // Update the user info
+        models.User.findOneAndUpdate({
+            'user_id': req.user_id
+        }, {
+                'levels': levels
+            }, function (err, oldUser) {
+                if (err || oldUser == null) {
+                    return utils.res(res, 500, 'Internal Server Error');
+                }
 
-    if (typeof (info.cleared) !== typeof (true)) {
-        return utils.res(res, 400, 'Invalid Cleared');
-    }
-
-    return utils.res(res, 200, 'Success');
+                return next();
+            });
+    });
 }
+
+// if (req == null || req.body == null || req.body.token == null || req.params == null || req.params.name == null) {
+//     res.send('<h1>Bad Request</h1>');
+// }
+// let gameName = req.params.name;
+// fileName = path.join(__dirname, 'build', 'games', gameName, 'index.html');
+// res.sendFile(fileName, function (err) {
+//     if (err) {
+//         res.send('<h1>404 Not Available</h1>')
+//     }
+// });
 
 module.exports = {
     'listUsers': listUsers,

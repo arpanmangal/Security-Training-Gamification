@@ -15,13 +15,7 @@
     }
     
     levels: {                            // List of levels played by the user with best performance (to be discussed)
-        "level_name": {
-            high_score: Number,                  // Player high-score on that level
-            cleared: Boolean,                    // Has player cleared that level or not
-            high_coins: Nubmer,                  // Highest # of coins earned
-            coins_earned: Number                 // Total Money earned in this level
-            num_attempts: Number                 // Number of Attempts to this level
-            num_cleared: Number                  // Number of times cleared this level
-        }, ....
+        "level_name": true,
+        ...
     }
 }

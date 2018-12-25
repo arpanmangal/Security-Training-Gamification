@@ -390,7 +390,7 @@ function modify_secret(req, res) {
             }
 
             if (!verdict) {
-                return utils.res(res, 401, 'Incorrect Secret');
+                return utils.res(res, 401, 'Incorrect Old Password');
             }
 
             // Successful validation

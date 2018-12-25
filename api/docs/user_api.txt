@@ -204,8 +204,8 @@ POST: /api/user/updateScore
                 total_coins: 1000,
                 cyber_IQ: 8
             }
-            
 
+/--------------- Cancelled ---------------------/
 POST: /api/user/updateLevelInfo             // Update User levels info, called after finishing a game
     params:
         header:

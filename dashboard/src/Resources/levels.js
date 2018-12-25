@@ -104,7 +104,7 @@ export const LevelEdit = props => {
         <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
                 <DisabledInput source="name" />
-                <TextInput source="level_secret" label="Level Password" type="password" validate={[required()]}/>
+                <TextInput source="level_secret" label="Level Password" type="password" autoComplete="new-password" validate={[required()]}/>
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
                 <SelectInput source="difficulty" choices={difficulties} />
@@ -141,7 +141,7 @@ export const LevelCreate = props => {
                 <LongTextInput source="description" />
                 <TextInput source="image_url" />
                 <NumberInput source="qualification_iq" />
-                <TextInput source="level_secret" label="Level Password" type="password" />
+                <TextInput source="level_secret" label="Level Password" type="password" autoComplete="new-password" />
             </SimpleForm>
         </Create>
     );

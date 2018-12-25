@@ -89,11 +89,9 @@ function setUpAPIs() {
     app.post('/api/user/update', utils.validateToken, userController.updateSelf);
     app.post('/api/user/delete', utils.validateToken, userController.deleteSelf);
     app.post('/api/user/resetPassword', utils.validateToken, userController.resetPassword);
-    // app.get('/api/user/adminViewUser', utils.validateToken, utils.checkAdmin, userController.adminViewUser);
-    // app.post('/api/user/modify', utils.validateToken, userController.modifyUser);
-    // app.post('/api/user/updateScore', utils.validateToken, userController.updateScore);
-    // app.post('/api/user/updateLevelInfo', utils.validateToken, userController.updateLevelInfo);
-    // app.post('/api/user/updateAssessment', utils.validateToken, userController.updateAssessment);
+    
+    app.post('/api/user/updateCoins', utils.validateToken, userController.updateCoins);
+    app.post('/api/user/updateIQ', utils.validateToken, userController.updateIQ);
     /***************** End User API *****************/
 
     /***************** Security Question API ********/

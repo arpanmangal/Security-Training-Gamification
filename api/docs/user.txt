@@ -7,11 +7,11 @@
     university: "IIT Delhi"                 // Name of university. Non-essential field
     role: ["admin","player"]                // All the roles that this user handles [normal, admin]
     total_coins: Number                     // Total money earned by the user based on assessments, rewards etc. 
-    cyber_IQ: Number                        // Cyber IQ of the player as given/learned by model
+    cyber_IQ: Number                        // Cyber IQ of the player as given/learned by model, range: 0-10
     
     security_question: {
-        question_id: Number,                                // Security question ID
-        answer: String                                          // bcrypt hashed answer to the security question
+        question_id: Number,                // Security question ID
+        answer: String                      // bcrypt hashed answer to the security question
     }
     
     levels: {                            // List of levels played by the user with best performance (to be discussed)

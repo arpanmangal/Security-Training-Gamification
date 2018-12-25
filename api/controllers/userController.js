@@ -718,8 +718,8 @@ function forgotPassword(req, res) {
     });
 }
 
-/** Update Coins/IQ */
-function updateScore(req, res) {
+/** Update Coins */
+function updateCoins(req, res) {
     if (req == null || req.body == null) {
         return utils.res(res, 400, 'Bad Request');
     }
@@ -729,7 +729,7 @@ function updateScore(req, res) {
     }
 
     const user = req.body;
-    if (user.coins == null || user.IQ == null) {
+    if (user.coins == null) {
         return utils.res(res, 400, 'Bad Request, Incomplete Information');
     }
 
@@ -740,15 +740,8 @@ function updateScore(req, res) {
         return utils.res(res, 400, 'Invalid Coins');
     }
 
-    const IQ = parseInt(user.IQ)
-    if (typeof (IQ) !== 'number' || !Number.isInteger(IQ) || IQ < 0 || IQ >= 10) {
-        // Not integer or invalid range
-        return utils.res(res, 400, 'Invalid IQ');
-    }
-
     let updatedUser = {};
     updatedUser['total_coins'] = coins;
-    updatedUser['cyber_IQ'] = IQ;
 
     models.User.findOneAndUpdate({
         'user_id': req.user_id
@@ -759,6 +752,43 @@ function updateScore(req, res) {
 
         return utils.res(res, 200, 'Information Successfully updated!', {
             total_coins: coins,
+        });
+    });
+}
+
+/** Update IQ */
+function updateIQ(req, res) {
+    if (req == null || req.body == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    const user = req.body;
+    if (user.IQ == null) {
+        return utils.res(res, 400, 'Bad Request, Incomplete Information');
+    }
+
+    // Validate user input
+    const IQ = parseInt(user.IQ)
+    if (typeof (IQ) !== 'number' || !Number.isInteger(IQ) || IQ < 0 || IQ >= 10) {
+        // Not integer or invalid range
+        return utils.res(res, 400, 'Invalid IQ');
+    }
+
+    let updatedUser = {};
+    updatedUser['cyber_IQ'] = IQ;
+
+    models.User.findOneAndUpdate({
+        'user_id': req.user_id
+    }, updatedUser, function (err, oldUser) {
+        if (err || oldUser == null) {
+            return utils.res(res, 500, 'Information could not be updated');
+        }
+
+        return utils.res(res, 200, 'Information Successfully updated!', {
             cyber_IQ: IQ,
         });
     });
@@ -808,16 +838,6 @@ function updateLevels(req, res, next) {
     });
 }
 
-// if (req == null || req.body == null || req.body.token == null || req.params == null || req.params.name == null) {
-//     res.send('<h1>Bad Request</h1>');
-// }
-// let gameName = req.params.name;
-// fileName = path.join(__dirname, 'build', 'games', gameName, 'index.html');
-// res.sendFile(fileName, function (err) {
-//     if (err) {
-//         res.send('<h1>404 Not Available</h1>')
-//     }
-// });
 
 module.exports = {
     'listUsers': listUsers,
@@ -834,6 +854,7 @@ module.exports = {
     'deleteSelf': deleteSelf,
     'resetPassword': resetPassword,
 
-    'updateScore': updateScore,
+    'updateCoins': updateCoins,
+    'updateIQ': updateIQ,
     'updateLevels': updateLevels,
 }

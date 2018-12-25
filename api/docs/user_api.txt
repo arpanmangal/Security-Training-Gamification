@@ -189,19 +189,31 @@ POST: /api/user/resetPassword
 
 
 // Game Interaction API
-POST: /api/user/updateScore    
+POST: /api/user/updateCoins   
     params:
         header:
             x-auth-token    //token for verifying that user is logged in
         body:
             coins: 1000
-            IQ: 8           // Should be 0-10
         return:
             status_code
             error: false/true
             message: "..string"
             data: {
                 total_coins: 1000,
+            }
+
+POST: /api/user/updateIQ    
+    params:
+        header:
+            x-auth-token    //token for verifying that user is logged in
+        body:
+            IQ: 8           // Should be 0-10
+        return:
+            status_code
+            error: false/true
+            message: "..string"
+            data: {
                 cyber_IQ: 8
             }
 

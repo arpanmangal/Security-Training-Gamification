@@ -55,3 +55,7 @@ $ npm start
 4. Add new levels and modify existing levels after logging in as an Admin user.
 
 Enjoy!
+
+### Other Documents
+1. **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/README.md 
+2. **Game Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md

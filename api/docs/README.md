@@ -84,6 +84,7 @@ To publish the game follow the steps:
 3. Your level is deployed.
 4. Remember to set your level name and request URLs properly within the game scripts. Also, remember to use Token call function within the script to allow the game grab token from the browser.
 ```
+
 ### Other Documents
-1. **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database 
-2. **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/tree/master/api
+- **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database
+- **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/tree/master/api

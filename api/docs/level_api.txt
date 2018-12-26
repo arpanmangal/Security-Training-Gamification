@@ -129,18 +129,22 @@ POST: /api/leaderboard   // Gets the top 10 players of that level
         message: "..string"
         data: {
             name: level_name,
-            leaderboard: []
+            leaderboard: {
+                "name":(Number)score
+            }
         }
 
 
 POST: /api/level/getAttributes
     body:
         name
+        keys = comma separated string
+        len = comma separated string
     return:
         status_code
         error: false/true
         message: ".. string"
-        data: { // Whichever format that unity permits}
+        data: {Json containing all attributes and asked amount of values}
 
 
 POST: /api/level/playerUpdate             // Adding player to played list if not already there

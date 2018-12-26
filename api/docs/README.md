@@ -1,4 +1,4 @@
-# Game scene connections
+# About Game Connections 
 
 We have developed 2 separate scenes in unity, one for initialising the game and other for updating the final scores.
 **Data.cs** C# script is a static class that holds data that needs to be stored and updated throughout the gameplay which helps in easy handling of data across scenes.
@@ -84,5 +84,6 @@ To publish the game follow the steps:
 3. Your level is deployed.
 4. Remember to set your level name and request URLs properly within the game scripts. Also, remember to use Token call function within the script to allow the game grab token from the browser.
 ```
-
- 
+### Other Documents
+1. **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database 
+2. **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/tree/master/api

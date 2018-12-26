@@ -52,3 +52,7 @@ If the app gives mongoDB network error, try:
 $ sudo service mongod restart
 ```
 and then try restarting the app until it starts.
+
+### Other Documents
+1. **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/README.md 
+2. **Game Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md

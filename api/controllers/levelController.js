@@ -8,6 +8,8 @@ const models = require('../models/models');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
+
+// var sleep = require('sleep');
 /** List all the levels */
 function listLevels(req, res) {
     if (req == null || req.query == null) {
@@ -531,9 +533,13 @@ function getAttributes(req, res) {
     }
 
     var my_key = req.body.keys.split(",");
-    var my_len = req.body.len.split(",").map(Number);
+    // var my_len = req.body.len.split(",").slice(0,-1).map(Number);
+    var my_len = req.body.len.split(",");
+    // var isShuffle = req.body.len.split(",").slice(-1);
     console.log("Yo: " + my_key);
     console.log("Yo again: " + my_len);
+    console.log(my_len[0].slice(-1));
+    // console.log("Yo again again: " + isShuffle);
 
     if (my_key.length != my_len.length) {
         return utils.res(res, 401, 'Length of content mismatch');
@@ -553,18 +559,32 @@ function getAttributes(req, res) {
 
         var attri = mylevel.attributes;
         var new_attri = {};
-        // var my_key = req.body.keys;
-        // var my_len = req.body.len;
         for (var i = 0; i < my_key.length; i++) {
             if (attri.hasOwnProperty(my_key[i])) {
-                var leng = (attri[my_key[i]]).length;
-                if (leng < my_len[i]) {
-                    return utils.res(res, 401, 'Data size too large');
+                var leng = (attri[my_key[i]].list).length;
+                if (leng < parseInt(my_len[i].slice(0,-1))) {
+                    my_len[i] = "-1F";
+                    // isShuffle[i] = 'f';
+                    // return utils.res(res, 401, 'Data size too large');
                 }
-                shuffleArray(attri[my_key[i]]);
+
+                // If shuffle is required
+                if(my_len[i].slice(-1).toLowerCase() == 't'){
+                    console.log("shuffling");
+                    shuffleArray(attri[my_key[i]].list);
+                }
                 new_attri[my_key[i]] = [];
-                for (var j = 0; j < my_len[i]; j++) {
-                    new_attri[my_key[i]].push(attri[my_key[i]][j]);
+                var num_ele;
+                
+                // If request is to fetch all elements
+                if(parseInt(my_len[i].slice(0,-1)) == -1){
+                    num_ele = leng;
+                }else{
+                    num_ele = parseInt(my_len[i].slice(0,-1));
+                }
+
+                for (var j = 0; j < num_ele; j++) {
+                    new_attri[my_key[i]].push(attri[my_key[i]].list[j]);
                 }
             }
         }
@@ -573,8 +593,11 @@ function getAttributes(req, res) {
 }
 
 
-function playerUpdate(req, res) {
+// function playerUpdate(req, res) {
+function playerUpdate() {
+    // console.log("START");
     my_lock.writeLock(function(release){
+        // sleep.sleep(10);
         if (req == null) {
             return utils.res(res, 400, 'Bad Request');
         }
@@ -586,7 +609,7 @@ function playerUpdate(req, res) {
         if (req.body.name == null) {
             return utils.res(res, 401, 'Invalid Level name');
         }
-
+        // return "DONE";
         // Fetch the level info
         models.level.findOne({
             'name': req.body.name

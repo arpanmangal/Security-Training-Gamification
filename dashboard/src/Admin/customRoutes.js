@@ -10,9 +10,6 @@ import AttributeEditCard from '../Cards/Attributes/AttributeEditCard';
 import LevelPassCard from '../Cards/LevelPassCard';
 import Leaderboard from '../Cards/Leaderboard/LevelLeaderboard';
 
-import { Datagrid, TextField } from 'react-admin';
-// import { TextField } from '@material-ui/core';
-
 const Attribute = ({ match: { params }, ...props }) => {
     return (
         <AttributeEditCard name={params.attri} history={props.history} />
@@ -32,26 +29,10 @@ LevelPassword.propTypes = {
 }
 
 const LevelLeaderboard = ({ match: { params }, ...props }) => {
-    // console.log(props);
-    // const ids = ['a', 'b'];
-    // const data = {
-    //     "a": {"rank": 1, "name": "A"},
-    //     "b": {"rank": 2, "name": "B"},
-    // };
-    // const basePath = '/leaderboard';
-    // const currentSort = {field: "rank", order: "ASC"}
-    // const filterValues = {};
     return (
         <Leaderboard levelName={params.name} />
-        // <Datagrid data={data} ids={ids} currentSort={currentSort}>
-        //     <TextField source="name" />
-        //     <TextField source="rank" />
-        // </Datagrid>
     )
 }
-// LevelLeaderboard.propTypes = {
-    // match: PropTypes.object.isRequired,
-// }
 
 export default [
     <Route exact path="/signup" component={SignupForm} noLayout />,

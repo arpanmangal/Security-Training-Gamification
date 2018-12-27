@@ -49,6 +49,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                 };
                 url = `${apiUrl}/${resource}?${stringify(query)}`;
                 if (resource === 'userscore') url = `${apiUrl}/user/scoreList`;
+                if (resource === 'leaderboard') url = `${apiUrl}/level?${stringify(query)}`
                 console.log(resource, url);
                 break;
             }
@@ -60,7 +61,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     filter: JSON.stringify({ id: params.ids }),
                 };
                 url = `${apiUrl}/${resource}?${stringify(query)}`;
-                if (resource === 'userscore') url = `${apiUrl}/user/scoreList`;
+                if (resource === 'userscore') url = `${apiUrl}/user/scoreList?${stringify(query)}`;
                 console.log(resource, url);
                 break;
             }

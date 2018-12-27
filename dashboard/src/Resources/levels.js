@@ -12,6 +12,7 @@ import AttibuteDisplayGrid from '../Cards/Attributes/AttDispGrid';
 import { Filter, ReferenceInput } from 'react-admin';
 import { Button } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+import LeaderIcon from '@material-ui/icons/TrendingUp';
 import { Field } from 'redux-form';
 import TextFieldMU from '@material-ui/core/TextField';
 
@@ -59,7 +60,6 @@ LevelFilter.propTypes = {
 
 export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
-    props.resource = 'leaderboard';
     console.log(props);
     return (
         <List {...props} filters={<LevelFilter />} bulkActionButtons={permissions === 'admin' ? <PostBulkActionButtons /> : <NoneActions />}>
@@ -86,6 +86,22 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
         <GameGrid />
     </List>
 );
+
+export const LevelLeaderboardList = ({ permissions, ...props }) => {
+    const { classes } = props;
+    console.log(props);
+    return (
+        <List {...props} filters={<LevelFilter />} bulkActionButtons={<NoneActions />}>
+            <Datagrid rowClick="show">
+                <TextField source="name" />
+                <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
+                <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
+                <SelectField source="type" choices={types} optionText="name" optionValue="id" />
+                <Button color="primary" onClick={() => { history.push('/leaderboard/' + levelName) }}><LeaderIcon /> &nbsp; Leaderboard</Button>
+            </Datagrid>
+        </List>
+    );
+}
 
 
 /************** Editing Levels ***************/

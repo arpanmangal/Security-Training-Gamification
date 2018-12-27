@@ -43,11 +43,12 @@ export const UserList = props => (
 export const UserScoreList = props => (
     <List {...props}>
         <Datagrid>
-            <TextField source="id" />
+            <TextField source="rank" />
+            <TextField source="id" label="username" />
             <TextField source="name" />
             <TextField source="total_coins" />
             <TextField source="cyber_IQ" />
-            <TextField source="levels" />
+            <TextField source="levels" label="Levels Played" />
         </Datagrid>
     </List>
 );

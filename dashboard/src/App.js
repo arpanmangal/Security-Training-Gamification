@@ -1,6 +1,6 @@
 import React from 'react';
 import { Admin, Resource, fetchUtils, ListGuesser, ShowGuesser, EditGuesser } from 'react-admin';
-import { LevelList, LevelEdit, LevelCreate, LevelShow, PlayerLevelList } from './Resources/levels';
+import { LevelList, LevelEdit, LevelCreate, LevelShow, PlayerLevelList, LevelLeaderboardList } from './Resources/levels';
 import { LeaderboardList } from './Resources/LeaderBoard';
 import { UserList, UserShow, UserScoreList } from './Resources/users';
 import { QuestionList, QuestionShow, QuestionCreate } from './Resources/questions';
@@ -45,7 +45,7 @@ const App = () => (
         ? <Resource
           name="level"
           icon={LevelIcon}
-          list={permissions !== 'player' ? LevelList : PlayerLevelList }
+          list={permissions !== 'player' ? LevelList : PlayerLevelList}
           edit={permissions === 'level_admin' ? LevelEdit : null}
           show={permissions !== 'player' ? LevelShow : null}
           create={permissions === 'admin' ? LevelCreate : null}
@@ -63,13 +63,14 @@ const App = () => (
 
       <Resource
         name="leaderboard"
-        list={LeaderboardList}
-        icon={LeaderIcon}
+        list={LevelLeaderboardList}
       />,
 
       <Resource
         name="userscore"
         list={UserScoreList}
+        icon={LeaderIcon}
+        options={{ label: 'Rankings' }}
       />,
     ]}
   </Admin>

@@ -19,7 +19,6 @@ function createUser(req, res) {
     if (user == null) {
         return utils.res(res, 400, 'Bad Request');
     }
-    console.log(user);
 
     if (user.user_id == null || user.name == null || user.email == null || user.password == null || user.age == null ||
         user.security_question_id == null || user.security_answer == null) {
@@ -99,7 +98,6 @@ function createUser(req, res) {
                     console.log(status);
                     if (status == 200) {
                         // User successfully created
-                        console.log('success', user.user_id);
                         return utils.res(res, 200, "Account Created Successfully!")
                     } else {
                         // Delete the user again
@@ -588,8 +586,22 @@ function listUsersScore(req, res) {
         return utils.res(res, 401, 'Invalid Token');
     }
 
+    let r0, r1, qFilter = {};
+    try {
+        // Filter
+        qFilter = JSON.parse(req.query.filter);
+
+        // Pagination
+        let range = JSON.parse(req.query.range);
+        r0 = range[0], r1 = range[1] + 1;
+    } catch (err) {
+    }
+
+    let filter = { 'role': 'player' };
+    if (!(qFilter.user_id == null) && typeof (qFilter.user_id) === 'string') filter['user_id'] = { $regex: qFilter.user_id, $options: 'i' };
+
     // Fetch User lists
-    models.User.find({}, 'user_id name total_coins cyber_IQ levels')
+    models.User.find(filter, 'user_id name total_coins cyber_IQ levels')
         .lean()
         .exec(function (err, users) {
             if (err) {
@@ -599,24 +611,33 @@ function listUsersScore(req, res) {
             if (users == null) {
                 return utils.res(res, 404, 'Users do not Exist');
             }
-            users.map(u => {
-                u['id'] = u['user_id'];
-                delete u['user_id'];
-                delete u['_id'];
-                u['levels'] = (u['levels']) ? Object.keys(u['levels']).length : 0;
-                return u;
-            });
 
             // Sort
             let sortPara = 'total_coins';
             let sortOrder = 'DESC';
-            const contentRange = 'users ' + 0 + '-' + (users.length - 1) + '/' + users.length;
+            users = utils.sortObjects(users, sortPara, sortOrder);
+
+            users.map((u, idx) => {
+                u['id'] = u['user_id'];
+                delete u['user_id'];
+                delete u['_id'];
+                u['levels'] = (u['levels']) ? Object.keys(u['levels']).length : 0;
+                u['rank'] = idx + 1;
+                return u;
+            });
+
+            // Pagination
+            const len = users.length;
+            r0 = r0 || 0;
+            r1 = r1 || len - 1;
+            const response = users.slice(r0, r1 + 1);
+            const contentRange = 'users ' + r0 + '-' + r1 + '/' + len;
 
             res.set({
                 'Access-Control-Expose-Headers': 'Content-Range',
                 'Content-Range': contentRange
             });
-            return utils.res(res, 200, 'Retrieval Successful', utils.sortObjects(users, sortPara, sortOrder));
+            return utils.res(res, 200, 'Retrieval Successful', response);
         })
 }
 

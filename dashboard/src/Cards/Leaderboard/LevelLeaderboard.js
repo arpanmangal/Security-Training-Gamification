@@ -93,13 +93,13 @@ class Leaderboard extends React.Component {
                                     <TextField source="name" />
                                 </ReferenceField>
                                 <TextField source="coins" label="Level Coins" />
-                                <ReferenceField label="Total Coins" source="username" reference="userscore">
+                                <ReferenceField label="Total Coins" source="username" reference="userscore" linkType={false}>
                                     <TextField source="total_coins" />
                                 </ReferenceField>
-                                <ReferenceField label="Cyber IQ" source="username" reference="userscore">
+                                <ReferenceField label="Cyber IQ" source="username" reference="userscore" linkType={false}>
                                     <TextField source="cyber_IQ" />
                                 </ReferenceField>
-                                <ReferenceField label="Levels Played" source="username" reference="userscore">
+                                <ReferenceField label="Levels Played" source="username" reference="userscore" linkType={false}>
                                     <TextField source="levels" />
                                 </ReferenceField>
                             </Datagrid>

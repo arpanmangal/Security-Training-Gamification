@@ -42,7 +42,6 @@ function listLevels(req, res) {
     if (!(qFilter.difficulty == null) && typeof (qFilter.difficulty) === 'string') filter['difficulty'] = qFilter.difficulty;
     if (!(qFilter.type == null) && typeof (qFilter.type) === 'string') filter['type'] = qFilter.type;
     if (!(qFilter.name == null) && typeof (qFilter.name) === 'string') filter['name'] = { $regex: qFilter.name, $options: 'i' };
-    if (!(qFilter.is_client == null)) filter['isAvailable'] = true;
 
     // Fetch the level info
     models.level.find(filter, '_id name subheading category description difficulty type image_url game_url isAvailable qualification_iq rules')

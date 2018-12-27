@@ -49,9 +49,13 @@ $ npm start
 ```
 
 ### Usage
-1. Create Admin account from `/registerAdmin`, using the Admin-Secret passed when starting the app.
-2. Create User accounts from `/signup`.
-3. Login from `/login`. 
+1. Create Admin account from `<Portal_Link>/#/registerAdmin`, using the Admin-Secret passed when starting the app.
+2. Create User accounts from `<Portal_Link>/#/signup`.
+3. Login from `<Portal_Link>/#/login`. 
 4. Add new levels and modify existing levels after logging in as an Admin user.
 
 Enjoy!
+
+### Other Documents
+1. **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/README.md 
+2. **Game Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md

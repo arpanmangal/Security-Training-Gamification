@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { List, Datagrid, TextField, UrlField, SelectField, NumberField, ImageField } from 'react-admin'
+import { List, Datagrid, TextField, UrlField, SelectField, NumberField, ImageField, BooleanField } from 'react-admin'
 import { Edit, EditButton, DeleteButton, ShowButton, SimpleFormIterator } from 'react-admin';
-import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput } from 'react-admin';
+import { Create, SimpleForm, TextInput, LongTextInput, NumberInput, DisabledInput, ArrayInput, SelectInput, BooleanInput } from 'react-admin';
 import { BulkDeleteButton, CardActions, RefreshButton, FilterButton } from 'react-admin';
 import { Show, SimpleShowLayout, ArrayField, SingleFieldList } from 'react-admin';
 import { fetchUtils } from 'react-admin';
@@ -68,6 +68,7 @@ export const LevelList = ({ permissions, ...props }) => {
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
                 <UrlField source="game_url" />
+                <BooleanField source="isAvailable" label="Available" />
                 <ShowButton />
                 {/* <EditButton /> */}
                 {permissions === 'admin' &&
@@ -79,7 +80,7 @@ export const LevelList = ({ permissions, ...props }) => {
 }
 
 export const PlayerLevelList = ({ permissions, ...props }) => (
-    <List {...props} actions={<NoneActions />} sort={{ field: 'name', order: 'ASC' }} filters={<LevelFilter on={'always'} />}>
+    <List {...props} actions={<NoneActions />} sort={{ field: 'name', order: 'ASC' }} filters={<LevelFilter on={'always'} />} filterDefaultValues={{ is_client: true }}>
         <GameGrid />
     </List>
 );
@@ -104,6 +105,7 @@ export const LevelEdit = props => {
         <Edit title={<LevelTitle />} actions={<LevelEditActions history={props.history} />} {...props}>
             <SimpleForm>
                 <DisabledInput source="name" />
+                <BooleanInput label="Available" source="isAvailable" />
                 <TextInput source="level_secret" label="Level Password" type="password" autoComplete="new-password" validate={[required()]}/>
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
@@ -226,6 +228,7 @@ export const LevelShow = ({ permissions, ...props }) => {
         <Show title={<LevelTitle />} actions={(permissions === 'admin' || permissions === 'level_admin') ? <LevelShowActions permissions={permissions} history={props.history} /> : null} {...props}>
             <SimpleShowLayout>
                 <TextField source="name" />
+                <BooleanField source="isAvailable" label="Available" />
                 <TextField source="subheading" />
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />

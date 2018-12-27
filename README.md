@@ -13,6 +13,7 @@ Install the following (if not available on the system):
 $ cd api
 $ mkdir build
 $ mkdir build/client
+$ mkdir build/games
 $ cd ..
 ```
 ```
@@ -23,19 +24,18 @@ $ cp -r build/* ../api/build/client
 ```
 
 ## Setup WebGL Unity Game
-@Atishya add here
+**Game Setup**: 
+https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md
 
 ## Run backend portal
-```
-$ cd api
-```
-Follow the instructions in the `README.md` there. 
+**Server Setup**:  
+https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/README.md 
 
 
 ## Notes
 
 ### Level categories
-Level categories are stored in `/database/utils/config.js`. You can add new categories there (and restart following above procedure), but do not delete existing ones if the database is already set-up.  
+Level categories are stored in `/dashboard/utils/config.js`. You can add new categories there (and restart following above procedure), but do not delete existing ones if the database is already set-up.  
 Reference: https://searchsecurity.techtarget.com/resources  
 
 
@@ -52,3 +52,7 @@ If the app gives mongoDB network error, try:
 $ sudo service mongod restart
 ```
 and then try restarting the app until it starts.
+
+### Other Documents
+1. **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/README.md 
+2. **Game Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md

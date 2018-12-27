@@ -129,9 +129,10 @@ POST: /api/leaderboard   // Gets the top 10 players of that level
         message: "..string"
         data: {
             name: level_name,
-            leaderboard: {
-                "name":(Number)score
-            }
+            leaderboard: [
+                ["name",(Number)score],
+                ....
+            ]
         }
 
 

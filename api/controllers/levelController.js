@@ -474,14 +474,15 @@ function getLeaderboard(req, res) {
         if (mylevel == null) {
             return utils.res(res, 401, 'Invalid type provided');
         }
-        var arr = {};
+        var arr = [];
         console.log(mylevel);
         var lead = sortProperties(mylevel.leaderboard);
         console.log(lead)
         var leng = Math.min(10, lead.length);
         console.log(lead[0][0]);
         for (var i = 0; i < leng; i++) {
-            arr[lead[i][0]] = lead[i][1];
+            arr.push(lead[i]);
+            // arr[lead[i][0]] = lead[i][1];
         }
         console.log(arr);
         const lev = {

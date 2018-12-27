@@ -48,6 +48,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     filter: JSON.stringify(params.filter),
                 };
                 url = `${apiUrl}/${resource}?${stringify(query)}`;
+                if (resource === 'userscore') url = `${apiUrl}/user/scoreList`;
+                console.log(resource, url);
                 break;
             }
             case GET_ONE:
@@ -58,6 +60,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                     filter: JSON.stringify({ id: params.ids }),
                 };
                 url = `${apiUrl}/${resource}?${stringify(query)}`;
+                if (resource === 'userscore') url = `${apiUrl}/user/scoreList`;
+                console.log(resource, url);
                 break;
             }
             case GET_MANY_REFERENCE: {

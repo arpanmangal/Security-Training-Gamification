@@ -127,14 +127,14 @@ POST: /api/leaderboard   // Gets the top 10 players of that level
         status_code
         error: false/true
         message: "..string"
-        data: {
-            name: level_name,
-            leaderboard: [
-                ["name",(Number)score],
-                ....
-            ]
-        }
-
+        data: [
+            {
+                rank: ,
+                username: ,
+                coins: ,
+            }, ...
+        ]
+        
 
 POST: /api/level/getAttributes
     body:

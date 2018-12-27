@@ -25,6 +25,7 @@ class GameGrid extends React.Component {
     render() {
         const { classes } = this.props;
         const { data, ids } = this.props;
+        console.log(this.props);
         return (
             <Card>
                 <CardContent>

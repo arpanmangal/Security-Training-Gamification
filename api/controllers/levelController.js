@@ -461,7 +461,7 @@ function getLeaderboard(req, res) {
     }
 
     if (req.body.name == null) {
-        return utils.res(res, 401, 'Level name undefined');
+        return utils.res(res, 400, 'Invalid level name');
     }
 
     // Fetch the level info
@@ -473,24 +473,27 @@ function getLeaderboard(req, res) {
         }
 
         if (mylevel == null) {
-            return utils.res(res, 401, 'Invalid type provided');
+            return utils.res(res, 400, 'Invalid level name');
         }
-        var arr = [];
-        console.log(mylevel);
-        var lead = sortProperties(mylevel.leaderboard);
-        console.log(lead)
-        var leng = Math.min(10, lead.length);
-        console.log(lead[0][0]);
-        for (var i = 0; i < leng; i++) {
+
+        let arr = [];
+        let lead = sortProperties(mylevel.leaderboard);
+        let leng = Math.min(10, lead.length);
+        for (let i = 0; i < leng; i++) {
             arr.push(lead[i]);
             // arr[lead[i][0]] = lead[i][1];
         }
-        console.log(arr);
-        const lev = {
-            'name': mylevel.name,
-            'leaderboard': arr,
-        }
-        return utils.res(res, 200, 'Retrieval Successful', lev);
+        
+        let leaderboard = [];
+        arr.forEach((e, idx) => {
+            leaderboard.push({
+                "rank": idx+1,
+                "username": e[0],
+                "coins": e[1],
+            });
+        });
+        
+        return utils.res(res, 200, 'Retrieval Successful', leaderboard);
     });
 }
 

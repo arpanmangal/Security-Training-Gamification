@@ -80,10 +80,17 @@ To publish the game follow the steps:
 
 ```
 1. Develop unity WebGl build
-2. The build will contain 2 folders(Build and TemplateData) and 1 index.html. Copy and Paste these 3 files inside api/build/games/<Level_Name>/
+2. The build will contain 2 folders(Build and TemplateData) and 1 index.html. Copy and Paste these 3 files inside api/build/games/<Level_Name>/. 
+   (DO NOT COMMIT THE BUILD HERE)
 3. Your level is deployed.
 4. Remember to set your level name and request URLs properly within the game scripts. Also, remember to use Token call function within the script to allow the game grab token from the browser.
+-------------------------------
+5. Ask your Super Admin to create a level from his account, giving your <Level_Name>. (Ignore if already done).
+6. Ask your Level Admin to edit your level filling the necessary details,
+   and most importantly setting the game url to: <Portal_Link>/game/<Level_Name>, and setting isAvailable.
+7. Test with your Player Account.
 ```
+
 
 ### Other Documents
 - **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database

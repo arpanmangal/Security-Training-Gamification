@@ -49,9 +49,9 @@ $ npm start
 ```
 
 ### Usage
-1. Create Admin account from `/registerAdmin`, using the Admin-Secret passed when starting the app.
-2. Create User accounts from `/signup`.
-3. Login from `/login`. 
+1. Create Admin account from `<Portal_Link>/#/registerAdmin`, using the Admin-Secret passed when starting the app.
+2. Create User accounts from `<Portal_Link>/#/signup`.
+3. Login from `<Portal_Link>/#/login`. 
 4. Add new levels and modify existing levels after logging in as an Admin user.
 
 Enjoy!

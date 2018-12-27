@@ -11,7 +11,7 @@ const UserTitle = ({ record }) => {
 const AdminField = ({ record, source }) => {
     return (
         <span>
-            {record['role'] === 'admin' ? '-' : record[source]}
+            {record['role'] === 'player' ? record[source] : '-'}
         </span>
     )
 }

@@ -40,6 +40,18 @@ export const UserList = props => (
     </List>
 );
 
+export const UserScoreList = props => (
+    <List {...props}>
+        <Datagrid>
+            <TextField source="id" />
+            <TextField source="name" />
+            <TextField source="total_coins" />
+            <TextField source="cyber_IQ" />
+            <TextField source="levels" />
+        </Datagrid>
+    </List>
+);
+
 export const UserShow = (props) => (
     <Show title={<UserTitle />} {...props}>
         <SimpleShowLayout>

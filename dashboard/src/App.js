@@ -2,7 +2,7 @@ import React from 'react';
 import { Admin, Resource, fetchUtils, ListGuesser, ShowGuesser, EditGuesser } from 'react-admin';
 import { LevelList, LevelEdit, LevelCreate, LevelShow, PlayerLevelList } from './Resources/levels';
 import { LeaderboardList } from './Resources/LeaderBoard';
-import { UserList, UserShow } from './Resources/users';
+import { UserList, UserShow, UserScoreList } from './Resources/users';
 import { QuestionList, QuestionShow, QuestionCreate } from './Resources/questions';
 import LevelIcon from '@material-ui/icons/ViewList';
 import UserIcon from '@material-ui/icons/Group';
@@ -65,7 +65,12 @@ const App = () => (
         name="leaderboard"
         list={LeaderboardList}
         icon={LeaderIcon}
-      />
+      />,
+
+      <Resource
+        name="userscore"
+        list={UserScoreList}
+      />,
     ]}
   </Admin>
 );

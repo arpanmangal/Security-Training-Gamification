@@ -59,9 +59,11 @@ LevelFilter.propTypes = {
 
 export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
+    props.resource = 'leaderboard';
+    console.log(props);
     return (
         <List {...props} filters={<LevelFilter />} bulkActionButtons={permissions === 'admin' ? <PostBulkActionButtons /> : <NoneActions />}>
-            <Datagrid>
+            <Datagrid rowClick="show">
                 <TextField source="name" />
                 <TextField source="subheading" />
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />

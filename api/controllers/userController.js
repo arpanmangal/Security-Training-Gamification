@@ -578,6 +578,48 @@ function listUsers(req, res) {
         })
 }
 
+/** Get the List of all users */
+function listUsersScore(req, res) {
+    if (req == null) {
+        return utils.res(res, 400, 'Bad Request');
+    }
+
+    if (req.user_id == null) {
+        return utils.res(res, 401, 'Invalid Token');
+    }
+
+    // Fetch User lists
+    models.User.find({}, 'user_id name total_coins cyber_IQ levels')
+        .lean()
+        .exec(function (err, users) {
+            if (err) {
+                return utils.res(res, 500, 'Internal Server Error');
+            }
+
+            if (users == null) {
+                return utils.res(res, 404, 'Users do not Exist');
+            }
+            users.map(u => {
+                u['id'] = u['user_id'];
+                delete u['user_id'];
+                delete u['_id'];
+                u['levels'] = (u['levels']) ? Object.keys(u['levels']).length : 0;
+                return u;
+            });
+
+            // Sort
+            let sortPara = 'total_coins';
+            let sortOrder = 'DESC';
+            const contentRange = 'users ' + 0 + '-' + (users.length - 1) + '/' + users.length;
+
+            res.set({
+                'Access-Control-Expose-Headers': 'Content-Range',
+                'Content-Range': contentRange
+            });
+            return utils.res(res, 200, 'Retrieval Successful', utils.sortObjects(users, sortPara, sortOrder));
+        })
+}
+
 /** Admin Viewing the user info */
 function viewUser(req, res) {
     if (req == null || req.params == null) {
@@ -845,6 +887,7 @@ module.exports = {
     'deleteUser': deleteUser,
 
     'forgotPassword': forgotPassword,
+    'listUsersScore': listUsersScore,
 
     'createUser': createUser,
     'createAdmin': createAdmin,

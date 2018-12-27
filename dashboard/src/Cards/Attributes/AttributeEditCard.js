@@ -43,7 +43,8 @@ class AttributeEditCard extends React.Component {
             subheading: '',
             attributes: {},
             count: 0,
-            level_secret: ''
+            level_secret: '',
+            level_secret_error: null,
         }
     }
 
@@ -155,11 +156,19 @@ class AttributeEditCard extends React.Component {
     handleChange = name => event => {
         this.setState({
             [name]: event.target.value,
+            'level_secret_error': null,
         });
     };
 
     handleSubmit = (event) => {
         event.preventDefault();
+
+        if (!this.state.level_secret || this.state.level_secret === '') {
+            this.setState({
+                level_secret_error: 'Required',
+            });
+            return;
+        }
 
         let url = ApiUrl + '/api/level/' + this.state.levelName;
         let body = {
@@ -179,7 +188,9 @@ class AttributeEditCard extends React.Component {
             })
             .catch((err, ...rest) => {
                 alert(err.message);
-                this.props.history.push('/level/' + this.state.levelName + '/show');
+                if (err.status !== 400) {
+                    this.props.history.push('/level/' + this.state.levelName + '/show');
+                }
             });
     }
 
@@ -211,6 +222,8 @@ class AttributeEditCard extends React.Component {
                         value={this.state.level_secret}
                         onChange={this.handleChange('level_secret')}
                         margin="normal"
+                        error={this.state["level_secret_error"] ? true : false}
+                        helperText={this.state["level_secret_error"]}
                     />
                     <Divider />
                     <br />

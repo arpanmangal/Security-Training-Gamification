@@ -2,7 +2,7 @@ import React from 'react';
 import { List, Datagrid, TextField, EmailField, NumberField } from 'react-admin';
 import { Show, SimpleShowLayout } from 'react-admin';
 import { ShowButton, DeleteButton } from 'react-admin';
-import { Filter, ReferenceInput, SelectInput, TextInput } from 'react-admin';
+import { Filter, CardActions, ReferenceInput, SelectInput, TextInput } from 'react-admin';
 
 const UserTitle = ({ record }) => {
     return <span>Player {record ? `"${record.id}"` : ''}</span>
@@ -23,6 +23,10 @@ const UserFilter = (props) => (
     </Filter>
 );
 
+const NoneActions = props => (
+    <CardActions />
+);
+
 export const UserList = props => (
     <List {...props} filters={<UserFilter />}>
         <Datagrid>
@@ -41,13 +45,13 @@ export const UserList = props => (
 );
 
 export const UserScoreList = props => (
-    <List {...props}>
+    <List {...props} actions={<NoneActions />} bulkActionButtons={<NoneActions />}>
         <Datagrid>
             <TextField source="rank" />
             <TextField source="id" label="username" />
             <TextField source="name" />
-            <TextField source="total_coins" />
-            <TextField source="cyber_IQ" />
+            <TextField source="total_coins" label="Total Coins"/>
+            <TextField source="cyber_IQ" label="Cyber IQ"/>
             <TextField source="levels" label="Levels Played" />
         </Datagrid>
     </List>

@@ -53,7 +53,6 @@ class Leaderboard extends React.Component {
         options.body = JSON.stringify(body);
         fetchUtils.fetchJson(url, options)
             .then(data => {
-                console.log(data.json.data);
                 let ids = [];
                 let record = {};
                 data.json.data.forEach(user => {
@@ -89,17 +88,17 @@ class Leaderboard extends React.Component {
                             <Datagrid basePath="leaderboard" data={this.state.data} ids={this.state.ids} currentSort={currentSort} setSort={setSort}>
                                 <TextField source="rank" />
                                 <TextField source="username" />
-                                <ReferenceField label="Name" source="username" reference="userscore">
+                                <ReferenceField label="Name" source="username" reference="rankings" linkType={false}>
                                     <TextField source="name" />
                                 </ReferenceField>
                                 <TextField source="coins" label="Level Coins" />
-                                <ReferenceField label="Total Coins" source="username" reference="userscore" linkType={false}>
+                                <ReferenceField label="Total Coins" source="username" reference="rankings" linkType={false}>
                                     <TextField source="total_coins" />
                                 </ReferenceField>
-                                <ReferenceField label="Cyber IQ" source="username" reference="userscore" linkType={false}>
+                                <ReferenceField label="Cyber IQ" source="username" reference="rankings" linkType={false}>
                                     <TextField source="cyber_IQ" />
                                 </ReferenceField>
-                                <ReferenceField label="Levels Played" source="username" reference="userscore" linkType={false}>
+                                <ReferenceField label="Levels Played" source="username" reference="rankings" linkType={false}>
                                     <TextField source="levels" />
                                 </ReferenceField>
                             </Datagrid>

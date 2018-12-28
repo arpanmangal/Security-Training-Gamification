@@ -6,8 +6,9 @@ import { UserList, UserShow, UserScoreList } from './Resources/users';
 import { QuestionList, QuestionShow, QuestionCreate } from './Resources/questions';
 import LevelIcon from '@material-ui/icons/ViewList';
 import UserIcon from '@material-ui/icons/Group';
-import LeaderIcon from '@material-ui/icons/TrendingUp';
 import SecurityIcon from '@material-ui/icons/Https';
+import LeaderIcon from '@material-ui/icons/TrendingUp';
+import RankingIcon from '@material-ui/icons/Sort';
 import Dashboard from './Admin/Dashboard';
 import customRoutes from './Admin/customRoutes';
 import authProvider from './Admin/authProvider';
@@ -64,13 +65,13 @@ const App = () => (
       <Resource
         name="leaderboard"
         list={LevelLeaderboardList}
+        icon={LeaderIcon}
       />,
 
       <Resource
-        name="userscore"
+        name="rankings"
         list={UserScoreList}
-        icon={LeaderIcon}
-        options={{ label: 'Rankings' }}
+        icon={RankingIcon}
       />,
     ]}
   </Admin>

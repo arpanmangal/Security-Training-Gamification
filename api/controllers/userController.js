@@ -589,11 +589,11 @@ function listUsersScore(req, res) {
     let r0, r1, qFilter = {};
     try {
         // Filter
-        qFilter = JSON.parse(req.query.filter);
+        qFilter = JSON.parse(req.query.filter || {});
 
         // Pagination
         let range = JSON.parse(req.query.range);
-        r0 = range[0], r1 = range[1] + 1;
+        r0 = range[0], r1 = range[1];
     } catch (err) {
     }
 

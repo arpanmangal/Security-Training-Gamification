@@ -60,7 +60,6 @@ LevelFilter.propTypes = {
 
 export const LevelList = ({ permissions, ...props }) => {
     const { classes } = props;
-    console.log(props);
     return (
         <List {...props} filters={<LevelFilter />} bulkActionButtons={permissions === 'admin' ? <PostBulkActionButtons /> : <NoneActions />}>
             <Datagrid rowClick="show">
@@ -87,17 +86,27 @@ export const PlayerLevelList = ({ permissions, ...props }) => (
     </List>
 );
 
+const LeaderLinkField = ({ history, record, source }) => {
+    return (
+        <Button
+            color="primary"
+            onClick={() => { history.push('/leaderboard/' + record[source]) }}>
+            <LeaderIcon /> &nbsp; Leaderboard
+        </Button>
+
+    )
+}
+
 export const LevelLeaderboardList = ({ permissions, ...props }) => {
     const { classes } = props;
-    console.log(props);
     return (
-        <List {...props} filters={<LevelFilter />} bulkActionButtons={<NoneActions />}>
-            <Datagrid rowClick="show">
+        <List {...props} actions={<NoneActions />} filters={<LevelFilter />} filters={<LevelFilter on={'always'} />} filterDefaultValues={{ is_client: true }} bulkActionButtons={<NoneActions />}>
+            <Datagrid>
                 <TextField source="name" />
                 <SelectField source="category" choices={categories} optionText="name" optionValue="id" />
                 <SelectField source="difficulty" choices={difficulties} optionText="name" optionValue="id" />
                 <SelectField source="type" choices={types} optionText="name" optionValue="id" />
-                <Button color="primary" onClick={() => { history.push('/leaderboard/' + levelName) }}><LeaderIcon /> &nbsp; Leaderboard</Button>
+                <LeaderLinkField source="name" history={props.history} label=''/>
             </Datagrid>
         </List>
     );
@@ -124,7 +133,7 @@ export const LevelEdit = props => {
             <SimpleForm>
                 <DisabledInput source="name" />
                 <BooleanInput label="Available" source="isAvailable" />
-                <TextInput source="level_secret" label="Level Password" type="password" autoComplete="new-password" validate={[required()]}/>
+                <TextInput source="level_secret" label="Level Password" type="password" autoComplete="new-password" validate={[required()]} />
                 <TextInput source="subheading" />
                 <SelectInput source="category" choices={categories} />
                 <SelectInput source="difficulty" choices={difficulties} />

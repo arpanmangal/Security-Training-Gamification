@@ -1,7 +1,7 @@
 import React from 'react';
-import NameCard from '../Cards/NameCard';
-import ProfileCard from '../Cards/ProfileCard';
-import AccountCard from '../Cards/AccountCard';
+import NameCard from '../NameCard';
+import ProfileCard from './ProfileCard';
+import AccountCard from '../AccountCard';
 
 class ProfilePage extends React.Component {
     constructor() {

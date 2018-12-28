@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import SignupForm from '../Forms/signupForm';
 import ForgotForm from '../Forms/forgotForm';
 import RegAdminForm from '../Forms/regAdminForm';
-import ProfilePage from '../Custom/ProfilePage';
+import ProfilePage from '../Cards/Profile/ProfilePage';
 import Configuration from '../Configuration/Configuration';
 import PropTypes from "prop-types";
 import AttributeEditCard from '../Cards/Attributes/AttributeEditCard';

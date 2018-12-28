@@ -95,7 +95,6 @@ function createUser(req, res) {
             .then(function () {
                 // Create log
                 logController.createLog(user.user_id, function (status) {
-                    console.log(status);
                     if (status == 200) {
                         // User successfully created
                         return utils.res(res, 200, "Account Created Successfully!")
@@ -242,7 +241,6 @@ function login(req, res) {
     }
     if (!config.passwordRegex.test(user.password)) {
         // Either invalid or dangerous
-        console.log(user.password);
         return utils.res(res, 401, 'Incorrect Password');
     }
 
@@ -480,7 +478,6 @@ function resetPassword(req, res) {
                     }, function (err, updatedUser) {
                         if (err || updatedUser == null) {
                             // Some problem occured
-                            // console.log(err);
                             return utils.res(res, 500, 'Internal Server Error');
                         }
 
@@ -770,7 +767,6 @@ function forgotPassword(req, res) {
                 }, function (err, updatedUser) {
                     if (err || updatedUser == null) {
                         // Some problem occured
-                        // console.log(err);
                         return utils.res(res, 500, 'Internal Server Error');
                     }
 

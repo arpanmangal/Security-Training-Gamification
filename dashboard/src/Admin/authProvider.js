@@ -14,7 +14,6 @@ export default (type, params) => {
             body: JSON.stringify({ username, password }),
             headers: new Headers({ 'Content-Type': 'application/json' }),
         })
-        console.log(request);
         return fetch(request)
             .then(response => {
                 if (response.status < 200 || response.status >= 300) {
@@ -23,14 +22,9 @@ export default (type, params) => {
                 return response.json();
             })
             .then((res) => {
-                // localStorage.removeItem('accessToken');
-                // localStorage.removeItem('role');
-                // if (res.data.admin) {
-                // }
                 localStorage.setItem('role', res.data.admin);
                 localStorage.setItem('accessToken', res.data.token);
                 localStorage.setItem('userName', res.data.user.name);
-                console.log(localStorage);
             });
     }
     // called when the user clicks on the logout button

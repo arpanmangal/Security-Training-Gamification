@@ -6,12 +6,12 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Avatar from '@material-ui/core/Avatar';
 import green from '@material-ui/core/colors/green';
 import { CardContent, Typography } from '@material-ui/core';
-import ProfileForm from '../Forms/profileForm';
+import ProfileForm from '../../Forms/profileForm';
 import Divider from '@material-ui/core/Divider';
 import CoinIcon from '@material-ui/icons/EuroSymbol';
 import LaptopIcon from '@material-ui/icons/LaptopMac';
 import { fetchUtils } from 'react-admin';
-import { ApiUrl, TextRegex } from '../Utils/config';
+import { ApiUrl, TextRegex } from '../../Utils/config';
 
 const styles = theme => ({
     card: {

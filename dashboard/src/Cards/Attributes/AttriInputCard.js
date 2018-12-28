@@ -168,7 +168,6 @@ class InputCard extends React.Component {
                             value={this.state.name}
                             onChange={this.handleName()}
                             margin="normal"
-                            value={this.state.name}
                         />
                         <IconButton
                             onClick={this.handleSubmit}

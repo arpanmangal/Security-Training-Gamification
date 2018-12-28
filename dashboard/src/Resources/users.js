@@ -44,7 +44,7 @@ export const UserList = props => (
     </List>
 );
 
-export const UserScoreList = props => (
+export const RankingsList = props => (
     <List {...props} actions={<NoneActions />} bulkActionButtons={<NoneActions />}>
         <Datagrid>
             <TextField source="rank" />

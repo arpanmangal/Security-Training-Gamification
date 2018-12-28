@@ -18,10 +18,6 @@ const styles = theme => ({
 });
 
 class GameGrid extends React.Component {
-    constructor() {
-        super();
-    }
-
     render() {
         const { classes } = this.props;
         const { data, ids } = this.props;

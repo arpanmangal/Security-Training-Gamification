@@ -57,5 +57,5 @@ $ npm start
 Enjoy!
 
 ### Other Documents
-1. **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/README.md 
-2. **Game Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md
+1. **Portal Setup**: [`INSTALL.md`](../INSTALL.md)
+2. **Game Setup**: [`api/docs/README.md`](docs/README.md)

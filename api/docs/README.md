@@ -93,5 +93,5 @@ To publish the game follow the steps:
 
 
 ### Other Documents
-- **Portal Setup**: https://github.com/arpanmangal/Serious-Games-Database
-- **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/tree/master/api
+- **Portal Setup**: [`INSTALL.md`](../../INSTALL.md)
+- **Server Setup**: [`api/README.md`](../README.md)

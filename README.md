@@ -1,58 +1,51 @@
-# Serious Games Database
+# Security Training Gamification
 
-## Initial Setup / Requirements
-Install the following (if not available on the system):
-1. [NodeJS](https://nodejs.org/en/download/package-manager/)
-2. NPM (sudo apt-get install npm)
-3. [MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
-4. React (npm install -g create-react-app)
+A `React` based portal for navigating and playing Unity based games. Aimed to be used to develop Unity based games, for teaching cyber-security to working professionals. The portal is intended to serve as a system where users can register, navigate and play games and see their positions on leaderboard and track progress.
 
+## Implementation
+1. Backend Architecture: `NodeJS` and `MongoDB`.
+2. Frontend: `React`
 
-## Setup front-end portal
-```
-$ cd api
-$ mkdir build
-$ mkdir build/client
-$ mkdir build/games
-$ cd ..
-```
-```
-$ cd dashboard
-$ npm install
-$ npm run-script build
-$ cp -r build/* ../api/build/client
-```
+For installation and other technical details refer to [`INSTALL.md`](INSTALL.md).
 
-## Setup WebGL Unity Game
-**Game Setup**: 
-https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md
+## Features:
+### For Users
+* User login, registration and authentication system.
 
-## Run backend portal
-**Server Setup**:  
-https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/README.md 
+Login             |  Password Reset
+:-------------------------:|:-------------------------:
+![login](imgs/login.JPG)  |  ![signup](imgs/forgot.JPG)
 
+Registration             |  Edit Profile
+:-------------------------:|:-------------------------:
+![login](imgs/signup.JPG)  |  ![signup](imgs/edit_profile.png)
 
-## Notes
+* Navigating and playing games
+    * Read game descriptions, rules and other info
+    * Click 'play' to be redirected to game
+    * Apply filters to filter games by category and difficuly
+    * Mark games as favourite
 
-### Level categories
-Level categories are stored in `/dashboard/utils/config.js`. You can add new categories there (and restart following above procedure), but do not delete existing ones if the database is already set-up.  
-Reference: https://searchsecurity.techtarget.com/resources  
+![play](imgs/play_dark.png)
 
+* Leaderboard
 
-## Trouble-shooting
-### Problems with React App
-If the app gives npm error, try:  
-```
-$ rm -rf node_modules && npm cache clean --force && npm install
-```
+* Utility
 
-### Problems with NodeJS Server
-If the app gives mongoDB network error, try:
-```
-$ sudo service mongod restart
-```
-and then try restarting the app until it starts.
+![theme](imgs/theme.png)
 
-### Other Documents
-1. **Server Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/README.md 
-2. **Game Setup**: https://github.com/arpanmangal/Serious-Games-Database/blob/master/api/docs/README.md
+### For Admins
+* Manage Games
+    * View and filter games
+    * Create new games and Edit existing
+
+![admin level view](imgs/admin_level_view.png)
+![level creation & edit](imgs/level_edit1.png)
+![level edit](imgs/level_edit.png)
+![level edit](imgs/edit_att.png)
+
+* Manage Users
+
+![level edit](imgs/admin_manage_users.png)
+
+* Manage Security Questions
